@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "fmt": "prettier -w src public",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "git checkout gitlab-pages && git merge master && git push gitlab gitlab-pages && git checkout master"
   },
   "dependencies": {
     "pdf-lib": "^1.17.1",
