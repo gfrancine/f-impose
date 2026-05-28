@@ -1,32 +1,5 @@
-import { PDFDocument, PDFPage, rgb } from "pdf-lib";
-
-const toPts = (mm: number) => mm * 2.83465;
-const toMm = (pt: number) => pt / 2.83465;
-
-function drawTrimMark(
-  sheet: PDFPage,
-  fromX: number,
-  fromY: number,
-  toX: number,
-  toY: number,
-) {
-  const start = { x: toPts(fromX), y: toPts(fromY) };
-  const end = { x: toPts(toX), y: toPts(toY) };
-
-  sheet.drawLine({
-    start,
-    end,
-    thickness: 3,
-    color: rgb(0, 0, 0),
-  });
-
-  sheet.drawLine({
-    start,
-    end,
-    thickness: 0.75,
-    color: rgb(1, 1, 1),
-  });
-}
+import { PDFDocument, rgb } from "pdf-lib";
+import { drawTrimMark, toMm, toPts } from "./utils";
 
 export async function imposePdf(inputBuffer: ArrayBuffer) {
   const srcDoc = await PDFDocument.load(inputBuffer);
