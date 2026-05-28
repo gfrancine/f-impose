@@ -3,6 +3,7 @@ import { imposePdf } from "./impose";
 import { PDFDocument } from "pdf-lib";
 
 function App() {
+  const [inputFile, setInputFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
@@ -11,11 +12,16 @@ function App() {
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
+    setInputFile(file);
+  };
+
+  const impose = async () => {
+    if (!inputFile) return;
     setIsProcessing(true);
 
     try {
       // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Typed_arrays
-      const srcPdf = await PDFDocument.load(await file.arrayBuffer());
+      const srcPdf = await PDFDocument.load(await inputFile.arrayBuffer());
       const outPdf = await imposePdf(srcPdf);
       const outPdfUint8Array = await outPdf.save();
       const outPdfBlob = new Blob([outPdfUint8Array as BlobPart], {
@@ -32,28 +38,36 @@ function App() {
   };
 
   return (
-    <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
-      <h1>Imposer</h1>
-      <div style={{ marginBottom: "1rem" }}>
+    <div className="app">
+      <h1>Impose</h1>
+      <fieldset>
+        <legend>Upload PDF</legend>
         <input
           type="file"
           accept=".pdf"
           onChange={handleFileUpload}
           disabled={isProcessing}
         />
-      </div>
-      {isProcessing && <p>Processing your zine...</p>}
+      </fieldset>
+      <fieldset>
+        <legend>Preset</legend>
+        <select>
+          <option>Test</option>
+        </select>
+      </fieldset>
+      <br />
+      <button onClick={impose}>Impose</button>
+      {isProcessing && <p>Processing...</p>}
       {downloadUrl && (
         <div>
-          <h3>Preview / Download</h3>
-          <iframe
-            src={downloadUrl}
-            style={{ width: "100%", height: "500px", border: "1px solid #ccc" }}
-          />
+          <h2>Output</h2>
+          <div>
+            <a href={downloadUrl} download="imposed.pdf">
+              Download PDF
+            </a>
+          </div>
           <br />
-          <a href={downloadUrl} download="imposed-zine.pdf">
-            Download PDF
-          </a>
+          <iframe src={downloadUrl} className="output" />
         </div>
       )}
     </div>
