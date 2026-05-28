@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { imposePdf } from "./impose";
+import { PDFDocument } from "pdf-lib";
 
 function App() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -13,17 +14,18 @@ function App() {
     setIsProcessing(true);
 
     try {
-      const fileArrayBuffer = await file.arrayBuffer();
-      const outputPdfUint8Array = await imposePdf(fileArrayBuffer);
-      // Create a blob and URL for preview/download
-      const blob = new Blob([outputPdfUint8Array as BlobPart], {
+      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Typed_arrays
+      const srcPdf = await PDFDocument.load(await file.arrayBuffer());
+      const outPdf = await imposePdf(srcPdf);
+      const outPdfUint8Array = await outPdf.save();
+      const outPdfBlob = new Blob([outPdfUint8Array as BlobPart], {
         type: "application/pdf",
       });
-      const url = URL.createObjectURL(blob);
+      const url = URL.createObjectURL(outPdfBlob);
       setDownloadUrl(url);
-    } catch (error) {
-      console.error("Error processing PDF:", error);
-      alert("Failed to process PDF. Check console for details.");
+    } catch (err) {
+      console.error("Error processing PDF:", err);
+      alert(`Failed to process PDF: ${err}\n\nCheck console for details.`);
     } finally {
       setIsProcessing(false);
     }

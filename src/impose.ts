@@ -1,8 +1,10 @@
 import { PDFDocument, rgb } from "pdf-lib";
 import { drawTrimMark, toMm, toPts } from "./utils";
 
-export async function imposePdf(inputBuffer: ArrayBuffer) {
-  const srcDoc = await PDFDocument.load(inputBuffer);
+export async function imposePdf(
+  srcDoc: PDFDocument /*inputBuffer: ArrayBuffer*/,
+) {
+  // const srcDoc = await PDFDocument.load(inputBuffer);
   const outDoc = await PDFDocument.create();
 
   const A4_WIDTH = toPts(210);
@@ -38,5 +40,6 @@ export async function imposePdf(inputBuffer: ArrayBuffer) {
 
   drawTrimMark(sheet, 5, 5, 5, toMm(sheet.getHeight()) - 5);
 
-  return await outDoc.save();
+  // return await outDoc.save();
+  return outDoc;
 }
