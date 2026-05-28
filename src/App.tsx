@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { imposePdf } from "./impose";
-import { DEFAULT_SETTINGS, SettingsForm, type Settings } from "./SettingsForm";
 
 function App() {
-  const [settings, setSettings] = useState<Settings>({ ...DEFAULT_SETTINGS });
   const [isProcessing, setIsProcessing] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
@@ -34,7 +32,6 @@ function App() {
   return (
     <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
       <h1>Imposer</h1>
-      <SettingsForm settings={settings} setSettings={setSettings} />
       <div style={{ marginBottom: "1rem" }}>
         <input
           type="file"
