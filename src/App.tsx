@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { imposePdf } from "../hidden/impose";
 import cardPreset from "./presets/card90x55-8up";
 import { PDFDocument } from "pdf-lib";
 
