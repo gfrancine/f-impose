@@ -68,6 +68,7 @@ export default function DummyGenerator() {
     <div>
       <details>
         <summary>Dummy PDF Generator</summary>
+        <p>Generate dummy page-numbered PDFs for testing layout presets.</p>
         <fieldset>
           <legend>Settings</legend>
           <label>

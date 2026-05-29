@@ -39,7 +39,24 @@ function App() {
 
   return (
     <div className="app">
-      <h1>Impose</h1>
+      <h1>F-Impose</h1>
+      <p>
+        Imposition tools for indie printmaking. Select a preset, upload your
+        source PDF, adjust the settings, and click the 'Impose' button to
+        generate an output!
+      </p>
+      <p>
+        To contribute, suggest features, or report issues please see the{" "}
+        <a href="https://gitlab.com/gfrancine/f-impose">source repository</a> or
+        contact me personally! Made with ❤️ by{" "}
+        <a href="https://instagram.com/gracefrancines">@gracefrancines</a>
+      </p>
+      <fieldset>
+        <legend>Preset</legend>
+        <select>
+          <option>Test</option>
+        </select>
+      </fieldset>
       <fieldset>
         <legend>Upload PDF</legend>
         <input
@@ -48,12 +65,6 @@ function App() {
           onChange={handleFileUpload}
           disabled={isProcessing}
         />
-      </fieldset>
-      <fieldset>
-        <legend>Preset</legend>
-        <select>
-          <option>Test</option>
-        </select>
       </fieldset>
       <br />
       <button onClick={impose}>Impose</button>
