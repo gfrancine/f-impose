@@ -42,15 +42,15 @@ export function drawTrimMark(
   sheet.drawLine({
     start,
     end,
-    thickness: 3,
-    color: rgb(0, 0, 0),
+    thickness: 1.5,
+    color: rgb(1, 1, 1),
   });
 
   sheet.drawLine({
     start,
     end,
-    thickness: 0.75,
-    color: rgb(1, 1, 1),
+    thickness: 0.5,
+    color: rgb(0, 0, 0),
   });
 }
 
