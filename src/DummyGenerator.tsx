@@ -1,40 +1,47 @@
 import { useState } from "react";
 import PdfOutput from "./PdfOutput";
-import { pdfToUrl, set, toPts } from "./utils";
+import { pdfToUrl, toPts } from "./utils";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+
+// handle blank input strings
+function toNumber(str: string, min = 0) {
+  return Number(str.length > 0 ? str : "" + min);
+}
 
 export default function DummyGenerator() {
   // https://react.dev/reference/react-dom/components/input
-  const [settings, setSettings] = useState({
-    width: 210,
-    height: 297,
-    bleed: 0,
-    pageCount: 1,
-  });
+  const [strWidth, setStrWidth] = useState("210");
+  const [strHeight, setStrHeight] = useState("297");
+  const [strBleed, setStrBleed] = useState("0");
+  const [strPageCount, setStrPageCount] = useState("1");
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
   const generateDummyPdf = async () => {
-    const width = toPts(settings.width),
-      height = toPts(settings.height),
-      bleed = toPts(settings.bleed);
+    const width = toPts(toNumber(strWidth, 1)),
+      height = toPts(toNumber(strHeight, 1)),
+      bleed = toPts(toNumber(strBleed, 0));
     const outerWidth = width + bleed * 2,
       outerHeight = height + bleed * 2;
 
     const outPdf = await PDFDocument.create();
     const helveticaFont = await outPdf.embedFont(StandardFonts.Helvetica);
 
-    for (let i = 0; i < settings.pageCount; i++) {
+    for (let i = 0; i < toNumber(strPageCount, 1); i++) {
       const page = outPdf.addPage([outerWidth, outerHeight]);
 
-      page.drawRectangle({
-        x: 0,
-        y: 0,
-        width: outerWidth,
-        height: outerHeight,
-        borderWidth: 1,
-        borderColor: rgb(0, 0, 0),
-      });
+      // bleed area
+      if (bleed > 0) {
+        page.drawRectangle({
+          x: 0,
+          y: 0,
+          width: outerWidth,
+          height: outerHeight,
+          borderWidth: 2,
+          borderColor: rgb(0, 0, 0),
+        });
+      }
 
+      // content area
       page.drawRectangle({
         x: bleed,
         y: bleed,
@@ -44,6 +51,7 @@ export default function DummyGenerator() {
         borderColor: rgb(0, 0, 0),
       });
 
+      // page number
       page.drawText(i + 1 + "", {
         x: bleed,
         y: bleed,
@@ -66,20 +74,18 @@ export default function DummyGenerator() {
             Width{" "}
             <input
               type="number"
-              value={settings.width}
-              onChange={(e) =>
-                setSettings(set(settings, "width", Number(e.target.value)))
-              }
+              value={strWidth}
+              min={0}
+              onChange={(e) => setStrWidth(e.target.value)}
             />
-          </label>
+          </label>{" "}
           <label>
             Height{" "}
             <input
               type="number"
-              value={settings.height}
-              onChange={(e) =>
-                setSettings(set(settings, "height", Number(e.target.value)))
-              }
+              value={strHeight}
+              min={0}
+              onChange={(e) => setStrHeight(e.target.value)}
             />
           </label>
           <br />
@@ -87,10 +93,9 @@ export default function DummyGenerator() {
             Bleed{" "}
             <input
               type="number"
-              value={settings.bleed}
-              onChange={(e) =>
-                setSettings(set(settings, "bleed", Number(e.target.value)))
-              }
+              value={strBleed}
+              min={0}
+              onChange={(e) => setStrBleed(e.target.value)}
             />
           </label>
           <br />
@@ -98,10 +103,9 @@ export default function DummyGenerator() {
             Page Count{" "}
             <input
               type="number"
-              value={settings.pageCount}
-              onChange={(e) =>
-                setSettings(set(settings, "pageCount", Number(e.target.value)))
-              }
+              value={strPageCount}
+              min={1}
+              onChange={(e) => setStrPageCount(e.target.value)}
             />
           </label>
         </fieldset>
