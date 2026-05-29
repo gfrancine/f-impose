@@ -10,7 +10,7 @@ To suggest features or report issues, please [create an issue](https://gitlab.co
 
 # Developing
 
-```
+```sh
 # Open a live development server
 npm run dev 
 
