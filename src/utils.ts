@@ -12,6 +12,21 @@ export function set<O, K extends keyof O>(object: O, key: K, value: O[K]) {
 export const toPts = (mm: number) => mm * 2.83465;
 export const toMm = (pt: number) => pt / 2.83465;
 
+/** a fancy immutable {x, y} container */
+export class Vec2 {
+  readonly x: number;
+  readonly y: number;
+
+  constructor(x = 0, y = 0) {
+    this.x = x;
+    this.y = y;
+  }
+
+  div(v: number) {
+    return new Vec2(this.x / v, this.y / v);
+  }
+}
+
 export function drawTrimMark(
   sheet: PDFPage,
   fromX: number,
@@ -19,8 +34,8 @@ export function drawTrimMark(
   toX: number,
   toY: number,
 ) {
-  const start = { x: toPts(fromX), y: toPts(fromY) };
-  const end = { x: toPts(toX), y: toPts(toY) };
+  const start = { x: fromX, y: fromY };
+  const end = { x: toX, y: toY };
 
   sheet.drawLine({
     start,

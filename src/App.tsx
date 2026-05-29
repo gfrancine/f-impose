@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { imposePdf } from "./impose";
+import { imposePdf } from "../hidden/impose";
+import cardPreset from "./presets/card90x55-8up";
 import { PDFDocument } from "pdf-lib";
 
 function App() {
@@ -22,7 +23,7 @@ function App() {
     try {
       // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Typed_arrays
       const srcPdf = await PDFDocument.load(await inputFile.arrayBuffer());
-      const outPdf = await imposePdf(srcPdf);
+      const outPdf = await cardPreset.impose(srcPdf);
       const outPdfUint8Array = await outPdf.save();
       const outPdfBlob = new Blob([outPdfUint8Array as BlobPart], {
         type: "application/pdf",
