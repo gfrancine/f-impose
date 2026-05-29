@@ -5,7 +5,8 @@
 */
 
 import { PDFDocument } from "pdf-lib";
-import { assert, drawTrimMark, set, toPts, Vec2 } from "../utils";
+import { assert, drawTrimMarksRect, toPts, Vec2 } from "../utils";
+import type { Preset } from "../types";
 
 const DEFAULT_SETTINGS = {
   // just here temporarily
@@ -42,6 +43,7 @@ async function impose(
   // 2 images in the center
   // with trim marks, take into account bleedArea
 
+  // create sheet
   const sheetSize = new Vec2(
     toPts(settings.sheetWidth),
     toPts(settings.sheetHeight),
@@ -49,117 +51,33 @@ async function impose(
   const sheetCenter = sheetSize.div(2);
   const sheet = outPdf.addPage([sheetSize.x, sheetSize.y]);
 
+  // draw page
   const srcPage = srcPages[0];
-
   const origin = sheetCenter;
   const srcSize = new Vec2(srcPage.width, srcPage.height);
   const srcSizeHalf = srcSize.div(2);
+  const bleedArea = toPts(settings.bleedArea);
+  const trimLength = toPts(settings.trimMarkLength);
+  const trimOffset = toPts(settings.trimMarkOffset);
 
   sheet.drawPage(srcPage, {
     x: origin.x - srcSizeHalf.x,
     y: origin.y - srcSizeHalf.y,
   });
 
-  const bleedArea = toPts(settings.bleedArea);
-  const trimLength = toPts(settings.trimMarkLength);
-  const trimOffset = toPts(settings.trimMarkOffset);
-
-  // bottom left, horiz
-  drawTrimMark(
-    sheet,
-    // from
-    origin.x - srcSizeHalf.x + bleedArea - trimOffset - trimLength,
-    origin.y - srcSizeHalf.y + bleedArea,
-    // to
-    origin.x - srcSizeHalf.x + bleedArea - trimOffset,
-    origin.y - srcSizeHalf.y + bleedArea,
-  );
-
-  // bottom left, vert
-  drawTrimMark(
-    sheet,
-    // from
-    origin.x - srcSizeHalf.x + bleedArea,
-    origin.y - srcSizeHalf.y + bleedArea - trimOffset - trimLength,
-    // to
-    origin.x - srcSizeHalf.x + bleedArea,
-    origin.y - srcSizeHalf.y + bleedArea - trimOffset,
-  );
-
-  // bottom right, horiz
-  drawTrimMark(
-    sheet,
-    // from
-    origin.x + srcSizeHalf.x - bleedArea + trimOffset,
-    origin.y - srcSizeHalf.y + bleedArea,
-    // to
-    origin.x + srcSizeHalf.x - bleedArea + trimOffset + trimLength,
-    origin.y - srcSizeHalf.y + bleedArea,
-  );
-
-  // bottom right, vert
-  drawTrimMark(
-    sheet,
-    // from
-    origin.x + srcSizeHalf.x - bleedArea,
-    origin.y - srcSizeHalf.y + bleedArea - trimOffset - trimLength,
-    // to
-    origin.x + srcSizeHalf.x - bleedArea,
-    origin.y - srcSizeHalf.y + bleedArea - trimOffset,
-  );
-
-  ///
-
-  // top left, horiz
-  drawTrimMark(
-    sheet,
-    // from
-    origin.x - srcSizeHalf.x + bleedArea - trimOffset - trimLength,
-    origin.y + srcSizeHalf.y - bleedArea,
-    // to
-    origin.x - srcSizeHalf.x + bleedArea - trimOffset,
-    origin.y + srcSizeHalf.y - bleedArea,
-  );
-
-  // top left, vert
-  drawTrimMark(
-    sheet,
-    // from
-    origin.x - srcSizeHalf.x + bleedArea,
-    origin.y + srcSizeHalf.y - bleedArea + trimOffset + trimLength,
-    // to
-    origin.x - srcSizeHalf.x + bleedArea,
-    origin.y + srcSizeHalf.y - bleedArea + trimOffset,
-  );
-
-  // top right, horiz
-  drawTrimMark(
-    sheet,
-    // from
-    origin.x + srcSizeHalf.x - bleedArea + trimOffset,
-    origin.y + srcSizeHalf.y - bleedArea,
-    // to
-    origin.x + srcSizeHalf.x - bleedArea + trimOffset + trimLength,
-    origin.y + srcSizeHalf.y - bleedArea,
-  );
-
-  // top right, vert
-  drawTrimMark(
-    sheet,
-    // from
-    origin.x + srcSizeHalf.x - bleedArea,
-    origin.y + srcSizeHalf.y - bleedArea + trimOffset + trimLength,
-    // to
-    origin.x + srcSizeHalf.x - bleedArea,
-    origin.y + srcSizeHalf.y - bleedArea + trimOffset,
-  );
+  drawTrimMarksRect(sheet, {
+    origin,
+    srcSize: srcSize.sub(bleedArea * 2),
+    trimLength,
+    trimOffset,
+  });
 
   return outPdf;
 }
 
 // default export presets: settings, impose function, preset name, description, etc.
 
-const preset = {
+const preset: Preset = {
   impose,
 };
 

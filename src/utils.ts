@@ -22,9 +22,11 @@ export class Vec2 {
     this.y = y;
   }
 
-  div(v: number) {
-    return new Vec2(this.x / v, this.y / v);
-  }
+  add = (v: number) => new Vec2(this.x + v, this.y + v);
+
+  sub = (v: number) => this.add(-v);
+
+  div = (v: number) => new Vec2(this.x / v, this.y / v);
 }
 
 export function drawTrimMark(
@@ -50,4 +52,106 @@ export function drawTrimMark(
     thickness: 0.75,
     color: rgb(1, 1, 1),
   });
+}
+
+export function drawTrimMarksRect(
+  sheet: PDFPage,
+  {
+    origin,
+    srcSize,
+    trimOffset,
+    trimLength,
+  }: { origin: Vec2; srcSize: Vec2; trimOffset: number; trimLength: number },
+) {
+  const srcSizeHalf = srcSize.div(2);
+
+  // bottom left, horiz
+  drawTrimMark(
+    sheet,
+    // from
+    origin.x - srcSizeHalf.x - trimOffset - trimLength,
+    origin.y - srcSizeHalf.y,
+    // to
+    origin.x - srcSizeHalf.x - trimOffset,
+    origin.y - srcSizeHalf.y,
+  );
+
+  // bottom left, vert
+  drawTrimMark(
+    sheet,
+    // from
+    origin.x - srcSizeHalf.x,
+    origin.y - srcSizeHalf.y - trimOffset - trimLength,
+    // to
+    origin.x - srcSizeHalf.x,
+    origin.y - srcSizeHalf.y - trimOffset,
+  );
+
+  // bottom right, horiz
+  drawTrimMark(
+    sheet,
+    // from
+    origin.x + srcSizeHalf.x + trimOffset,
+    origin.y - srcSizeHalf.y,
+    // to
+    origin.x + srcSizeHalf.x + trimOffset + trimLength,
+    origin.y - srcSizeHalf.y,
+  );
+
+  // bottom right, vert
+  drawTrimMark(
+    sheet,
+    // from
+    origin.x + srcSizeHalf.x,
+    origin.y - srcSizeHalf.y - trimOffset - trimLength,
+    // to
+    origin.x + srcSizeHalf.x,
+    origin.y - srcSizeHalf.y - trimOffset,
+  );
+
+  ///
+
+  // top left, horiz
+  drawTrimMark(
+    sheet,
+    // from
+    origin.x - srcSizeHalf.x - trimOffset - trimLength,
+    origin.y + srcSizeHalf.y,
+    // to
+    origin.x - srcSizeHalf.x - trimOffset,
+    origin.y + srcSizeHalf.y,
+  );
+
+  // top left, vert
+  drawTrimMark(
+    sheet,
+    // from
+    origin.x - srcSizeHalf.x,
+    origin.y + srcSizeHalf.y + trimOffset + trimLength,
+    // to
+    origin.x - srcSizeHalf.x,
+    origin.y + srcSizeHalf.y + trimOffset,
+  );
+
+  // top right, horiz
+  drawTrimMark(
+    sheet,
+    // from
+    origin.x + srcSizeHalf.x + trimOffset,
+    origin.y + srcSizeHalf.y,
+    // to
+    origin.x + srcSizeHalf.x + trimOffset + trimLength,
+    origin.y + srcSizeHalf.y,
+  );
+
+  // top right, vert
+  drawTrimMark(
+    sheet,
+    // from
+    origin.x + srcSizeHalf.x,
+    origin.y + srcSizeHalf.y + trimOffset + trimLength,
+    // to
+    origin.x + srcSizeHalf.x,
+    origin.y + srcSizeHalf.y + trimOffset,
+  );
 }
