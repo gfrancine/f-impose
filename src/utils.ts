@@ -1,4 +1,4 @@
-import { PDFEmbeddedPage, type PDFPage, rgb } from "pdf-lib";
+import { PDFDocument, PDFEmbeddedPage, type PDFPage, rgb } from "pdf-lib";
 
 export function assert(condition: unknown, err: string) {
   if (!condition) throw new Error(err);
@@ -27,6 +27,14 @@ export class Vec2 {
   sub = (v: number) => this.add(-v);
 
   div = (v: number) => new Vec2(this.x / v, this.y / v);
+}
+
+export async function pdfToUrl(pdf: PDFDocument) {
+  const pdfUint8Array = await pdf.save();
+  const pdfBlob = new Blob([pdfUint8Array as BlobPart], {
+    type: "application/pdf",
+  });
+  return URL.createObjectURL(pdfBlob);
 }
 
 export function drawTrimMark(

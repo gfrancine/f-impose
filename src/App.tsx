@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import cardPreset from "./presets/card90x55-8up";
 import addTrimMarksPreset from "./presets/add-trim-marks";
 import { PDFDocument } from "pdf-lib";
+import DummyGenerator from "./DummyGenerator";
+import PdfOutput from "./PdfOutput";
+import "./App.css";
+import { pdfToUrl } from "./utils";
 
 function App() {
   const [inputFile, setInputFile] = useState<File | null>(null);
@@ -24,12 +28,7 @@ function App() {
       // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Typed_arrays
       const srcPdf = await PDFDocument.load(await inputFile.arrayBuffer());
       const outPdf = await addTrimMarksPreset.impose(srcPdf);
-      const outPdfUint8Array = await outPdf.save();
-      const outPdfBlob = new Blob([outPdfUint8Array as BlobPart], {
-        type: "application/pdf",
-      });
-      const url = URL.createObjectURL(outPdfBlob);
-      setDownloadUrl(url);
+      setDownloadUrl(await pdfToUrl(outPdf));
     } catch (err) {
       console.error("Error processing PDF:", err);
       alert(`Failed to process PDF: ${err}\n\nCheck console for details.`);
@@ -58,19 +57,16 @@ function App() {
       </fieldset>
       <br />
       <button onClick={impose}>Impose</button>
+      <br />
       {isProcessing && <p>Processing...</p>}
       {downloadUrl && (
-        <div>
+        <>
           <h2>Output</h2>
-          <div>
-            <a href={downloadUrl} download="imposed.pdf">
-              Download PDF
-            </a>
-          </div>
-          <br />
-          <iframe src={downloadUrl} className="output" />
-        </div>
+          <PdfOutput downloadUrl={downloadUrl} />
+        </>
       )}
+      <br />
+      <DummyGenerator />
     </div>
   );
 }
