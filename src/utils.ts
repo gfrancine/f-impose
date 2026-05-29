@@ -1,4 +1,4 @@
-import { type PDFPage, rgb } from "pdf-lib";
+import { PDFEmbeddedPage, type PDFPage, rgb } from "pdf-lib";
 
 export function assert(condition: unknown, err: string) {
   if (!condition) throw new Error(err);
@@ -154,4 +154,31 @@ export function drawTrimMarksRect(
     origin.x + srcSizeHalf.x,
     origin.y + srcSizeHalf.y + trimOffset,
   );
+}
+
+export function imposePage(
+  sheet: PDFPage,
+  srcPage: PDFEmbeddedPage,
+  origin: Vec2,
+  options: {
+    bleedArea?: number;
+    trimLength?: number;
+    trimOffset?: number;
+  } = {},
+) {
+  const { bleedArea = 0, trimLength = 0, trimOffset = 0 } = options;
+  const srcSize = new Vec2(srcPage.width, srcPage.height);
+  const srcSizeHalf = srcSize.div(2);
+
+  sheet.drawPage(srcPage, {
+    x: origin.x - srcSizeHalf.x,
+    y: origin.y - srcSizeHalf.y,
+  });
+
+  drawTrimMarksRect(sheet, {
+    origin,
+    srcSize: srcSize.sub(bleedArea * 2),
+    trimLength,
+    trimOffset,
+  });
 }
