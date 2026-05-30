@@ -23,9 +23,7 @@ export class Vec2 {
   }
 
   add = (v: number) => new Vec2(this.x + v, this.y + v);
-
   sub = (v: number) => this.add(-v);
-
   div = (v: number) => new Vec2(this.x / v, this.y / v);
 }
 
@@ -35,6 +33,32 @@ export async function pdfToUrl(pdf: PDFDocument) {
     type: "application/pdf",
   });
   return URL.createObjectURL(pdfBlob);
+}
+
+/**
+ * Map saddle stitch page indices. Takes a page length and groups per sheet
+ * the indices of a hypothetical array of pages.
+ */
+export function mapIndicesSaddleStitch(pageCount: number) {
+  assert(pageCount % 4 === 0, "Page count must be a multiple of 4.");
+
+  const indexGroups: {
+    // a sheet of paper
+    front1: number; // front page, right-hand side
+    front2: number; // front page, left-hand side
+    back1: number; // back page of front1
+    back2: number; // back page of front2
+  }[] = [];
+
+  for (let i = 0; i < pageCount / 2; i += 2) {
+    const front1 = i;
+    const back1 = i + 1;
+    const front2 = pageCount - 1 - i; // don't forget the -1 because indices start with 0
+    const back2 = pageCount - 1 - i - 1;
+    indexGroups.push({ front1, front2, back1, back2 });
+  }
+
+  return indexGroups;
 }
 
 export function drawTrimMark(
