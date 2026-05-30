@@ -36,19 +36,36 @@ export async function pdfToUrl(pdf: PDFDocument) {
 }
 
 /**
+ * When trim marks stretch outside the bleed area, it creates an
+ * unnecessary gutter in tight-grid layouts. This calculates how
+ * much to remove to maximize space.
+ */
+export function calcExtraGutter(
+  bleedArea: number,
+  trimLength: number,
+  trimOffset: number,
+) {
+  return trimLength + trimOffset > bleedArea
+    ? trimLength + trimOffset - bleedArea
+    : 0;
+}
+
+// one leaf
+export type SaddleStitchIndexGroup = {
+  front1: number; // front page, right-hand side
+  front2: number; // front page, left-hand side
+  back1: number; // back page of front1
+  back2: number; // back page of front2
+};
+
+/**
  * Map saddle stitch page indices. Takes a page length and groups per sheet
  * the indices of a hypothetical array of pages.
  */
 export function mapIndicesSaddleStitch(pageCount: number) {
   assert(pageCount % 4 === 0, "Page count must be a multiple of 4.");
 
-  const indexGroups: {
-    // a sheet of paper
-    front1: number; // front page, right-hand side
-    front2: number; // front page, left-hand side
-    back1: number; // back page of front1
-    back2: number; // back page of front2
-  }[] = [];
+  const indexGroups: SaddleStitchIndexGroup[] = [];
 
   for (let i = 0; i < pageCount / 2; i += 2) {
     const front1 = i;
@@ -339,6 +356,7 @@ export function drawSpread(
     bleedArea,
     trimLength,
     trimOffset,
+    hideTrimMarks = {},
   }: {
     origin: Vec2;
     leftPage: PDFEmbeddedPage;
@@ -346,10 +364,22 @@ export function drawSpread(
     bleedArea: number;
     trimLength: number;
     trimOffset: number;
+    hideTrimMarks?: Partial<HideTrimMarkOptions>;
   },
 ) {
   const rightPageOrigin = origin.add(leftPage.width / 2, 0);
   const leftPageOrigin = origin.sub(rightPage.width / 2, 0);
+
+  const {
+    topLeftHoriz,
+    topLeftVert,
+    topRightHoriz,
+    topRightVert,
+    bottomRightHoriz,
+    bottomRightVert,
+    bottomLeftHoriz,
+    bottomLeftVert,
+  } = hideTrimMarks;
 
   const hideLeftTrimMarks = {
     topLeftHoriz: true,
@@ -365,17 +395,29 @@ export function drawSpread(
     bottomRightVert: true,
   };
 
-  drawPageWithTrimMarks(sheet, rightPage, rightPageOrigin, {
-    bleedArea,
-    trimLength,
-    trimOffset,
-    hideTrimMarks: hideLeftTrimMarks,
-  });
-
   drawPageWithTrimMarks(sheet, leftPage, leftPageOrigin, {
     bleedArea,
     trimLength,
     trimOffset,
-    hideTrimMarks: hideRightTrimMarks,
+    hideTrimMarks: {
+      ...hideRightTrimMarks,
+      topLeftHoriz,
+      topLeftVert,
+      bottomLeftHoriz,
+      bottomLeftVert,
+    },
+  });
+
+  drawPageWithTrimMarks(sheet, rightPage, rightPageOrigin, {
+    bleedArea,
+    trimLength,
+    trimOffset,
+    hideTrimMarks: {
+      ...hideLeftTrimMarks,
+      topRightHoriz,
+      topRightVert,
+      bottomRightHoriz,
+      bottomRightVert,
+    },
   });
 }

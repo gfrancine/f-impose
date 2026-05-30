@@ -8,7 +8,13 @@ Business Card 8-Up
 */
 
 import { PDFDocument } from "pdf-lib";
-import { assert, drawPageWithTrimMarks, toPts, Vec2 } from "../utils";
+import {
+  assert,
+  calcExtraGutter,
+  drawPageWithTrimMarks,
+  toPts,
+  Vec2,
+} from "../utils";
 import type { Preset } from "../types";
 
 const name = "Business Card 8-Up";
@@ -62,19 +68,12 @@ async function impose(
     // create sheet
     const sheet = outPdf.addPage([sheetSize.x, sheetSize.y]);
 
-    // when the trim marks stretch outside the bleed area it creates an
-    // unecessary gutter. remove it to maximize space
-    const extraGutterSpace =
-      trimLength + trimOffset > bleedArea
-        ? trimLength + trimOffset - bleedArea
-        : 0;
+    const extraGutter = calcExtraGutter(bleedArea, trimLength, trimOffset);
 
     const totalImposedWidth =
-      srcPage.width +
-      (-bleedArea + trimOffset + trimLength - extraGutterSpace) * 2;
+      srcPage.width + (-bleedArea + trimOffset + trimLength - extraGutter) * 2;
     const totalImposedHeight =
-      srcPage.height +
-      (-bleedArea + trimOffset + trimLength - extraGutterSpace) * 2;
+      srcPage.height + (-bleedArea + trimOffset + trimLength - extraGutter) * 2;
 
     const N_ROWS = 4;
     const N_COLS = 2;
