@@ -31,9 +31,9 @@ export const standardDefaults = {
 
 /** preset utility/prelude to set up and retrieve the most commmon preset settings */
 export function standardPresetSettings({
-  orientation = "potrait",
+  orientation = "portrait",
 }: {
-  orientation?: "potrait" | "landscape";
+  orientation?: "portrait" | "landscape";
 } = {}) {
   const sheetWidth = orientation === "landscape" ? 297 : 210,
     sheetHeight = orientation === "landscape" ? 210 : 297;
@@ -79,9 +79,9 @@ export function standardPresetSettings({
     getSettings(rawSettings, {
       sheetWidth: (v) => toPts(asNumber(v, sheetWidth)),
       sheetHeight: (v) => toPts(asNumber(v, sheetHeight)),
-      bleedArea: (v) => toPts(asNumber(v, 3)),
-      trimLength: (v) => toPts(asNumber(v, 5)),
-      trimOffset: (v) => toPts(asNumber(v, 2)),
+      bleedArea: (v) => toPts(asNumber(v, standardDefaults.bleedArea)),
+      trimLength: (v) => toPts(asNumber(v, standardDefaults.trimLength)),
+      trimOffset: (v) => toPts(asNumber(v, standardDefaults.trimOffset)),
     });
 
   return {

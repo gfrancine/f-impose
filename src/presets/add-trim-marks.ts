@@ -14,7 +14,7 @@ const name = "Add Trim Marks";
 const description = "Generic preset for imposing any PDF file with trim marks.";
 
 const { standardSchemaItems, getStandardSettings } = standardPresetSettings({
-  orientation: "potrait",
+  orientation: "portrait",
 });
 const settingsSchema = defineSettingsSchema(standardSchemaItems);
 

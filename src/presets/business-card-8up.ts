@@ -18,7 +18,7 @@ const description =
   `Imposes cards on a long edge-flip, 2x4 layout. Supports both one- and double-sided cards. (Note: The preset currently only supports landscape cards, please rotate your portrait cards before imposing!)`.trim();
 
 const { standardSchemaItems, getStandardSettings } = standardPresetSettings({
-  orientation: "potrait",
+  orientation: "portrait",
 });
 const settingsSchema = defineSettingsSchema(standardSchemaItems);
 
