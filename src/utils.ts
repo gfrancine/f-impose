@@ -329,3 +329,53 @@ export function drawPageWithTrimMarks(
     hideTrimMarks,
   });
 }
+
+export function drawSpread(
+  sheet: PDFPage,
+  {
+    origin,
+    leftPage,
+    rightPage,
+    bleedArea,
+    trimLength,
+    trimOffset,
+  }: {
+    origin: Vec2;
+    leftPage: PDFEmbeddedPage;
+    rightPage: PDFEmbeddedPage;
+    bleedArea: number;
+    trimLength: number;
+    trimOffset: number;
+  },
+) {
+  const rightPageOrigin = origin.add(leftPage.width / 2, 0);
+  const leftPageOrigin = origin.sub(rightPage.width / 2, 0);
+
+  const hideLeftTrimMarks = {
+    topLeftHoriz: true,
+    topLeftVert: true,
+    bottomLeftHoriz: true,
+    bottomLeftVert: true,
+  };
+
+  const hideRightTrimMarks = {
+    topRightHoriz: true,
+    topRightVert: true,
+    bottomRightHoriz: true,
+    bottomRightVert: true,
+  };
+
+  drawPageWithTrimMarks(sheet, rightPage, rightPageOrigin, {
+    bleedArea,
+    trimLength,
+    trimOffset,
+    hideTrimMarks: hideLeftTrimMarks,
+  });
+
+  drawPageWithTrimMarks(sheet, leftPage, leftPageOrigin, {
+    bleedArea,
+    trimLength,
+    trimOffset,
+    hideTrimMarks: hideRightTrimMarks,
+  });
+}

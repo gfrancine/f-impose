@@ -5,13 +5,7 @@ Saddle-Stitched Booklet 2-Up
 */
 
 import { PDFDocument } from "pdf-lib";
-import {
-  assert,
-  drawPageWithTrimMarks,
-  mapIndicesSaddleStitch,
-  toPts,
-  Vec2,
-} from "../utils";
+import { drawSpread, mapIndicesSaddleStitch, toPts, Vec2 } from "../utils";
 import type { Preset } from "../types";
 
 const name = "Saddle-Stitched Booklet 2-Up";
@@ -43,78 +37,30 @@ async function impose(
   const trimOffset = toPts(settings.trimMarkOffset);
 
   // validate input & settings
-  assert(srcPages.length % 4 === 0, "Page count must be a multiple of 4.");
-
+  // mapIndicesSaddleStitch will throw if page count isn't a multiple of 4
   const indexGroups = mapIndicesSaddleStitch(srcPages.length);
-  const pageSize = new Vec2(srcPages[0].width, srcPages[0].height);
 
   for (const indexGroup of indexGroups) {
     const frontSheet = outPdf.addPage([sheetSize.x, sheetSize.y]);
     const backSheet = outPdf.addPage([sheetSize.x, sheetSize.y]);
 
-    const rightPageOrigin = sheetCenter.add(pageSize.x / 2, 0);
-    const leftPageOrigin = sheetCenter.sub(pageSize.x / 2, 0);
+    drawSpread(frontSheet, {
+      origin: sheetCenter,
+      rightPage: srcPages[indexGroup.front1],
+      leftPage: srcPages[indexGroup.front2],
+      bleedArea,
+      trimLength,
+      trimOffset,
+    });
 
-    const hideLeftTrimMarks = {
-      topLeftHoriz: true,
-      topLeftVert: true,
-      bottomLeftHoriz: true,
-      bottomLeftVert: true,
-    };
-    const hideRightTrimMarks = {
-      topRightHoriz: true,
-      topRightVert: true,
-      bottomRightHoriz: true,
-      bottomRightVert: true,
-    };
-
-    drawPageWithTrimMarks(
-      frontSheet,
-      srcPages[indexGroup.front1],
-      rightPageOrigin,
-      {
-        bleedArea,
-        trimLength,
-        trimOffset,
-        hideTrimMarks: hideLeftTrimMarks,
-      },
-    );
-
-    drawPageWithTrimMarks(
-      backSheet,
-      srcPages[indexGroup.back1],
-      leftPageOrigin,
-      {
-        bleedArea,
-        trimLength,
-        trimOffset,
-        hideTrimMarks: hideRightTrimMarks,
-      },
-    );
-
-    drawPageWithTrimMarks(
-      frontSheet,
-      srcPages[indexGroup.front2],
-      leftPageOrigin,
-      {
-        bleedArea,
-        trimLength,
-        trimOffset,
-        hideTrimMarks: hideRightTrimMarks,
-      },
-    );
-
-    drawPageWithTrimMarks(
-      backSheet,
-      srcPages[indexGroup.back2],
-      rightPageOrigin,
-      {
-        bleedArea,
-        trimLength,
-        trimOffset,
-        hideTrimMarks: hideLeftTrimMarks,
-      },
-    );
+    drawSpread(backSheet, {
+      origin: sheetCenter,
+      rightPage: srcPages[indexGroup.back2],
+      leftPage: srcPages[indexGroup.back1],
+      bleedArea,
+      trimLength,
+      trimOffset,
+    });
   }
 
   return outPdf;
