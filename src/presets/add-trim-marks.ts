@@ -17,6 +17,7 @@ import {
 } from "../settings";
 
 const name = "Add Trim Marks";
+const description = "Generic preset for imposing any PDF file with trim marks.";
 
 const settingsSchema = defineSettingsSchema([
   inputRow([
@@ -84,6 +85,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
 
 const preset: Preset = {
   name,
+  description,
   settingsSchema,
   impose,
 };

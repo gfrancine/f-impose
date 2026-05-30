@@ -8,6 +8,24 @@ import { pdfToUrl } from "../utils";
 import SettingsForm from "./SettingsForm";
 import type { RawSettings } from "../settings";
 
+// authored by BigPickle
+// Splits paragraphs from double line breaks "\n\n" and turns single ones "\n"
+// into a <br/> element. Used for preset descriptions in place of a full-blown
+// Markdown processor.
+function descriptionToElements(description: string) {
+  return description
+    .split("\n\n")
+    .map((paragraph, i) => (
+      <p key={i}>
+        {paragraph
+          .split("\n")
+          .flatMap((line, j) =>
+            j === 0 ? [line] : [<br key={`${i}-${j}`} />, line],
+          )}
+      </p>
+    ));
+}
+
 function App() {
   const [inputFile, setInputFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -71,6 +89,8 @@ function App() {
             ))}
           </select>
         </label>
+        <p>{descriptionToElements(presets[currentPresetId].description)}</p>
+        <h3>Preset Settings</h3>
         <SettingsForm
           schema={presets[currentPresetId].settingsSchema}
           rawSettings={rawSettings}

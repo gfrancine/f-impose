@@ -24,6 +24,8 @@ import {
 } from "../settings";
 
 const name = "Saddle-Stitched Tall Booklet 4-Up";
+const description =
+  "Imposes two saddle-stitched booklet spreads per sheet. Good for tall booklets.";
 
 const settingsSchema = defineSettingsSchema([
   inputRow([
@@ -156,6 +158,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
 
 const preset: Preset = {
   name,
+  description,
   settingsSchema,
   impose,
 };

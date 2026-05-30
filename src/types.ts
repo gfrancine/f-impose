@@ -3,6 +3,7 @@ import type { RawSettings, SettingsSchema } from "./settings";
 
 export type Preset = {
   name: string;
+  description: string;
   settingsSchema: SettingsSchema;
   impose: (
     srcPdf: PDFDocument,

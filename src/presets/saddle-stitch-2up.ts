@@ -17,6 +17,8 @@ import {
 } from "../settings";
 
 const name = "Saddle-Stitched Booklet 2-Up";
+const description =
+  "Generic 2-up saddle-stitched booklet. To remove inner/spine bleeds, check out the 'Remove Inner Bleed' preset.";
 
 const settingsSchema = defineSettingsSchema([
   inputRow([
@@ -98,6 +100,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
 
 const preset: Preset = {
   name,
+  description,
   settingsSchema,
   impose,
 };

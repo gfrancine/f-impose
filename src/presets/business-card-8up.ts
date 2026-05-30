@@ -26,6 +26,8 @@ import {
 } from "../settings";
 
 const name = "Business Card 8-Up";
+const description =
+  `Imposes cards on a long edge-flip, 2x4 layout. Supports both one- and double-sided cards. (Note: The preset currently only supports landscape cards, please rotate your portrait cards before imposing!)`.trim();
 
 const settingsSchema = defineSettingsSchema([
   inputRow([
@@ -139,6 +141,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
 
 const preset: Preset = {
   name,
+  description,
   settingsSchema,
   impose,
 };
