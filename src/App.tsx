@@ -47,7 +47,7 @@ function App() {
       </p>
       <p>
         To contribute, suggest features, or report issues please see the{" "}
-        <a href="https://gitlab.com/gfrancine/f-impose">source repository</a> or
+        <a href="https://github.com/gfrancine/f-impose">source repository</a> or
         contact me personally! Made with ❤️ by{" "}
         <a href="https://instagram.com/gracefrancines">@gracefrancines</a>
       </p>
