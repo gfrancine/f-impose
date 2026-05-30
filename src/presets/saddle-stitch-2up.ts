@@ -1,6 +1,6 @@
 /*
 
-2-up Saddle Stitch Booklet
+Saddle-Stitched Booklet 2-Up
 
 */
 
@@ -13,6 +13,8 @@ import {
   Vec2,
 } from "../utils";
 import type { Preset } from "../types";
+
+const name = "Saddle-Stitched Booklet 2-Up";
 
 const DEFAULT_SETTINGS = {
   sheetWidth: 297,
@@ -119,6 +121,7 @@ async function impose(
 }
 
 const preset: Preset = {
+  name,
   impose,
 };
 

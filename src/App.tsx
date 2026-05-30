@@ -1,8 +1,6 @@
 import React, { useState } from "react";
-import cardPreset from "./presets/card90x55-8up";
-import addTrimMarksPreset from "./presets/add-trim-marks";
-import saddleStitchPreset from "./presets/saddle-stitch-2up";
 import { PDFDocument } from "pdf-lib";
+import { presets, defaultPresetId, type PresetId } from "./presets";
 import DummyGenerator from "./DummyGenerator";
 import PdfOutput from "./PdfOutput";
 import "./App.css";
@@ -12,6 +10,8 @@ function App() {
   const [inputFile, setInputFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [currentPresetId, setCurrentPresetId] =
+    useState<PresetId>(defaultPresetId);
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -28,7 +28,8 @@ function App() {
     try {
       // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Typed_arrays
       const srcPdf = await PDFDocument.load(await inputFile.arrayBuffer());
-      const outPdf = await saddleStitchPreset.impose(srcPdf);
+      const preset = presets[currentPresetId];
+      const outPdf = await preset.impose(srcPdf);
       setDownloadUrl(await pdfToUrl(outPdf));
     } catch (err) {
       console.error("Error processing PDF:", err);
@@ -54,9 +55,19 @@ function App() {
       </p>
       <fieldset>
         <legend>Preset</legend>
-        <select>
-          <option>Test</option>
-        </select>
+        <label>
+          Select Preset{" "}
+          <select
+            value={currentPresetId}
+            onChange={(e) => setCurrentPresetId(e.target.value as PresetId)}
+          >
+            {Object.entries(presets).map(([id, preset]) => (
+              <option key={id} value={id}>
+                {preset.name}
+              </option>
+            ))}
+          </select>
+        </label>
       </fieldset>
       <fieldset>
         <legend>Upload PDF</legend>

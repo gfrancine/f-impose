@@ -8,6 +8,8 @@ import { PDFDocument } from "pdf-lib";
 import { drawPageWithTrimMarks, toPts, Vec2 } from "../utils";
 import type { Preset } from "../types";
 
+const name = "Add Trim Marks";
+
 const DEFAULT_SETTINGS = {
   sheetWidth: 210,
   sheetHeight: 297,
@@ -50,6 +52,7 @@ async function impose(
 }
 
 const preset: Preset = {
+  name,
   impose,
 };
 

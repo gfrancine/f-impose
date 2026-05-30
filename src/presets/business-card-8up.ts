@@ -1,6 +1,6 @@
 /*
 
-Standard 90x55mm Business Card
+Business Card 8-Up
 - 8-up
 - Long edge flip
 - One- and double-side support
@@ -10,6 +10,8 @@ Standard 90x55mm Business Card
 import { PDFDocument } from "pdf-lib";
 import { assert, drawPageWithTrimMarks, toPts, Vec2 } from "../utils";
 import type { Preset } from "../types";
+
+const name = "Business Card 8-Up";
 
 const DEFAULT_SETTINGS = {
   // just here temporarily
@@ -107,6 +109,7 @@ async function impose(
 }
 
 const preset: Preset = {
+  name,
   impose,
 };
 

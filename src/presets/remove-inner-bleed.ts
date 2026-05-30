@@ -9,6 +9,8 @@ import { PDFDocument } from "pdf-lib";
 import { assert, toPts } from "../utils";
 import type { Preset } from "../types";
 
+const name = "Remove Inner Bleed";
+
 const DEFAULT_SETTINGS = {
   bleedArea: 5,
 };
@@ -42,6 +44,7 @@ async function impose(
 }
 
 const preset: Preset = {
+  name,
   impose,
 };
 
