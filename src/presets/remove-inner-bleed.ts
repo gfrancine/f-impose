@@ -8,7 +8,7 @@ Removes inner bleed from PDFs with facing pages
 import { PDFDocument } from "pdf-lib";
 import { assert, toPts } from "../utils";
 import type { Preset } from "../types";
-import { defineSettingsSchema, inputRow, numberInput } from "../settings";
+import { defineSettingsSchema, numberInput } from "../settings";
 
 const name = "Remove Inner Bleed";
 
@@ -17,7 +17,7 @@ const DEFAULT_SETTINGS = {
 };
 
 const settingsSchema = defineSettingsSchema([
-  numberInput({ id: "bleedArea", name: "Bleed Area", defaultValue: 3 }),
+  numberInput({ id: "bleedArea", name: "Bleed Area", defaultValue: 3, min: 0 }),
 ]);
 
 async function impose(srcPdf: PDFDocument, settings = DEFAULT_SETTINGS) {

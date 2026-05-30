@@ -15,12 +15,12 @@ type NoType<T> = Omit<T, "type">;
 type OptionalDefaultValue<T extends Record<"defaultValue", unknown>> =
   PartialKeys<T, "defaultValue">;
 
-export type BaseInput = {
+export type BaseInputSchema = {
   id: string;
   name: string;
 };
 
-export type NumberInput = BaseInput & {
+export type NumberInputSchema = BaseInputSchema & {
   type: "number";
   defaultValue: number;
   min?: number;
@@ -33,11 +33,11 @@ export function numberInput({
   min,
   max,
   defaultValue = 0,
-}: NoType<OptionalDefaultValue<NumberInput>>): NumberInput {
+}: NoType<OptionalDefaultValue<NumberInputSchema>>): NumberInputSchema {
   return { type: "number", id, name, min, max, defaultValue };
 }
 
-export type CheckboxInput = BaseInput & {
+export type CheckboxInputSchema = BaseInputSchema & {
   type: "checkbox";
   defaultValue: boolean;
 };
@@ -46,24 +46,24 @@ export function checkboxInput({
   id,
   name,
   defaultValue = false,
-}: NoType<OptionalDefaultValue<CheckboxInput>>): CheckboxInput {
+}: NoType<OptionalDefaultValue<CheckboxInputSchema>>): CheckboxInputSchema {
   return { type: "checkbox", id, name, defaultValue };
 }
 
-export type Inputs = NumberInput | CheckboxInput;
+export type InputSchema = NumberInputSchema | CheckboxInputSchema;
 
-export type InputRow = {
+export type InputRowSchema = {
   type: "inputRow";
-  inputs: Inputs[];
+  inputs: InputSchema[];
 };
 
-export function inputRow(inputs: Inputs[]): InputRow {
+export function inputRow(inputs: InputSchema[]): InputRowSchema {
   return { type: "inputRow", inputs };
 }
 
-export type SettingsSchemaItem = InputRow | Inputs;
+export type SettingsItemSchema = InputRowSchema | InputSchema;
 
-export type SettingsSchema = SettingsSchemaItem[];
+export type SettingsSchema = SettingsItemSchema[];
 
 /**
  * Usage:
@@ -79,7 +79,7 @@ export type SettingsSchema = SettingsSchemaItem[];
  * ```
  */
 export function defineSettingsSchema(
-  items: SettingsSchemaItem[],
+  items: SettingsItemSchema[],
 ): SettingsSchema {
   return items;
 }

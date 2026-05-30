@@ -5,6 +5,7 @@ import DummyGenerator from "./DummyGenerator";
 import PdfOutput from "./PdfOutput";
 import "./App.css";
 import { pdfToUrl } from "../utils";
+import SettingsForm from "./SettingsForm";
 
 function App() {
   const [inputFile, setInputFile] = useState<File | null>(null);
@@ -12,6 +13,7 @@ function App() {
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [currentPresetId, setCurrentPresetId] =
     useState<PresetId>(defaultPresetId);
+  const [rawSettings, setRawSettings] = useState<Record<string, string>>({});
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -68,6 +70,11 @@ function App() {
             ))}
           </select>
         </label>
+        <SettingsForm
+          schema={presets[currentPresetId].settingsSchema}
+          rawSettings={rawSettings}
+          onChange={(v) => setRawSettings(v)}
+        />
       </fieldset>
       <fieldset>
         <legend>Upload PDF</legend>

@@ -21,20 +21,32 @@ const DEFAULT_SETTINGS = {
 
 const settingsSchema = defineSettingsSchema([
   inputRow([
-    numberInput({ id: "sheetWidth", name: "Sheet Width", defaultValue: 210 }),
-    numberInput({ id: "sheetHeight", name: "Sheet Height", defaultValue: 297 }),
+    numberInput({
+      id: "sheetWidth",
+      name: "Sheet Width",
+      defaultValue: 210,
+      min: 1,
+    }),
+    numberInput({
+      id: "sheetHeight",
+      name: "Sheet Height",
+      defaultValue: 297,
+      min: 1,
+    }),
   ]),
-  numberInput({ id: "bleedArea", name: "Bleed Area", defaultValue: 3 }),
+  numberInput({ id: "bleedArea", name: "Bleed Area", defaultValue: 3, min: 0 }),
   inputRow([
     numberInput({
       id: "trimMarkLength",
       name: "Trim Mark Length",
       defaultValue: 5,
+      min: 0,
     }),
     numberInput({
       id: "trimMarkOffset",
       name: "Trim Mark Offset",
       defaultValue: 2,
+      min: 0,
     }),
   ]),
 ]);
