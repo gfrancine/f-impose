@@ -15,20 +15,25 @@ import {
   numberInput,
   type RawSettings,
 } from "../settings";
-import { setupOutPdf } from "./helpers";
+import { setupOutPdf, standardDefaults } from "./helpers";
 
 const name = "Remove Inner Bleed";
 const description =
   "Removes inner bleed from PDFs with facing pages. Useful for imposing book spreads.";
 
 const settingsSchema = defineSettingsSchema([
-  numberInput({ id: "bleedArea", name: "Bleed Area", defaultValue: 3, min: 0 }),
+  numberInput({
+    id: "bleedArea",
+    name: "Bleed Area",
+    defaultValue: standardDefaults.bleedArea,
+    min: 0,
+  }),
 ]);
 
 async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const { outPdf, srcPages } = await setupOutPdf(srcPdf);
   const { bleedArea } = getSettings(rawSettings, {
-    bleedArea: (v) => toPts(asNumber(v, 3)),
+    bleedArea: (v) => toPts(asNumber(v, standardDefaults.bleedArea)),
   });
 
   for (let i = 0; i < srcPages.length; i++) {

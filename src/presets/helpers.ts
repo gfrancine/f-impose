@@ -22,6 +22,13 @@ export async function setupOutPdf(srcPdf: PDFDocument) {
   return { outPdf, srcPages };
 }
 
+// should this be UPPER_SNAKE_CASE?
+export const standardDefaults = {
+  bleedArea: 3,
+  trimLength: 5,
+  trimOffset: 2,
+};
+
 /** preset utility/prelude to set up and retrieve the most commmon preset settings */
 export function standardPresetSettings({
   orientation = "potrait",
@@ -49,20 +56,20 @@ export function standardPresetSettings({
     numberInput({
       id: "bleedArea",
       name: "Bleed Area",
-      defaultValue: 3,
+      defaultValue: standardDefaults.bleedArea,
       min: 0,
     }),
     inputRow([
       numberInput({
         id: "trimLength",
         name: "Trim Mark Length",
-        defaultValue: 5,
+        defaultValue: standardDefaults.trimLength,
         min: 0,
       }),
       numberInput({
         id: "trimOffset",
         name: "Trim Mark Offset",
-        defaultValue: 2,
+        defaultValue: standardDefaults.trimOffset,
         min: 0,
       }),
     ]),
