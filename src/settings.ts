@@ -87,4 +87,48 @@ export function defineSettingsSchema(
 // Retrieval & validation
 // --------
 
-export type GetSetting<T> = (id: string, processValue: (v: unknown) => T) => T;
+export type RawSettings = Record<string, string>; // native HTML inputs work with strings
+
+/**
+ * Processes the raw settings object and returns its type-safe values.
+ *
+ * Usage:
+ * ```ts
+ * const { sheetWidth, enableTrimMarks } = getSettings(rawSettings, {
+ *   sheetWidth: (v) => toPts(asNumber(v, 297)),
+ *   enableTrimMarks: (v) => asBool(v, true),
+ * })
+ * ```
+ */
+// Authored with Big Pickle
+export function getSettings<T extends Record<string, (v: string) => unknown>>(
+  rawSettings: RawSettings,
+  processSettings: T,
+) {
+  const processedSettings: Record<string, unknown> = {};
+  for (const [id, processValue] of Object.entries(processSettings)) {
+    processedSettings[id] = processValue(rawSettings[id]);
+  }
+  return processedSettings as { [K in keyof T]: ReturnType<T[K]> };
+}
+
+export function getSetting<T>(
+  rawSettings: RawSettings,
+  id: string,
+  processValue: (v: unknown) => T,
+) {
+  return processValue(rawSettings[id]);
+}
+
+// Authored by Big Pickle
+export function asNumber(v: string, defaultValue: number): number {
+  const n = Number(v);
+  if (!Number.isNaN(n)) return n;
+  return defaultValue; // null/undefined, nan, gibberish / invalid numbers
+}
+
+export function asBool(v: string, defaultValue: boolean) {
+  if (v === "true") return true;
+  if (v === "false") return false;
+  return defaultValue;
+}

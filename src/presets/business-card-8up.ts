@@ -16,18 +16,16 @@ import {
   Vec2,
 } from "../utils";
 import type { Preset } from "../types";
-import { defineSettingsSchema, inputRow, numberInput } from "../settings";
+import {
+  asNumber,
+  defineSettingsSchema,
+  getSettings,
+  inputRow,
+  numberInput,
+  type RawSettings,
+} from "../settings";
 
 const name = "Business Card 8-Up";
-
-const DEFAULT_SETTINGS = {
-  // just here temporarily
-  sheetWidth: 210,
-  sheetHeight: 297,
-  bleedArea: 5,
-  trimMarkLength: 5,
-  trimMarkOffset: 2,
-};
 
 const settingsSchema = defineSettingsSchema([
   inputRow([
@@ -47,13 +45,13 @@ const settingsSchema = defineSettingsSchema([
   numberInput({ id: "bleedArea", name: "Bleed Area", defaultValue: 3, min: 0 }),
   inputRow([
     numberInput({
-      id: "trimMarkLength",
+      id: "trimLength",
       name: "Trim Mark Length",
       defaultValue: 5,
       min: 0,
     }),
     numberInput({
-      id: "trimMarkOffset",
+      id: "trimOffset",
       name: "Trim Mark Offset",
       defaultValue: 2,
       min: 0,
@@ -61,18 +59,22 @@ const settingsSchema = defineSettingsSchema([
   ]),
 ]);
 
-async function impose(srcPdf: PDFDocument, settings = DEFAULT_SETTINGS) {
+async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const outPdf = await PDFDocument.create();
   const srcPages = await outPdf.embedPages(srcPdf.getPages()); // embed pages into the output
 
-  const sheetSize = new Vec2(
-    toPts(settings.sheetWidth),
-    toPts(settings.sheetHeight),
-  );
+  const { sheetWidth, sheetHeight, bleedArea, trimLength, trimOffset } =
+    getSettings(rawSettings, {
+      sheetWidth: (v) => toPts(asNumber(v, 210)),
+      sheetHeight: (v) => toPts(asNumber(v, 197)),
+      bleedArea: (v) => toPts(asNumber(v, 3)),
+
+      trimLength: (v) => toPts(asNumber(v, 5)),
+      trimOffset: (v) => toPts(asNumber(v, 2)),
+    });
+
+  const sheetSize = new Vec2(sheetWidth, sheetHeight);
   const sheetCenter = sheetSize.div(2); // always work with center anchor points/origins
-  const bleedArea = toPts(settings.bleedArea);
-  const trimLength = toPts(settings.trimMarkLength);
-  const trimOffset = toPts(settings.trimMarkOffset);
 
   // validate input & settings
   // 2 for a front and back page

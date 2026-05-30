@@ -6,6 +6,7 @@ import PdfOutput from "./PdfOutput";
 import "./App.css";
 import { pdfToUrl } from "../utils";
 import SettingsForm from "./SettingsForm";
+import type { RawSettings } from "../settings";
 
 function App() {
   const [inputFile, setInputFile] = useState<File | null>(null);
@@ -13,7 +14,7 @@ function App() {
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [currentPresetId, setCurrentPresetId] =
     useState<PresetId>(defaultPresetId);
-  const [rawSettings, setRawSettings] = useState<Record<string, string>>({});
+  const [rawSettings, setRawSettings] = useState<RawSettings>({});
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -31,7 +32,7 @@ function App() {
       // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Typed_arrays
       const srcPdf = await PDFDocument.load(await inputFile.arrayBuffer());
       const preset = presets[currentPresetId];
-      const outPdf = await preset.impose(srcPdf);
+      const outPdf = await preset.impose(srcPdf, rawSettings);
       setDownloadUrl(await pdfToUrl(outPdf));
     } catch (err) {
       console.error("Error processing PDF:", err);

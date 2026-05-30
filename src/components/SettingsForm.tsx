@@ -1,6 +1,7 @@
 import type {
   CheckboxInputSchema,
   NumberInputSchema,
+  RawSettings,
   SettingsItemSchema,
   SettingsSchema,
 } from "../settings";
@@ -71,8 +72,8 @@ export default function SettingsForm({
   onChange,
 }: {
   schema: SettingsSchema;
-  rawSettings: Record<string, string>;
-  onChange?: (v: Record<string, string>) => unknown;
+  rawSettings: RawSettings;
+  onChange?: (v: RawSettings) => unknown;
 }) {
   const fallback = (v: string, defaultValue: unknown) =>
     v !== undefined ? v : "" + defaultValue;
