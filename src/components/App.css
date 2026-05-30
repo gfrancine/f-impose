@@ -3,3 +3,13 @@
   max-width: 48rem;
   margin: auto;
 }
+
+.app fieldset input[type="number"] {
+  width: 4rem;
+}
+
+@media screen and (max-width: 560px) {
+  .app fieldset label {
+    display: block;
+  }
+}

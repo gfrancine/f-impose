@@ -71,44 +71,49 @@ export default function DummyGenerator() {
         <p>Generate dummy page-numbered PDFs for testing layout presets.</p>
         <fieldset>
           <legend>Settings</legend>
-          <label>
-            Width{" "}
-            <input
-              type="number"
-              value={strWidth}
-              min={0}
-              onChange={(e) => setStrWidth(e.target.value)}
-            />
-          </label>{" "}
-          <label>
-            Height{" "}
-            <input
-              type="number"
-              value={strHeight}
-              min={0}
-              onChange={(e) => setStrHeight(e.target.value)}
-            />
-          </label>
-          <br />
-          <label>
-            Bleed{" "}
-            <input
-              type="number"
-              value={strBleed}
-              min={0}
-              onChange={(e) => setStrBleed(e.target.value)}
-            />
-          </label>
-          <br />
-          <label>
-            Page Count{" "}
-            <input
-              type="number"
-              value={strPageCount}
-              min={1}
-              onChange={(e) => setStrPageCount(e.target.value)}
-            />
-          </label>
+          <div>
+            <label>
+              Width{" "}
+              <input
+                type="number"
+                value={strWidth}
+                min={0}
+                onChange={(e) => setStrWidth(e.target.value)}
+              />
+            </label>{" "}
+            <label>
+              Height{" "}
+              <input
+                type="number"
+                value={strHeight}
+                min={0}
+                onChange={(e) => setStrHeight(e.target.value)}
+              />
+            </label>
+          </div>
+
+          <div>
+            <label>
+              Bleed{" "}
+              <input
+                type="number"
+                value={strBleed}
+                min={0}
+                onChange={(e) => setStrBleed(e.target.value)}
+              />
+            </label>
+          </div>
+          <div>
+            <label>
+              Page Count{" "}
+              <input
+                type="number"
+                value={strPageCount}
+                min={1}
+                onChange={(e) => setStrPageCount(e.target.value)}
+              />
+            </label>
+          </div>
         </fieldset>
         <br />
         <button onClick={generateDummyPdf}>Generate</button>

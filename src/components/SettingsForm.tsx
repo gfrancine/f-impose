@@ -78,24 +78,27 @@ export default function SettingsForm({
   const fallback = (v: string, defaultValue: unknown) =>
     v !== undefined ? v : "" + defaultValue;
 
-  const schemaItemToElement = (item: SettingsItemSchema) =>
-    item.type === "inputRow" ? (
-      <div>{item.inputs.map((input) => schemaItemToElement(input))}</div>
-    ) : item.type === "number" ? (
-      <NumberInput
-        schema={item}
-        value={fallback(rawSettings[item.id], item.defaultValue)}
-        onChange={(v) => onChange?.(set(rawSettings, item.id, v))}
-      />
-    ) : item.type === "checkbox" ? (
-      <CheckboxInput
-        schema={item}
-        value={fallback(rawSettings[item.id], item.defaultValue)}
-        onChange={(v) => onChange?.(set(rawSettings, item.id, v))}
-      />
-    ) : (
-      <></>
-    );
+  const schemaItemToElement = (item: SettingsItemSchema) => (
+    <>
+      {item.type === "inputRow" ? (
+        <div>{item.inputs.map((input) => schemaItemToElement(input))}</div>
+      ) : item.type === "number" ? (
+        <NumberInput
+          schema={item}
+          value={fallback(rawSettings[item.id], item.defaultValue)}
+          onChange={(v) => onChange?.(set(rawSettings, item.id, v))}
+        />
+      ) : item.type === "checkbox" ? (
+        <CheckboxInput
+          schema={item}
+          value={fallback(rawSettings[item.id], item.defaultValue)}
+          onChange={(v) => onChange?.(set(rawSettings, item.id, v))}
+        />
+      ) : (
+        <></>
+      )}{" "}
+    </>
+  );
   return (
     <div>
       {schema.map((item) => (

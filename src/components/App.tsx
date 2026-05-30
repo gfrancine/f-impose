@@ -75,7 +75,16 @@ function App() {
         <a href="https://instagram.com/gracefrancines">@gracefrancines</a>
       </p>
       <fieldset>
-        <legend>Preset</legend>
+        <legend>Upload PDF</legend>
+        <input
+          type="file"
+          accept=".pdf"
+          onChange={handleFileUpload}
+          disabled={isProcessing}
+        />
+      </fieldset>
+      <fieldset>
+        <legend>Layout Preset</legend>
         <label>
           Select Preset{" "}
           <select
@@ -95,15 +104,6 @@ function App() {
           schema={presets[currentPresetId].settingsSchema}
           rawSettings={rawSettings}
           onChange={(v) => setRawSettings(v)}
-        />
-      </fieldset>
-      <fieldset>
-        <legend>Upload PDF</legend>
-        <input
-          type="file"
-          accept=".pdf"
-          onChange={handleFileUpload}
-          disabled={isProcessing}
         />
       </fieldset>
       <br />
