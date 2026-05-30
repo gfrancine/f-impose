@@ -16,6 +16,7 @@ import {
   Vec2,
 } from "../utils";
 import type { Preset } from "../types";
+import { defineSettingsSchema, inputRow, numberInput } from "../settings";
 
 const name = "Business Card 8-Up";
 
@@ -28,12 +29,27 @@ const DEFAULT_SETTINGS = {
   trimMarkOffset: 2,
 };
 
-type Settings = typeof DEFAULT_SETTINGS;
+const settingsSchema = defineSettingsSchema([
+  inputRow([
+    numberInput({ id: "sheetWidth", name: "Sheet Width", defaultValue: 210 }),
+    numberInput({ id: "sheetHeight", name: "Sheet Height", defaultValue: 297 }),
+  ]),
+  numberInput({ id: "bleedArea", name: "Bleed Area", defaultValue: 3 }),
+  inputRow([
+    numberInput({
+      id: "trimMarkLength",
+      name: "Trim Mark Length",
+      defaultValue: 5,
+    }),
+    numberInput({
+      id: "trimMarkOffset",
+      name: "Trim Mark Offset",
+      defaultValue: 2,
+    }),
+  ]),
+]);
 
-async function impose(
-  srcPdf: PDFDocument,
-  settings: Settings = DEFAULT_SETTINGS,
-) {
+async function impose(srcPdf: PDFDocument, settings = DEFAULT_SETTINGS) {
   const outPdf = await PDFDocument.create();
   const srcPages = await outPdf.embedPages(srcPdf.getPages()); // embed pages into the output
 
@@ -109,6 +125,7 @@ async function impose(
 
 const preset: Preset = {
   name,
+  settingsSchema,
   impose,
 };
 
