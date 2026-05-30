@@ -22,8 +22,8 @@ export class Vec2 {
     this.y = y;
   }
 
-  add = (v: number) => new Vec2(this.x + v, this.y + v);
-  sub = (v: number) => this.add(-v);
+  add = (x: number, y: number) => new Vec2(this.x + x, this.y + y);
+  sub = (x: number, y: number) => this.add(-x, -y);
   div = (v: number) => new Vec2(this.x / v, this.y / v);
 }
 
@@ -86,6 +86,17 @@ export function drawTrimMark(
   });
 }
 
+export type HideTrimMarkOptions = {
+  bottomLeftHoriz: boolean;
+  bottomLeftVert: boolean;
+  bottomRightHoriz: boolean;
+  bottomRightVert: boolean;
+  topLeftHoriz: boolean;
+  topLeftVert: boolean;
+  topRightHoriz: boolean;
+  topRightVert: boolean;
+};
+
 export function drawTrimMarksRect(
   sheet: PDFPage,
   {
@@ -93,112 +104,138 @@ export function drawTrimMarksRect(
     srcSize,
     trimOffset,
     trimLength,
-  }: { origin: Vec2; srcSize: Vec2; trimOffset: number; trimLength: number },
+    hideTrimMarks = {},
+  }: {
+    origin: Vec2;
+    srcSize: Vec2;
+    trimOffset: number;
+    trimLength: number;
+    hideTrimMarks?: Partial<HideTrimMarkOptions>;
+  },
 ) {
   const srcSizeHalf = srcSize.div(2);
 
   // bottom left, horiz
-  drawTrimMark(
-    sheet,
-    // from
-    origin.x - srcSizeHalf.x - trimOffset - trimLength,
-    origin.y - srcSizeHalf.y,
-    // to
-    origin.x - srcSizeHalf.x - trimOffset,
-    origin.y - srcSizeHalf.y,
-  );
+  if (!hideTrimMarks.bottomLeftHoriz) {
+    drawTrimMark(
+      sheet,
+      // from
+      origin.x - srcSizeHalf.x - trimOffset - trimLength,
+      origin.y - srcSizeHalf.y,
+      // to
+      origin.x - srcSizeHalf.x - trimOffset,
+      origin.y - srcSizeHalf.y,
+    );
+  }
 
   // bottom left, vert
-  drawTrimMark(
-    sheet,
-    // from
-    origin.x - srcSizeHalf.x,
-    origin.y - srcSizeHalf.y - trimOffset - trimLength,
-    // to
-    origin.x - srcSizeHalf.x,
-    origin.y - srcSizeHalf.y - trimOffset,
-  );
+  if (!hideTrimMarks.bottomLeftVert) {
+    drawTrimMark(
+      sheet,
+      // from
+      origin.x - srcSizeHalf.x,
+      origin.y - srcSizeHalf.y - trimOffset - trimLength,
+      // to
+      origin.x - srcSizeHalf.x,
+      origin.y - srcSizeHalf.y - trimOffset,
+    );
+  }
 
   // bottom right, horiz
-  drawTrimMark(
-    sheet,
-    // from
-    origin.x + srcSizeHalf.x + trimOffset,
-    origin.y - srcSizeHalf.y,
-    // to
-    origin.x + srcSizeHalf.x + trimOffset + trimLength,
-    origin.y - srcSizeHalf.y,
-  );
+  if (!hideTrimMarks.bottomRightHoriz) {
+    drawTrimMark(
+      sheet,
+      // from
+      origin.x + srcSizeHalf.x + trimOffset,
+      origin.y - srcSizeHalf.y,
+      // to
+      origin.x + srcSizeHalf.x + trimOffset + trimLength,
+      origin.y - srcSizeHalf.y,
+    );
+  }
 
   // bottom right, vert
-  drawTrimMark(
-    sheet,
-    // from
-    origin.x + srcSizeHalf.x,
-    origin.y - srcSizeHalf.y - trimOffset - trimLength,
-    // to
-    origin.x + srcSizeHalf.x,
-    origin.y - srcSizeHalf.y - trimOffset,
-  );
-
-  ///
+  if (!hideTrimMarks.bottomRightVert) {
+    drawTrimMark(
+      sheet,
+      // from
+      origin.x + srcSizeHalf.x,
+      origin.y - srcSizeHalf.y - trimOffset - trimLength,
+      // to
+      origin.x + srcSizeHalf.x,
+      origin.y - srcSizeHalf.y - trimOffset,
+    );
+  }
 
   // top left, horiz
-  drawTrimMark(
-    sheet,
-    // from
-    origin.x - srcSizeHalf.x - trimOffset - trimLength,
-    origin.y + srcSizeHalf.y,
-    // to
-    origin.x - srcSizeHalf.x - trimOffset,
-    origin.y + srcSizeHalf.y,
-  );
+  if (!hideTrimMarks.topLeftHoriz) {
+    drawTrimMark(
+      sheet,
+      // from
+      origin.x - srcSizeHalf.x - trimOffset - trimLength,
+      origin.y + srcSizeHalf.y,
+      // to
+      origin.x - srcSizeHalf.x - trimOffset,
+      origin.y + srcSizeHalf.y,
+    );
+  }
 
   // top left, vert
-  drawTrimMark(
-    sheet,
-    // from
-    origin.x - srcSizeHalf.x,
-    origin.y + srcSizeHalf.y + trimOffset + trimLength,
-    // to
-    origin.x - srcSizeHalf.x,
-    origin.y + srcSizeHalf.y + trimOffset,
-  );
+  if (!hideTrimMarks.topLeftVert) {
+    drawTrimMark(
+      sheet,
+      // from
+      origin.x - srcSizeHalf.x,
+      origin.y + srcSizeHalf.y + trimOffset + trimLength,
+      // to
+      origin.x - srcSizeHalf.x,
+      origin.y + srcSizeHalf.y + trimOffset,
+    );
+  }
 
   // top right, horiz
-  drawTrimMark(
-    sheet,
-    // from
-    origin.x + srcSizeHalf.x + trimOffset,
-    origin.y + srcSizeHalf.y,
-    // to
-    origin.x + srcSizeHalf.x + trimOffset + trimLength,
-    origin.y + srcSizeHalf.y,
-  );
+  if (!hideTrimMarks.topRightHoriz) {
+    drawTrimMark(
+      sheet,
+      // from
+      origin.x + srcSizeHalf.x + trimOffset,
+      origin.y + srcSizeHalf.y,
+      // to
+      origin.x + srcSizeHalf.x + trimOffset + trimLength,
+      origin.y + srcSizeHalf.y,
+    );
+  }
 
   // top right, vert
-  drawTrimMark(
-    sheet,
-    // from
-    origin.x + srcSizeHalf.x,
-    origin.y + srcSizeHalf.y + trimOffset + trimLength,
-    // to
-    origin.x + srcSizeHalf.x,
-    origin.y + srcSizeHalf.y + trimOffset,
-  );
+  if (!hideTrimMarks.topRightVert) {
+    drawTrimMark(
+      sheet,
+      // from
+      origin.x + srcSizeHalf.x,
+      origin.y + srcSizeHalf.y + trimOffset + trimLength,
+      // to
+      origin.x + srcSizeHalf.x,
+      origin.y + srcSizeHalf.y + trimOffset,
+    );
+  }
 }
 
-export function imposePage(
+export function imposePageWithTrimMarks(
   sheet: PDFPage,
   srcPage: PDFEmbeddedPage,
   origin: Vec2,
-  options: {
+  {
+    bleedArea = 0,
+    trimLength = 0,
+    trimOffset = 0,
+    hideTrimMarks = {},
+  }: {
     bleedArea?: number;
     trimLength?: number;
     trimOffset?: number;
+    hideTrimMarks?: Partial<HideTrimMarkOptions>;
   } = {},
 ) {
-  const { bleedArea = 0, trimLength = 0, trimOffset = 0 } = options;
   const srcSize = new Vec2(srcPage.width, srcPage.height);
   const srcSizeHalf = srcSize.div(2);
 
@@ -209,8 +246,9 @@ export function imposePage(
 
   drawTrimMarksRect(sheet, {
     origin,
-    srcSize: srcSize.sub(bleedArea * 2),
+    srcSize: srcSize.sub(bleedArea * 2, bleedArea * 2),
     trimLength,
     trimOffset,
+    hideTrimMarks,
   });
 }

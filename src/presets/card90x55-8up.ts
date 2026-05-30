@@ -8,7 +8,7 @@ Standard 90x55mm Business Card
 */
 
 import { PDFDocument } from "pdf-lib";
-import { assert, imposePage, toPts, Vec2 } from "../utils";
+import { assert, drawPageWithTrimMarks, toPts, Vec2 } from "../utils";
 import type { Preset } from "../types";
 
 const DEFAULT_SETTINGS = {
@@ -94,7 +94,7 @@ async function impose(
           directionX * colFromCenter * totalImposedWidth +
           (directionX * totalImposedWidth) / 2;
 
-        imposePage(sheet, srcPage, new Vec2(originX, originY), {
+        drawPageWithTrimMarks(sheet, srcPage, new Vec2(originX, originY), {
           bleedArea,
           trimLength,
           trimOffset,

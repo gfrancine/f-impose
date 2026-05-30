@@ -5,7 +5,7 @@ Generic 1-up add trim mark preset
 */
 
 import { PDFDocument } from "pdf-lib";
-import { imposePage, toPts, Vec2 } from "../utils";
+import { drawPageWithTrimMarks, toPts, Vec2 } from "../utils";
 import type { Preset } from "../types";
 
 const DEFAULT_SETTINGS = {
@@ -39,7 +39,7 @@ async function impose(
 
   for (const srcPage of srcPages) {
     const sheet = outPdf.addPage([sheetSize.x, sheetSize.y]);
-    imposePage(sheet, srcPage, sheetCenter, {
+    drawPageWithTrimMarks(sheet, srcPage, sheetCenter, {
       bleedArea,
       trimLength,
       trimOffset,
