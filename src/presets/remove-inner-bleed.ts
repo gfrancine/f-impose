@@ -15,6 +15,7 @@ import {
   numberInput,
   type RawSettings,
 } from "../settings";
+import { setupOutPdf } from "./helpers";
 
 const name = "Remove Inner Bleed";
 const description =
@@ -25,9 +26,7 @@ const settingsSchema = defineSettingsSchema([
 ]);
 
 async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
-  const outPdf = await PDFDocument.create();
-  const srcPages = await outPdf.embedPages(srcPdf.getPages());
-
+  const { outPdf, srcPages } = await setupOutPdf(srcPdf);
   const { bleedArea } = getSettings(rawSettings, {
     bleedArea: (v) => toPts(asNumber(v, 3)),
   });

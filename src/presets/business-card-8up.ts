@@ -8,75 +8,27 @@ Business Card 8-Up
 */
 
 import { PDFDocument } from "pdf-lib";
-import {
-  assert,
-  calcExtraGutter,
-  drawPageWithTrimMarks,
-  toPts,
-  Vec2,
-} from "../utils";
+import { assert, calcExtraGutter, drawPageWithTrimMarks, Vec2 } from "../utils";
 import type { Preset } from "../types";
-import {
-  asNumber,
-  defineSettingsSchema,
-  getSettings,
-  inputRow,
-  numberInput,
-  type RawSettings,
-} from "../settings";
+import { defineSettingsSchema, type RawSettings } from "../settings";
+import { setupOutPdf, standardPresetSettings } from "./helpers";
 
 const name = "Business Card 8-Up";
 const description =
   `Imposes cards on a long edge-flip, 2x4 layout. Supports both one- and double-sided cards. (Note: The preset currently only supports landscape cards, please rotate your portrait cards before imposing!)`.trim();
 
-const settingsSchema = defineSettingsSchema([
-  inputRow([
-    numberInput({
-      id: "sheetWidth",
-      name: "Sheet Width",
-      defaultValue: 210,
-      min: 1,
-    }),
-    numberInput({
-      id: "sheetHeight",
-      name: "Sheet Height",
-      defaultValue: 297,
-      min: 1,
-    }),
-  ]),
-  numberInput({ id: "bleedArea", name: "Bleed Area", defaultValue: 3, min: 0 }),
-  inputRow([
-    numberInput({
-      id: "trimLength",
-      name: "Trim Mark Length",
-      defaultValue: 5,
-      min: 0,
-    }),
-    numberInput({
-      id: "trimOffset",
-      name: "Trim Mark Offset",
-      defaultValue: 2,
-      min: 0,
-    }),
-  ]),
-]);
+const { standardSchemaItems, getStandardSettings } = standardPresetSettings({
+  orientation: "potrait",
+});
+const settingsSchema = defineSettingsSchema(standardSchemaItems);
 
 async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
-  const outPdf = await PDFDocument.create();
-  const srcPages = await outPdf.embedPages(srcPdf.getPages()); // embed pages into the output
-
+  const { outPdf, srcPages } = await setupOutPdf(srcPdf);
   const { sheetWidth, sheetHeight, bleedArea, trimLength, trimOffset } =
-    getSettings(rawSettings, {
-      sheetWidth: (v) => toPts(asNumber(v, 210)),
-      sheetHeight: (v) => toPts(asNumber(v, 197)),
-      bleedArea: (v) => toPts(asNumber(v, 3)),
-
-      trimLength: (v) => toPts(asNumber(v, 5)),
-      trimOffset: (v) => toPts(asNumber(v, 2)),
-    });
+    getStandardSettings(rawSettings);
 
   const sheetSize = new Vec2(sheetWidth, sheetHeight);
-  const sheetCenter = sheetSize.div(2); // always work with center anchor points/origins
+  const sheetCenter = sheetSize.div(2);
 
   // validate input & settings
   // 2 for a front and back page
@@ -84,12 +36,6 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     srcPages.length === 1 || srcPages.length === 2,
     "Source PDF must exactly be 1 or 2 pages.",
   );
-  // make sure the output is portrait. the layout will be 4 rows x 2 columns
-  assert(sheetSize.x <= sheetSize.y, "Output PDF must be portrait.");
-  // TODO handle minimum sheet width/height .
-  // TODO max trim mark length + offset.
-  // TODO bleed area must be <  trim mark + offset
-  // or maybe not enforce minimum/max sizes at all?
 
   // handle landscape/not
   // TODO: rotate the card on the center instead of throwing error
