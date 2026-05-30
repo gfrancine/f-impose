@@ -25,6 +25,9 @@ npm run build
 # Format the codebase, always run pre-commit
 npm run fmt
 
+# Run tests
+npm run test
+
 # Deploy to GitHub Pages
 # Merges the master branch to the `github-pages` branch
 # and pushes it upstream to the `github` remote.
