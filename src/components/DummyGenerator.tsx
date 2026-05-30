@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PdfOutput from "./PdfOutput";
-import { pdfToUrl, toPts } from "./utils";
+import { pdfToUrl, toPts } from "../utils";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
 // handle blank input strings

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { PDFDocument } from "pdf-lib";
-import { presets, defaultPresetId, type PresetId } from "./presets";
+import { presets, defaultPresetId, type PresetId } from "../presets";
 import DummyGenerator from "./DummyGenerator";
 import PdfOutput from "./PdfOutput";
 import "./App.css";
-import { pdfToUrl } from "./utils";
+import { pdfToUrl } from "../utils";
 
 function App() {
   const [inputFile, setInputFile] = useState<File | null>(null);
