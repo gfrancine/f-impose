@@ -61,6 +61,9 @@ export function mapIndicesSaddleStitch(pageCount: number) {
   return indexGroups;
 }
 
+// pdf-lib drawing utils
+// --------
+
 export function drawTrimMark(
   sheet: PDFPage,
   fromX: number,
@@ -86,7 +89,81 @@ export function drawTrimMark(
   });
 }
 
-export type HideTrimMarkOptions = {
+export function drawTrimMarksLine(
+  sheet: PDFPage,
+  {
+    origin,
+    srcLength,
+    trimOffset,
+    trimLength,
+    orientation,
+    hideTrimMarks = {},
+  }: {
+    origin: Vec2;
+    srcLength: number;
+    trimOffset: number;
+    trimLength: number;
+    orientation: "horiz" | "vert";
+    // line1 is the left trim mark when horizontal, top when vertical, and so on
+    hideTrimMarks?: Partial<{ line1: boolean; line2: boolean }>;
+  },
+) {
+  const srcLengthHalf = srcLength / 2;
+
+  // top
+  if (orientation === "vert" && !hideTrimMarks.line1) {
+    drawTrimMark(
+      sheet,
+      // from
+      origin.x,
+      origin.y + srcLengthHalf + trimOffset + trimLength,
+      // to
+      origin.x,
+      origin.y + srcLengthHalf + trimOffset,
+    );
+  }
+
+  // bottom
+  if (orientation === "vert" && !hideTrimMarks.line2) {
+    drawTrimMark(
+      sheet,
+      // from
+      origin.x,
+      origin.y - srcLengthHalf - trimOffset - trimLength,
+      // to
+      origin.x,
+      origin.y - srcLengthHalf - trimOffset,
+    );
+  }
+
+  // left
+  if (orientation === "horiz" && !hideTrimMarks.line1) {
+    drawTrimMark(
+      sheet,
+      // from
+      origin.x - srcLengthHalf - trimOffset - trimLength,
+      origin.y,
+      // to
+      origin.x - srcLengthHalf - trimOffset,
+      origin.y,
+    );
+  }
+
+  // right
+  if (orientation === "horiz" && !hideTrimMarks.line2) {
+    drawTrimMark(
+      sheet,
+      // from
+      origin.x + srcLengthHalf + trimOffset,
+      origin.y,
+      // to
+      origin.x + srcLengthHalf + trimOffset + trimLength,
+      origin.y,
+    );
+  }
+}
+
+type HideTrimMarkOptions = {
   bottomLeftHoriz: boolean;
   bottomLeftVert: boolean;
   bottomRightHoriz: boolean;
@@ -220,7 +297,7 @@ export function drawTrimMarksRect(
   }
 }
 
-export function imposePageWithTrimMarks(
+export function drawPageWithTrimMarks(
   sheet: PDFPage,
   srcPage: PDFEmbeddedPage,
   origin: Vec2,

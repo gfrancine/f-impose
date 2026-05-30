@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import cardPreset from "./presets/card90x55-8up";
 import addTrimMarksPreset from "./presets/add-trim-marks";
+import saddleStitchPreset from "./presets/saddle-stitch-2up";
 import { PDFDocument } from "pdf-lib";
 import DummyGenerator from "./DummyGenerator";
 import PdfOutput from "./PdfOutput";
@@ -27,7 +28,7 @@ function App() {
     try {
       // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Typed_arrays
       const srcPdf = await PDFDocument.load(await inputFile.arrayBuffer());
-      const outPdf = await addTrimMarksPreset.impose(srcPdf);
+      const outPdf = await saddleStitchPreset.impose(srcPdf);
       setDownloadUrl(await pdfToUrl(outPdf));
     } catch (err) {
       console.error("Error processing PDF:", err);
