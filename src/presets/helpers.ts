@@ -15,8 +15,9 @@ import {
   buttonGroup,
   type RawSettings,
   type SettingsItemSchema,
+  getSetting,
 } from "../settings";
-import { inToPts, toPts } from "../utils";
+import { inToPts, mmToPts } from "../utils";
 
 /** sets up a a PDFDocument and embeds the source pages */
 export async function setupOutPdf(srcPdf: PDFDocument) {
@@ -46,6 +47,9 @@ export function standardPresetSettings({
 
   const standardSchemaItems: SettingsItemSchema[] = [];
 
+  const getUnitsSetting = (rawSettings: RawSettings) =>
+    getSetting(rawSettings, "units", (v) => (v ? (v as string) : "mm"));
+
   standardSchemaItems.push(
     selectInput({
       id: "units",
@@ -59,6 +63,48 @@ export function standardPresetSettings({
   );
 
   if (!exclude.includes("sheetSize")) {
+    const a4Button = buttonInput({
+      id: "setA4Size",
+      name: "A4",
+      onClick: (rawSettings, setRawSettings) => {
+        const units = getUnitsSetting(rawSettings);
+        if (units === "in") {
+          setRawSettings({
+            ...rawSettings,
+            sheetWidth: orientation === "landscape" ? "11.69" : "8.27",
+            sheetHeight: orientation === "landscape" ? "8.27" : "11.69",
+          });
+        } else {
+          setRawSettings({
+            ...rawSettings,
+            sheetWidth: orientation === "landscape" ? "297" : "210",
+            sheetHeight: orientation === "landscape" ? "210" : "297",
+          });
+        }
+      },
+    });
+
+    const letterButton = buttonInput({
+      id: "setLetterSize",
+      name: "Letter",
+      onClick: (rawSettings, setRawSettings) => {
+        const units = getUnitsSetting(rawSettings);
+        if (units === "in") {
+          setRawSettings({
+            ...rawSettings,
+            sheetWidth: orientation === "landscape" ? "11" : "8.5",
+            sheetHeight: orientation === "landscape" ? "8.5" : "11",
+          });
+        } else {
+          setRawSettings({
+            ...rawSettings,
+            sheetWidth: orientation === "landscape" ? "279.4" : "215.9",
+            sheetHeight: orientation === "landscape" ? "215.9" : "279.4",
+          });
+        }
+      },
+    });
+
     standardSchemaItems.push(
       inputRow([
         numberInput({
@@ -73,63 +119,13 @@ export function standardPresetSettings({
           defaultValue: sheetHeight,
           min: 1,
         }),
+
+        buttonGroup({
+          id: "sizePresets",
+          name: "Presets",
+          buttons: [a4Button, letterButton],
+        }),
       ]),
-    );
-    standardSchemaItems.push(
-      buttonGroup({
-        id: "sizePresets",
-        name: "Size Presets",
-        buttons: [
-          buttonInput({
-            id: "sizeA4",
-            name: "A4",
-            onClick: (rawSettings, onChange) => {
-              const unit = (rawSettings["units"] ?? "mm").toLowerCase();
-              if (unit === "in") {
-                onChange({
-                  ...rawSettings,
-                  sheetWidth:
-                    orientation === "landscape" ? "11.69" : "8.27",
-                  sheetHeight:
-                    orientation === "landscape" ? "8.27" : "11.69",
-                });
-              } else {
-                onChange({
-                  ...rawSettings,
-                  sheetWidth:
-                    orientation === "landscape" ? "297" : "210",
-                  sheetHeight:
-                    orientation === "landscape" ? "210" : "297",
-                });
-              }
-            },
-          }),
-          buttonInput({
-            id: "sizeLetter",
-            name: "Letter",
-            onClick: (rawSettings, onChange) => {
-              const unit = (rawSettings["units"] ?? "mm").toLowerCase();
-              if (unit === "in") {
-                onChange({
-                  ...rawSettings,
-                  sheetWidth:
-                    orientation === "landscape" ? "11" : "8.5",
-                  sheetHeight:
-                    orientation === "landscape" ? "8.5" : "11",
-                });
-              } else {
-                onChange({
-                  ...rawSettings,
-                  sheetWidth:
-                    orientation === "landscape" ? "279.4" : "215.9",
-                  sheetHeight:
-                    orientation === "landscape" ? "215.9" : "279.4",
-                });
-              }
-            },
-          }),
-        ],
-      }),
     );
   }
 
@@ -164,15 +160,15 @@ export function standardPresetSettings({
   }
 
   const getStandardSettings = (rawSettings: RawSettings) => {
-    const unit = (rawSettings["units"] ?? "mm").toLowerCase();
-    const toPt = unit === "in" ? inToPts : toPts;
+    const units = getUnitsSetting(rawSettings);
+    const convertUnits = units === "mm" ? mmToPts : inToPts;
 
     return getSettings(rawSettings, {
-      sheetWidth: (v) => toPt(asNumber(v, sheetWidth)),
-      sheetHeight: (v) => toPt(asNumber(v, sheetHeight)),
-      bleedArea: (v) => toPt(asNumber(v, standardDefaults.bleedArea)),
-      trimLength: (v) => toPt(asNumber(v, standardDefaults.trimLength)),
-      trimOffset: (v) => toPt(asNumber(v, standardDefaults.trimOffset)),
+      sheetWidth: (v) => convertUnits(asNumber(v, sheetWidth)),
+      sheetHeight: (v) => convertUnits(asNumber(v, sheetHeight)),
+      bleedArea: (v) => convertUnits(asNumber(v, standardDefaults.bleedArea)),
+      trimLength: (v) => convertUnits(asNumber(v, standardDefaults.trimLength)),
+      trimOffset: (v) => convertUnits(asNumber(v, standardDefaults.trimOffset)),
     });
   };
 
