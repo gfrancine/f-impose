@@ -1,4 +1,11 @@
-import { PDFDocument, PDFEmbeddedPage, type PDFPage, rgb } from "pdf-lib";
+import {
+  type Rotation,
+  PDFDocument,
+  PDFEmbeddedPage,
+  type PDFPage,
+  rgb,
+  degrees,
+} from "pdf-lib";
 
 export function assert(condition: unknown, err: string) {
   if (!condition) throw new Error(err);
@@ -11,6 +18,7 @@ export function set<O, K extends keyof O>(object: O, key: K, value: O[K]) {
 
 export const toPts = (mm: number) => mm * 2.83465;
 export const toMm = (pt: number) => pt / 2.83465;
+export const toRad = (deg: number) => (deg * Math.PI) / 180;
 
 /** a fancy immutable {x, y} container */
 export class Vec2 {
@@ -25,6 +33,9 @@ export class Vec2 {
   add = (x: number, y: number) => new Vec2(this.x + x, this.y + y);
   sub = (x: number, y: number) => this.add(-x, -y);
   div = (v: number) => new Vec2(this.x / v, this.y / v);
+
+  addVec = (v: Vec2) => this.add(v.x, v.y);
+  subVec = (v: Vec2) => this.add(-v.x, -v.y);
 }
 
 export async function pdfToUrl(pdf: PDFDocument) {
@@ -80,6 +91,16 @@ export function mapIndicesSaddleStitch(pageCount: number) {
 
 // pdf-lib drawing utils
 // --------
+
+export function debugPoint(sheet: PDFPage, origin: Vec2) {
+  sheet.drawRectangle({
+    x: origin.x,
+    y: origin.y,
+    width: 10,
+    height: 10,
+    color: rgb(1, 0, 0), // Fill color
+  });
+}
 
 export function drawTrimMark(
   sheet: PDFPage,
@@ -314,6 +335,36 @@ export function drawTrimMarksRect(
   }
 }
 
+export function drawPageRotated(
+  sheet: PDFPage,
+  srcPage: PDFEmbeddedPage,
+  origin: Vec2,
+  rotateDeg: number = 0,
+) {
+  const size = new Vec2(srcPage.width, srcPage.height);
+  const sizeHalf = size.div(2);
+  const rotateRad = toRad(rotateDeg);
+
+  const c = Math.cos(rotateRad);
+  const s = Math.sin(rotateRad);
+
+  // drawPage's rotation option rotates on the bottom-left corner (bx, by).
+  // find the offset bottom-left position so the center remains at origin
+  // bx = origin.x - (w/2)·cos(θ) + (h/2)·sin(θ)
+  // by = origin.y - (w/2)·sin(θ) - (h/2)·cos(θ)
+  // thanks big pickle
+  const bottomLeft = origin.sub(
+    sizeHalf.x * c - sizeHalf.y * s,
+    sizeHalf.x * s + sizeHalf.y * c,
+  );
+
+  sheet.drawPage(srcPage, {
+    x: bottomLeft.x,
+    y: bottomLeft.y,
+    rotate: degrees(rotateDeg),
+  });
+}
+
 export function drawPageWithTrimMarks(
   sheet: PDFPage,
   srcPage: PDFEmbeddedPage,
@@ -323,20 +374,17 @@ export function drawPageWithTrimMarks(
     trimLength = 0,
     trimOffset = 0,
     hideTrimMarks = {},
+    rotateDeg = 0,
   }: {
     bleedArea?: number;
     trimLength?: number;
     trimOffset?: number;
     hideTrimMarks?: Partial<HideTrimMarkOptions>;
+    rotateDeg?: number;
   } = {},
 ) {
+  drawPageRotated(sheet, srcPage, origin, rotateDeg);
   const srcSize = new Vec2(srcPage.width, srcPage.height);
-  const srcSizeHalf = srcSize.div(2);
-
-  sheet.drawPage(srcPage, {
-    x: origin.x - srcSizeHalf.x,
-    y: origin.y - srcSizeHalf.y,
-  });
 
   drawTrimMarksRect(sheet, {
     origin,
