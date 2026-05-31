@@ -1,5 +1,4 @@
 import {
-  type Rotation,
   PDFDocument,
   PDFEmbeddedPage,
   type PDFPage,
