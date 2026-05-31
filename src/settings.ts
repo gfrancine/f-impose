@@ -146,7 +146,7 @@ export type RawSettings = Record<string, string>; // native HTML inputs work wit
  * Usage:
  * ```ts
  * const { sheetWidth, enableTrimMarks } = getSettings(rawSettings, {
- *   sheetWidth: (v) => toPts(asNumber(v, 297)),
+ *   sheetWidth: (v) => mmToPts(asNumber(v, 297)),
  *   enableTrimMarks: (v) => asBool(v, true),
  * })
  * ```

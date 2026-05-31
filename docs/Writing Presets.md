@@ -52,8 +52,8 @@ const settingsSchema = defineSettingsSchema([
   const { sheetWidth, sheetHeight } =
     getSettings(rawSettings, {
       // [Settings input ID]: (Raw string value) => Processed value
-      sheetWidth: (v) => toPts(asNumber(v, 210)), // 210 as the default value
-      sheetHeight: (v) => toPts(asNumber(v, 297)),
+      sheetWidth: (v) => mmToPts(asNumber(v, 210)), // 210 as the default value
+      sheetHeight: (v) => mmToPts(asNumber(v, 297)),
     }
   )
   ```
@@ -63,7 +63,7 @@ const settingsSchema = defineSettingsSchema([
 
 - Several utility functions already exist to help imposition logic:
   - A `Vec2` class, which is a fancy `{x, y}` container. It is immutable and operations copy the class like strings or numbers.
-  - Unit conversions (`toMm`, `toPt` [from millimeters])
+  - Unit conversions (`ptsToMm`, `toPt` [from millimeters])
   - Several draw and imposition functions, such as `drawTrimMarksRect` and `drawTrimMarksLine` (both with options to hide certain trim mark arms), `drawPageWithTrimMarks`, `drawSpread`, and more.
   - A `mapIndicesSaddleStitch` utility for saddle-stitch booklets, which groups the indices of an array of pages by sheet when imposed.
 

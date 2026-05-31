@@ -6,7 +6,7 @@ Removes inner bleed from PDFs with facing pages
 // Authored with Big Pickle
 
 import { PDFDocument } from "pdf-lib";
-import { assert, toPts } from "../utils";
+import { assert, mmToPts } from "../utils";
 import type { Preset } from "../types";
 import {
   asNumber,
@@ -33,7 +33,7 @@ const settingsSchema = defineSettingsSchema([
 async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const { outPdf, srcPages } = await setupOutPdf(srcPdf);
   const { bleedArea } = getSettings(rawSettings, {
-    bleedArea: (v) => toPts(asNumber(v, standardDefaults.bleedArea)),
+    bleedArea: (v) => mmToPts(asNumber(v, standardDefaults.bleedArea)),
   });
 
   for (let i = 0; i < srcPages.length; i++) {
