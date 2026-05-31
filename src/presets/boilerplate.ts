@@ -17,7 +17,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const { outPdf, srcPages } = await setupOutPdf(srcPdf);
   const { sheetWidth, sheetHeight, bleedArea, trimLength, trimOffset } =
     getStandardSettings(rawSettings);
-  
+
   return outPdf;
 }
 
@@ -25,7 +25,7 @@ export const preset: Preset = {
   name,
   description,
   settingsSchema,
-  impose
-}
+  impose,
+};
 
 export default preset;
