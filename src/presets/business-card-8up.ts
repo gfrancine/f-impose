@@ -8,12 +8,7 @@ Business Card 8-Up
 */
 
 import { PDFDocument } from "pdf-lib";
-import {
-  assert,
-  calcExcessTrimLength,
-  drawPageWithTrimMarks,
-  Vec2,
-} from "../utils";
+import { drawPageRotated, drawTrimMarksRect, Vec2 } from "../utils";
 import type { Preset } from "../types";
 import { defineSettingsSchema, type RawSettings } from "../settings";
 import { setupOutPdf, standardPresetSettings } from "./helpers";
@@ -35,53 +30,52 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const sheetSize = new Vec2(sheetWidth, sheetHeight);
   const sheetCenter = sheetSize.div(2);
 
-  // validate input & settings
-  // 2 for a front and back page
-  assert(
-    srcPages.length === 1 || srcPages.length === 2,
-    "Source PDF must exactly be 1 or 2 pages.",
-  );
-
-  // handle landscape/not
-  // TODO: rotate the card on the center instead of throwing error
-  const isSrcPdfLandscape = srcPages[0].width > srcPages[0].height;
-  assert(isSrcPdfLandscape, "Source PDF must be landscape.");
-
   for (const srcPage of srcPages) {
     // create sheet
     const sheet = outPdf.addPage([sheetSize.x, sheetSize.y]);
 
-    const excessTrim = calcExcessTrimLength(bleedArea, trimLength, trimOffset);
+    const isSrcLandscape = srcPage.width > srcPage.height;
+    const srcSize = isSrcLandscape
+      ? new Vec2(srcPage.width, srcPage.height)
+      : new Vec2(srcPage.height, srcPage.width);
 
-    const totalImposedWidth =
-      srcPage.width + (-bleedArea + trimOffset + trimLength - excessTrim) * 2;
-    const totalImposedHeight =
-      srcPage.height + (-bleedArea + trimOffset + trimLength - excessTrim) * 2;
+    // TODO: enable gutter?
+    // const excessTrim = calcExcessTrim(bleedArea, trimLength, trim)* 2;
+    // const totalSize = srcSize.add( excessTrim, excessTrim )
 
     const N_ROWS = 4;
     const N_COLS = 2;
 
-    for (let row = 1; row < N_ROWS + 1; row++) {
-      const directionY = row <= N_ROWS / 2 ? -1 : 1; // draw upwards from center for the first half of rows
-      const rowFromCenter = directionY < 0 ? -row : N_ROWS / 2 - row; // distance from center
-      const originY =
-        sheetCenter.y +
-        directionY * rowFromCenter * totalImposedHeight +
-        // dont forget to offset by half the page size
-        (directionY * totalImposedHeight) / 2;
+    // bottom-left corner of row 0 col 0, based on the sheet center
+    const corner = sheetCenter.sub(
+      (srcSize.x * N_COLS) / 2,
+      (srcSize.y * N_ROWS) / 2,
+    );
 
-      for (let col = 1; col < N_COLS + 1; col++) {
-        const directionX = col <= N_COLS / 2 ? -1 : 1;
-        const colFromCenter = directionX < 0 ? -col : N_COLS / 2 - col;
-        const originX =
-          sheetCenter.x +
-          directionX * colFromCenter * totalImposedWidth +
-          (directionX * totalImposedWidth) / 2;
+    for (let row = 0; row < N_ROWS; row++) {
+      for (let col = 0; col < N_COLS; col++) {
+        const origin = new Vec2(
+          corner.x + srcSize.x * col,
+          corner.y + srcSize.y * row,
+        ).addVec(srcSize.div(2));
 
-        drawPageWithTrimMarks(sheet, srcPage, new Vec2(originX, originY), {
-          bleedArea,
+        drawPageRotated(sheet, srcPage, origin, isSrcLandscape ? 0 : 90);
+
+        drawTrimMarksRect(sheet, {
+          origin,
+          srcSize: srcSize.sub(bleedArea, bleedArea),
           trimLength,
           trimOffset,
+          hideTrimMarks: {
+            bottomLeftHoriz: col > 0,
+            bottomLeftVert: row > 0,
+            bottomRightHoriz: col < N_COLS - 1,
+            bottomRightVert: row > 0,
+            topLeftHoriz: col > 0,
+            topLeftVert: row < N_ROWS - 1,
+            topRightHoriz: col < N_COLS - 1,
+            topRightVert: row < N_ROWS - 1,
+          },
         });
       }
     }

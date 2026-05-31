@@ -47,9 +47,8 @@ export async function pdfToUrl(pdf: PDFDocument) {
 }
 
 /**
- * When trim marks stretch outside the bleed area, it creates an
- * unnecessary gutter in tight-grid layouts. This calculates how
- * much to remove to maximize space.
+ * Calculate how much trim marks stretch outside the bleed area. Used
+ * for working with extra gutter space caused by this excess length.
  */
 export function calcExcessTrimLength(
   bleedArea: number,
@@ -374,17 +373,20 @@ export function drawPageWithTrimMarks(
     trimLength = 0,
     trimOffset = 0,
     hideTrimMarks = {},
-    rotateDeg = 0,
   }: {
     bleedArea?: number;
     trimLength?: number;
     trimOffset?: number;
     hideTrimMarks?: Partial<HideTrimMarkOptions>;
-    rotateDeg?: number;
   } = {},
 ) {
-  drawPageRotated(sheet, srcPage, origin, rotateDeg);
   const srcSize = new Vec2(srcPage.width, srcPage.height);
+  const srcSizeHalf = srcSize.div(2);
+
+  sheet.drawPage(srcPage, {
+    x: origin.x - srcSizeHalf.x,
+    y: origin.y - srcSizeHalf.y,
+  });
 
   drawTrimMarksRect(sheet, {
     origin,
