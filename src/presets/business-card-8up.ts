@@ -63,7 +63,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
 
         drawTrimMarksRect(sheet, {
           origin,
-          srcSize: srcSize.sub(bleedArea, bleedArea),
+          srcSize: srcSize.sub(bleedArea * 2, bleedArea * 2),
           trimLength,
           trimOffset,
           hideTrimMarks: {
