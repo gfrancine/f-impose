@@ -6,7 +6,7 @@ Saddle-Stitched Tall Booklet 4-Up
 
 import { PDFDocument } from "pdf-lib";
 import {
-  calcExtraGutter,
+  calcExcessTrimLength,
   drawSpread,
   mapIndicesSaddleStitch,
   Vec2,
@@ -32,7 +32,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
 
   const sheetSize = new Vec2(sheetWidth, sheetHeight);
   const sheetCenter = sheetSize.div(2);
-  const extraGutter = calcExtraGutter(bleedArea, trimLength, trimOffset);
+  const excessTrim = calcExcessTrimLength(bleedArea, trimLength, trimOffset);
 
   // validate input & settings
   // will throw if page count isn't a multiple of 4
@@ -66,7 +66,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     const leaf1Width = calcLeafTotalWidth(leaf1);
 
     drawSpread(frontSheet, {
-      origin: sheetCenter.sub(leaf1Width / 2, 0).add(extraGutter, 0),
+      origin: sheetCenter.sub(leaf1Width / 2, 0).add(excessTrim, 0),
       leftPage: srcPages[leaf1.front2],
       rightPage: srcPages[leaf1.front1],
       bleedArea,
@@ -76,7 +76,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     });
 
     drawSpread(backSheet, {
-      origin: sheetCenter.add(leaf1Width / 2, 0).sub(extraGutter, 0),
+      origin: sheetCenter.add(leaf1Width / 2, 0).sub(excessTrim, 0),
       leftPage: srcPages[leaf1.back1],
       rightPage: srcPages[leaf1.back2],
       bleedArea,
@@ -89,7 +89,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
       const leaf2Width = calcLeafTotalWidth(leaf2);
 
       drawSpread(frontSheet, {
-        origin: sheetCenter.add(leaf2Width / 2, 0).sub(extraGutter, 0),
+        origin: sheetCenter.add(leaf2Width / 2, 0).sub(excessTrim, 0),
         leftPage: srcPages[leaf2.front2],
         rightPage: srcPages[leaf2.front1],
         bleedArea,
@@ -99,7 +99,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
       });
 
       drawSpread(backSheet, {
-        origin: sheetCenter.sub(leaf2Width / 2, 0).add(extraGutter, 0),
+        origin: sheetCenter.sub(leaf2Width / 2, 0).add(excessTrim, 0),
         leftPage: srcPages[leaf2.back1],
         rightPage: srcPages[leaf2.back2],
         bleedArea,

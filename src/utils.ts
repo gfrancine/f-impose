@@ -40,7 +40,7 @@ export async function pdfToUrl(pdf: PDFDocument) {
  * unnecessary gutter in tight-grid layouts. This calculates how
  * much to remove to maximize space.
  */
-export function calcExtraGutter(
+export function calcExcessTrimLength(
   bleedArea: number,
   trimLength: number,
   trimOffset: number,

@@ -8,7 +8,12 @@ Business Card 8-Up
 */
 
 import { PDFDocument } from "pdf-lib";
-import { assert, calcExtraGutter, drawPageWithTrimMarks, Vec2 } from "../utils";
+import {
+  assert,
+  calcExcessTrimLength,
+  drawPageWithTrimMarks,
+  Vec2,
+} from "../utils";
 import type { Preset } from "../types";
 import { defineSettingsSchema, type RawSettings } from "../settings";
 import { setupOutPdf, standardPresetSettings } from "./helpers";
@@ -46,12 +51,12 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     // create sheet
     const sheet = outPdf.addPage([sheetSize.x, sheetSize.y]);
 
-    const extraGutter = calcExtraGutter(bleedArea, trimLength, trimOffset);
+    const excessTrim = calcExcessTrimLength(bleedArea, trimLength, trimOffset);
 
     const totalImposedWidth =
-      srcPage.width + (-bleedArea + trimOffset + trimLength - extraGutter) * 2;
+      srcPage.width + (-bleedArea + trimOffset + trimLength - excessTrim) * 2;
     const totalImposedHeight =
-      srcPage.height + (-bleedArea + trimOffset + trimLength - extraGutter) * 2;
+      srcPage.height + (-bleedArea + trimOffset + trimLength - excessTrim) * 2;
 
     const N_ROWS = 4;
     const N_COLS = 2;
