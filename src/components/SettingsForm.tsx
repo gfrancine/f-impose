@@ -1,6 +1,7 @@
 import type {
   CheckboxInputSchema,
   NumberInputSchema,
+  SelectInputSchema,
   RawSettings,
   SettingsItemSchema,
   SettingsSchema,
@@ -66,6 +67,34 @@ function CheckboxInput({
   );
 }
 
+function SelectInput({
+  schema,
+  value,
+  onChange,
+}: {
+  schema: SelectInputSchema;
+  value: string;
+  onChange?: (value: string) => unknown;
+}) {
+  const { name, options } = schema;
+
+  return (
+    <label>
+      {name}{" "}
+      <select
+        value={value}
+        onChange={(e) => onChange?.(e.target.value)}
+      >
+        {options.map((opt) => (
+          <option key={opt.id} value={opt.id}>
+            {opt.name}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
 export default function SettingsForm({
   schema,
   rawSettings,
@@ -90,6 +119,12 @@ export default function SettingsForm({
         />
       ) : item.type === "checkbox" ? (
         <CheckboxInput
+          schema={item}
+          value={fallback(rawSettings[item.id], item.defaultValue)}
+          onChange={(v) => onChange?.(set(rawSettings, item.id, v))}
+        />
+      ) : item.type === "select" ? (
+        <SelectInput
           schema={item}
           value={fallback(rawSettings[item.id], item.defaultValue)}
           onChange={(v) => onChange?.(set(rawSettings, item.id, v))}
