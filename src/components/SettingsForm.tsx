@@ -1,4 +1,5 @@
 import type {
+  ButtonGroupSchema,
   CheckboxInputSchema,
   NumberInputSchema,
   SelectInputSchema,
@@ -95,6 +96,32 @@ function SelectInput({
   );
 }
 
+function ButtonGroupInput({
+  schema,
+  rawSettings,
+  onChange,
+}: {
+  schema: ButtonGroupSchema;
+  rawSettings: RawSettings;
+  onChange?: (v: RawSettings) => unknown;
+}) {
+  const { name, buttons } = schema;
+
+  return (
+    <div>
+      <label>{name}: </label>
+      {buttons.map((button) => (
+        <button
+          key={button.id}
+          onClick={() => button.onClick(rawSettings, (updated) => onChange?.(updated))}
+        >
+          {button.name}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function SettingsForm({
   schema,
   rawSettings,
@@ -128,6 +155,12 @@ export default function SettingsForm({
           schema={item}
           value={fallback(rawSettings[item.id], item.defaultValue)}
           onChange={(v) => onChange?.(set(rawSettings, item.id, v))}
+        />
+      ) : item.type === "buttonGroup" ? (
+        <ButtonGroupInput
+          schema={item}
+          rawSettings={rawSettings}
+          onChange={onChange}
         />
       ) : (
         <></>
