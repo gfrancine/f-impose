@@ -11,6 +11,7 @@ import {
   inputRow,
   numberInput,
   type RawSettings,
+  type SettingsItemSchema,
 } from "../settings";
 import { toPts } from "../utils";
 
@@ -32,48 +33,64 @@ export const standardDefaults = {
 /** preset utility/prelude to set up and retrieve the most commmon preset settings */
 export function standardPresetSettings({
   orientation = "portrait",
+  exclude = [],
 }: {
   orientation?: "portrait" | "landscape";
+  exclude?: ("sheetSize" | "bleedArea" | "trimMarks")[];
 } = {}) {
   const sheetWidth = orientation === "landscape" ? 297 : 210,
     sheetHeight = orientation === "landscape" ? 210 : 297;
 
-  const standardSchemaItems = [
-    inputRow([
+  const standardSchemaItems: SettingsItemSchema[] = [];
+
+  if (!exclude.includes("sheetSize")) {
+    standardSchemaItems.push(
+      inputRow([
+        numberInput({
+          id: "sheetWidth",
+          name: "Sheet Width",
+          defaultValue: sheetWidth,
+          min: 1,
+        }),
+        numberInput({
+          id: "sheetHeight",
+          name: "Sheet Height",
+          defaultValue: sheetHeight,
+          min: 1,
+        }),
+      ]),
+    );
+  }
+
+  if (!exclude.includes("bleedArea")) {
+    standardSchemaItems.push(
       numberInput({
-        id: "sheetWidth",
-        name: "Sheet Width",
-        defaultValue: sheetWidth,
-        min: 1,
-      }),
-      numberInput({
-        id: "sheetHeight",
-        name: "Sheet Height",
-        defaultValue: sheetHeight,
-        min: 1,
-      }),
-    ]),
-    numberInput({
-      id: "bleedArea",
-      name: "Bleed Area",
-      defaultValue: standardDefaults.bleedArea,
-      min: 0,
-    }),
-    inputRow([
-      numberInput({
-        id: "trimLength",
-        name: "Trim Mark Length",
-        defaultValue: standardDefaults.trimLength,
+        id: "bleedArea",
+        name: "Bleed Area",
+        defaultValue: standardDefaults.bleedArea,
         min: 0,
       }),
-      numberInput({
-        id: "trimOffset",
-        name: "Trim Mark Offset",
-        defaultValue: standardDefaults.trimOffset,
-        min: 0,
-      }),
-    ]),
-  ];
+    );
+  }
+
+  if (!exclude.includes("trimMarks")) {
+    standardSchemaItems.push(
+      inputRow([
+        numberInput({
+          id: "trimLength",
+          name: "Trim Mark Length",
+          defaultValue: standardDefaults.trimLength,
+          min: 0,
+        }),
+        numberInput({
+          id: "trimOffset",
+          name: "Trim Mark Offset",
+          defaultValue: standardDefaults.trimOffset,
+          min: 0,
+        }),
+      ]),
+    );
+  }
 
   const getStandardSettings = (rawSettings: RawSettings) =>
     getSettings(rawSettings, {
