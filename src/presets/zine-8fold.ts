@@ -1,0 +1,89 @@
+/*
+
+Zine 8-Fold 
+
+*/
+
+import { PDFDocument } from "pdf-lib";
+import { assert, drawPageRotated, drawTrimMarksRect, Vec2 } from "../utils";
+import type { Preset } from "../types";
+import { defineSettingsSchema, type RawSettings } from "../settings";
+import { setupOutPdf, standardPresetSettings } from "./helpers";
+
+const name = "Zine 8-Fold";
+const description = "A typical 8-fold mini zine. (Bleed areas not supported)";
+
+const { standardSchemaItems, getStandardSettings } = standardPresetSettings({
+  orientation: "landscape",
+  exclude: ["bleedArea"],
+});
+const settingsSchema = defineSettingsSchema(standardSchemaItems);
+
+const indexMap = [
+  [5, 4, 3, 2],
+  [6, 7, 0, 1],
+].reverse();
+
+async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
+  const { outPdf, srcPages } = await setupOutPdf(srcPdf);
+  const { sheetWidth, sheetHeight, trimLength, trimOffset } =
+    getStandardSettings(rawSettings);
+
+  assert(
+    srcPages.length % 8 === 0,
+    "Source PDF page count must be a multiple of 8.",
+  );
+
+  const sheetSize = new Vec2(sheetWidth, sheetHeight);
+  const sheetCenter = sheetSize.div(2);
+  const srcSize = new Vec2(srcPages[0].width, srcPages[0].height);
+  const srcSizeHalf = srcSize.div(2);
+  const nSheets = srcPages.length / 8;
+
+  // should we enforce a strict 8-page length instead?
+  for (let s = 0; s < nSheets; s++) {
+    const sheet = outPdf.addPage([sheetWidth, sheetHeight]);
+    const srcPagesOffset = s * 8; // index offset of the first page in the srcPages array
+
+    const N_ROWS = 2;
+    const N_COLS = 4;
+
+    // origin of the page on row 0 col 0, based on the sheet center
+    const corner = sheetCenter.sub(
+      (srcSize.x * N_COLS) / 2,
+      (srcSize.y * N_ROWS) / 2,
+    );
+
+    for (let row = 0; row < N_ROWS; row++) {
+      for (let col = 0; col < N_COLS; col++) {
+        const i = srcPagesOffset + indexMap[row][col];
+        const srcPage = srcPages[i];
+        const origin = new Vec2(
+          corner.x + srcSize.x * col,
+          corner.y + srcSize.y * row,
+        ).addVec(srcSizeHalf);
+
+        const rotation = row === 1 ? 180 : 0;
+        drawPageRotated(sheet, srcPage, origin, rotation);
+      }
+    }
+
+    drawTrimMarksRect(sheet, {
+      origin: sheetCenter,
+      srcSize: new Vec2(srcSize.x * N_COLS, srcSize.y * N_ROWS),
+      trimLength,
+      trimOffset,
+    });
+  }
+
+  return outPdf;
+}
+
+const preset: Preset = {
+  name,
+  description,
+  settingsSchema,
+  impose,
+};
+
+export default preset;

@@ -1,8 +1,9 @@
-import businessCard from "./business-card-8up";
 import addTrimMarks from "./add-trim-marks";
+import removeInnerBleed from "./remove-inner-bleed";
+import businessCard from "./business-card-8up";
 import saddleStitch from "./saddle-stitch-2up";
 import saddleStitch4UpTall from "./saddle-stitch-4up-tall";
-import removeInnerBleed from "./remove-inner-bleed";
+import zine8Fold from "./zine-8fold";
 
 export const presets = {
   addTrimMarks,
@@ -10,6 +11,7 @@ export const presets = {
   businessCard,
   saddleStitch,
   saddleStitch4UpTall,
+  zine8Fold,
 };
 
 export type PresetId = keyof typeof presets;
