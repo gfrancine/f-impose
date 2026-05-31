@@ -1,36 +1,47 @@
 import { useState } from "react";
 import PdfOutput from "./PdfOutput";
-import { pdfToUrl, mmToPts } from "../utils";
+import SettingsForm from "./SettingsForm";
+import { pdfToUrl } from "../utils";
+import {
+  asNumber,
+  getSetting,
+  numberInput,
+  type RawSettings,
+  type SettingsSchema,
+} from "../settings";
+import { standardPresetSettings } from "../presets/helpers";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
-// handle blank input strings
-function toNumber(str: string, min = 0) {
-  return Number(str.length > 0 ? str : "" + min);
-}
+const { standardSchemaItems, getStandardSettings } = standardPresetSettings({
+  orientation: "portrait",
+  exclude: ["trimMarks"],
+});
+
+const dummyGeneratorSchema: SettingsSchema = [
+  ...standardSchemaItems,
+  numberInput({ id: "pageCount", name: "Page Count", defaultValue: 1, min: 1 }),
+];
 
 export default function DummyGenerator() {
-  // https://react.dev/reference/react-dom/components/input
-  const [strWidth, setStrWidth] = useState("210");
-  const [strHeight, setStrHeight] = useState("297");
-  const [strBleed, setStrBleed] = useState("0");
-  const [strPageCount, setStrPageCount] = useState("1");
+  const [rawSettings, setRawSettings] = useState<RawSettings>({});
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
   const generateDummyPdf = async () => {
-    const width = mmToPts(toNumber(strWidth, 1)),
-      height = mmToPts(toNumber(strHeight, 1)),
-      bleed = mmToPts(toNumber(strBleed, 0));
-    const outerWidth = width + bleed * 2,
-      outerHeight = height + bleed * 2;
+    const { sheetWidth, sheetHeight, bleedArea } =
+      getStandardSettings(rawSettings);
+    const pageCount = getSetting(rawSettings, "pageCount", (v) =>
+      asNumber(v as string, 1),
+    );
+    const outerWidth = sheetWidth + bleedArea * 2;
+    const outerHeight = sheetHeight + bleedArea * 2;
 
     const outPdf = await PDFDocument.create();
     const helveticaFont = await outPdf.embedFont(StandardFonts.Helvetica);
 
-    for (let i = 0; i < toNumber(strPageCount, 1); i++) {
+    for (let i = 0; i < pageCount; i++) {
       const page = outPdf.addPage([outerWidth, outerHeight]);
 
-      // bleed area
-      if (bleed > 0) {
+      if (bleedArea > 0) {
         page.drawRectangle({
           x: 0,
           y: 0,
@@ -41,21 +52,19 @@ export default function DummyGenerator() {
         });
       }
 
-      // content area
       page.drawRectangle({
-        x: bleed,
-        y: bleed,
-        width,
-        height,
+        x: bleedArea,
+        y: bleedArea,
+        width: sheetWidth,
+        height: sheetHeight,
         borderWidth: 1,
         borderColor: rgb(0, 0, 0),
       });
 
-      // page number
-      page.drawText(i + 1 + "", {
-        x: bleed,
-        y: bleed,
-        size: Math.min(width, height) / 2,
+      page.drawText((i + 1).toString(), {
+        x: bleedArea,
+        y: bleedArea,
+        size: Math.min(sheetWidth, sheetHeight) / 2,
         color: rgb(0, 0, 0),
         font: helveticaFont,
       });
@@ -71,49 +80,11 @@ export default function DummyGenerator() {
         <p>Generate dummy page-numbered PDFs for testing layout presets.</p>
         <fieldset>
           <legend>Settings</legend>
-          <div>
-            <label>
-              Width{" "}
-              <input
-                type="number"
-                value={strWidth}
-                min={0}
-                onChange={(e) => setStrWidth(e.target.value)}
-              />
-            </label>{" "}
-            <label>
-              Height{" "}
-              <input
-                type="number"
-                value={strHeight}
-                min={0}
-                onChange={(e) => setStrHeight(e.target.value)}
-              />
-            </label>
-          </div>
-
-          <div>
-            <label>
-              Bleed{" "}
-              <input
-                type="number"
-                value={strBleed}
-                min={0}
-                onChange={(e) => setStrBleed(e.target.value)}
-              />
-            </label>
-          </div>
-          <div>
-            <label>
-              Page Count{" "}
-              <input
-                type="number"
-                value={strPageCount}
-                min={1}
-                onChange={(e) => setStrPageCount(e.target.value)}
-              />
-            </label>
-          </div>
+          <SettingsForm
+            schema={dummyGeneratorSchema}
+            rawSettings={rawSettings}
+            setRawSettings={setRawSettings}
+          />
         </fieldset>
         <br />
         <button onClick={generateDummyPdf}>Generate</button>
