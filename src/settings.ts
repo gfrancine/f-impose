@@ -59,9 +59,9 @@ export type SelectInputSchema = BaseInputSchema & {
 export function selectInput({
   id,
   name,
-  defaultValue = "mm",
+  defaultValue, // required
   options,
-}: NoType<OptionalDefaultValue<SelectInputSchema>>): SelectInputSchema {
+}: NoType<SelectInputSchema>): SelectInputSchema {
   return { type: "select", id, name, defaultValue, options };
 }
 
@@ -96,7 +96,12 @@ export function buttonGroup({
   return { type: "buttonGroup", id, name, buttons };
 }
 
-export type InputSchema = NumberInputSchema | CheckboxInputSchema | SelectInputSchema;
+export type InputSchema =
+  | NumberInputSchema
+  | CheckboxInputSchema
+  | SelectInputSchema
+  | ButtonInputSchema
+  | ButtonGroupSchema;
 
 export type InputRowSchema = {
   type: "inputRow";
@@ -107,7 +112,7 @@ export function inputRow(inputs: InputSchema[]): InputRowSchema {
   return { type: "inputRow", inputs };
 }
 
-export type SettingsItemSchema = InputRowSchema | InputSchema | ButtonGroupSchema;
+export type SettingsItemSchema = InputRowSchema | InputSchema;
 
 export type SettingsSchema = SettingsItemSchema[];
 

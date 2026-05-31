@@ -103,7 +103,7 @@ function App() {
         <SettingsForm
           schema={presets[currentPresetId].settingsSchema}
           rawSettings={rawSettings}
-          onChange={(v) => setRawSettings(v)}
+          setRawSettings={setRawSettings}
         />
       </fieldset>
       <br />

@@ -1,5 +1,5 @@
 import type {
-  ButtonGroupSchema,
+  ButtonInputSchema,
   CheckboxInputSchema,
   NumberInputSchema,
   SelectInputSchema,
@@ -82,10 +82,7 @@ function SelectInput({
   return (
     <label>
       {name}{" "}
-      <select
-        value={value}
-        onChange={(e) => onChange?.(e.target.value)}
-      >
+      <select value={value} onChange={(e) => onChange?.(e.target.value)}>
         {options.map((opt) => (
           <option key={opt.id} value={opt.id}>
             {opt.name}
@@ -96,40 +93,34 @@ function SelectInput({
   );
 }
 
-function ButtonGroupInput({
+function ButtonInput({
   schema,
   rawSettings,
-  onChange,
+  setRawSettings,
 }: {
-  schema: ButtonGroupSchema;
+  schema: ButtonInputSchema;
   rawSettings: RawSettings;
-  onChange?: (v: RawSettings) => unknown;
+  setRawSettings?: (v: RawSettings) => unknown;
 }) {
-  const { name, buttons } = schema;
-
   return (
-    <div>
-      <label>{name}: </label>
-      {buttons.map((button) => (
-        <button
-          key={button.id}
-          onClick={() => button.onClick(rawSettings, (updated) => onChange?.(updated))}
-        >
-          {button.name}
-        </button>
-      ))}
-    </div>
+    <button
+      onClick={() =>
+        schema.onClick(rawSettings, (updated) => setRawSettings?.(updated))
+      }
+    >
+      {schema.name}
+    </button>
   );
 }
 
 export default function SettingsForm({
   schema,
   rawSettings,
-  onChange,
+  setRawSettings,
 }: {
   schema: SettingsSchema;
   rawSettings: RawSettings;
-  onChange?: (v: RawSettings) => unknown;
+  setRawSettings?: (v: RawSettings) => unknown;
 }) {
   const fallback = (v: string, defaultValue: unknown) =>
     v !== undefined ? v : "" + defaultValue;
@@ -142,25 +133,31 @@ export default function SettingsForm({
         <NumberInput
           schema={item}
           value={fallback(rawSettings[item.id], item.defaultValue)}
-          onChange={(v) => onChange?.(set(rawSettings, item.id, v))}
+          onChange={(v) => setRawSettings?.(set(rawSettings, item.id, v))}
         />
       ) : item.type === "checkbox" ? (
         <CheckboxInput
           schema={item}
           value={fallback(rawSettings[item.id], item.defaultValue)}
-          onChange={(v) => onChange?.(set(rawSettings, item.id, v))}
+          onChange={(v) => setRawSettings?.(set(rawSettings, item.id, v))}
         />
       ) : item.type === "select" ? (
         <SelectInput
           schema={item}
           value={fallback(rawSettings[item.id], item.defaultValue)}
-          onChange={(v) => onChange?.(set(rawSettings, item.id, v))}
+          onChange={(v) => setRawSettings?.(set(rawSettings, item.id, v))}
         />
       ) : item.type === "buttonGroup" ? (
-        <ButtonGroupInput
+        <span>
+          <label>{item.name} </label>
+          {item.buttons.map((button) => schemaItemToElement(button))}
+        </span>
+      ) : item.type === "button" ? (
+        <ButtonInput
+          key={item.id}
           schema={item}
           rawSettings={rawSettings}
-          onChange={onChange}
+          setRawSettings={setRawSettings}
         />
       ) : (
         <></>
