@@ -6,7 +6,7 @@ import PdfOutput from "./PdfOutput";
 import "./App.css";
 import { pdfToUrl } from "../utils";
 import SettingsForm from "./SettingsForm";
-import type { RawSettings } from "../settings";
+import type { RawSettings, SettingsSchema } from "../settings";
 
 // authored by BigPickle
 // Splits paragraphs from double line breaks "\n\n" and turns single ones "\n"
@@ -60,6 +60,8 @@ function App() {
     }
   };
 
+  const currentPreset = presets[currentPresetId];
+
   return (
     <div className="app">
       <h1>F-Impose</h1>
@@ -98,13 +100,17 @@ function App() {
             ))}
           </select>
         </label>
-        <p>{descriptionToElements(presets[currentPresetId].description)}</p>
-        <h3>Preset Settings</h3>
-        <SettingsForm
-          schema={presets[currentPresetId].settingsSchema}
-          rawSettings={rawSettings}
-          setRawSettings={setRawSettings}
-        />
+        <p>{descriptionToElements(currentPreset.description)}</p>
+        {currentPreset.settingsSchema && (
+          <>
+            <h3>Preset Settings</h3>
+            <SettingsForm
+              schema={presets[currentPresetId].settingsSchema as SettingsSchema}
+              rawSettings={rawSettings}
+              setRawSettings={setRawSettings}
+            />
+          </>
+        )}
       </fieldset>
       <br />
       <button onClick={impose}>Impose</button>
