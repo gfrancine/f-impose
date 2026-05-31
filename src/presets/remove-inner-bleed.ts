@@ -6,35 +6,23 @@ Removes inner bleed from PDFs with facing pages
 // Authored with Big Pickle
 
 import { PDFDocument } from "pdf-lib";
-import { assert, toPts } from "../utils";
+import { assert } from "../utils";
 import type { Preset } from "../types";
-import {
-  asNumber,
-  defineSettingsSchema,
-  getSettings,
-  numberInput,
-  type RawSettings,
-} from "../settings";
-import { setupOutPdf, standardDefaults } from "./helpers";
+import { defineSettingsSchema, type RawSettings } from "../settings";
+import { setupOutPdf, standardPresetSettings } from "./helpers";
 
 const name = "Remove Inner Bleed";
 const description =
   "Removes inner bleed from PDFs with facing pages. Useful for imposing book spreads.";
 
-const settingsSchema = defineSettingsSchema([
-  numberInput({
-    id: "bleedArea",
-    name: "Bleed Area",
-    defaultValue: standardDefaults.bleedArea,
-    min: 0,
-  }),
-]);
+const { standardSchemaItems, getStandardSettings } = standardPresetSettings({
+  exclude: ["trimMarks", "sheetSize"],
+});
+const settingsSchema = defineSettingsSchema(standardSchemaItems);
 
 async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const { outPdf, srcPages } = await setupOutPdf(srcPdf);
-  const { bleedArea } = getSettings(rawSettings, {
-    bleedArea: (v) => toPts(asNumber(v, standardDefaults.bleedArea)),
-  });
+  const { bleedArea } = getStandardSettings(rawSettings);
 
   for (let i = 0; i < srcPages.length; i++) {
     const srcPage = srcPages[i];

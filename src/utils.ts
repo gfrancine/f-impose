@@ -1,5 +1,4 @@
 import {
-  type Rotation,
   PDFDocument,
   PDFEmbeddedPage,
   type PDFPage,
@@ -16,9 +15,10 @@ export function set<O, K extends keyof O>(object: O, key: K, value: O[K]) {
   return { ...object, [key]: value };
 }
 
-export const toPts = (mm: number) => mm * 2.83465;
-export const toMm = (pt: number) => pt / 2.83465;
-export const toRad = (deg: number) => (deg * Math.PI) / 180;
+export const mmToPts = (mm: number) => mm * 2.83465;
+export const inToPts = (inches: number) => inches * 72;
+export const ptsToMm = (pt: number) => pt / 2.83465;
+export const degToRad = (deg: number) => (deg * Math.PI) / 180;
 
 /** a fancy immutable {x, y} container */
 export class Vec2 {
@@ -343,7 +343,7 @@ export function drawPageRotated(
 ) {
   const size = new Vec2(srcPage.width, srcPage.height);
   const sizeHalf = size.div(2);
-  const rotateRad = toRad(rotateDeg);
+  const rotateRad = degToRad(rotateDeg);
 
   const c = Math.cos(rotateRad);
   const s = Math.sin(rotateRad);

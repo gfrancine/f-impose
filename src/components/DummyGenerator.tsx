@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PdfOutput from "./PdfOutput";
-import { pdfToUrl, toPts } from "../utils";
+import { pdfToUrl, mmToPts } from "../utils";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
 // handle blank input strings
@@ -17,9 +17,9 @@ export default function DummyGenerator() {
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
   const generateDummyPdf = async () => {
-    const width = toPts(toNumber(strWidth, 1)),
-      height = toPts(toNumber(strHeight, 1)),
-      bleed = toPts(toNumber(strBleed, 0));
+    const width = mmToPts(toNumber(strWidth, 1)),
+      height = mmToPts(toNumber(strHeight, 1)),
+      bleed = mmToPts(toNumber(strBleed, 0));
     const outerWidth = width + bleed * 2,
       outerHeight = height + bleed * 2;
 
