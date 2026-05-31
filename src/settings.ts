@@ -50,7 +50,53 @@ export function checkboxInput({
   return { type: "checkbox", id, name, defaultValue };
 }
 
-export type InputSchema = NumberInputSchema | CheckboxInputSchema;
+export type SelectInputSchema = BaseInputSchema & {
+  type: "select";
+  defaultValue: string;
+  options: { id: string; name: string }[];
+};
+
+export function selectInput({
+  id,
+  name,
+  defaultValue = "mm",
+  options,
+}: NoType<OptionalDefaultValue<SelectInputSchema>>): SelectInputSchema {
+  return { type: "select", id, name, defaultValue, options };
+}
+
+export type ButtonInputSchema = BaseInputSchema & {
+  type: "button";
+  onClick: (
+    rawSettings: RawSettings,
+    setRawSettings: (updated: RawSettings) => void,
+  ) => void;
+};
+
+export function buttonInput({
+  id,
+  name,
+  onClick,
+}: NoType<ButtonInputSchema>): ButtonInputSchema {
+  return { type: "button", id, name, onClick };
+}
+
+export type ButtonGroupSchema = {
+  type: "buttonGroup";
+  id: string;
+  name: string;
+  buttons: ButtonInputSchema[];
+};
+
+export function buttonGroup({
+  id,
+  name,
+  buttons,
+}: NoType<ButtonGroupSchema>): ButtonGroupSchema {
+  return { type: "buttonGroup", id, name, buttons };
+}
+
+export type InputSchema = NumberInputSchema | CheckboxInputSchema | SelectInputSchema;
 
 export type InputRowSchema = {
   type: "inputRow";
@@ -61,7 +107,7 @@ export function inputRow(inputs: InputSchema[]): InputRowSchema {
   return { type: "inputRow", inputs };
 }
 
-export type SettingsItemSchema = InputRowSchema | InputSchema;
+export type SettingsItemSchema = InputRowSchema | InputSchema | ButtonGroupSchema;
 
 export type SettingsSchema = SettingsItemSchema[];
 

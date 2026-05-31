@@ -17,6 +17,7 @@ export function set<O, K extends keyof O>(object: O, key: K, value: O[K]) {
 }
 
 export const toPts = (mm: number) => mm * 2.83465;
+export const inToPts = (inches: number) => inches * 72;
 export const toMm = (pt: number) => pt / 2.83465;
 export const toRad = (deg: number) => (deg * Math.PI) / 180;
 
