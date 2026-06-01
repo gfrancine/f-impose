@@ -50,7 +50,7 @@ export async function pdfToUrl(pdf: PDFDocument) {
  * Calculate how much trim marks stretch outside the bleed area. Used
  * for working with extra gutter space caused by this excess length.
  */
-export function calcExcessTrimLength(
+export function calcExcessTrim(
   bleedArea: number,
   trimLength: number,
   trimOffset: number,

@@ -6,7 +6,6 @@ Saddle-Stitched Tall Booklet 4-Up
 
 import { PDFDocument } from "pdf-lib";
 import {
-  calcExcessTrimLength,
   drawSpread,
   mapIndicesSaddleStitch,
   Vec2,
@@ -32,7 +31,8 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
 
   const sheetSize = new Vec2(sheetWidth, sheetHeight);
   const sheetCenter = sheetSize.div(2);
-  const excessTrim = calcExcessTrimLength(bleedArea, trimLength, trimOffset);
+  // TODO: add option to enable gutter & inner trim marks
+  // const excessTrim = calcExcessTrim(bleedArea, trimLength, trimOffset);
 
   // validate input & settings
   // will throw if page count isn't a multiple of 4
@@ -41,8 +41,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const calcLeafTotalWidth = (leaf: SaddleStitchIndexGroup) =>
     // handle pages of  different sizes
     Math.max(srcPages[leaf.front2].width, srcPages[leaf.back2].width) +
-    Math.max(srcPages[leaf.front1].width, srcPages[leaf.back1].width) +
-    (-bleedArea + trimOffset + trimLength) * 2;
+    Math.max(srcPages[leaf.front1].width, srcPages[leaf.back1].width);
 
   for (let i = 0; i < indexGroups.length; i += 2) {
     const frontSheet = outPdf.addPage([sheetSize.x, sheetSize.y]);
@@ -50,8 +49,6 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
 
     const leaf1 = indexGroups[i];
     const leaf2: SaddleStitchIndexGroup | undefined = indexGroups[i + 1]; // may not exist. test handling with odd leaf count booklets
-
-    // TODO: add boolean options to enable gutter & inner trim marks
 
     const hideRightHorizTrimMarks = {
       topRightHoriz: true,
@@ -66,7 +63,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     const leaf1Width = calcLeafTotalWidth(leaf1);
 
     drawSpread(frontSheet, {
-      origin: sheetCenter.sub(leaf1Width / 2, 0).add(excessTrim, 0),
+      origin: sheetCenter.sub(leaf1Width / 2, 0),
       leftPage: srcPages[leaf1.front2],
       rightPage: srcPages[leaf1.front1],
       bleedArea,
@@ -76,7 +73,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     });
 
     drawSpread(backSheet, {
-      origin: sheetCenter.add(leaf1Width / 2, 0).sub(excessTrim, 0),
+      origin: sheetCenter.add(leaf1Width / 2, 0),
       leftPage: srcPages[leaf1.back1],
       rightPage: srcPages[leaf1.back2],
       bleedArea,
@@ -89,7 +86,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
       const leaf2Width = calcLeafTotalWidth(leaf2);
 
       drawSpread(frontSheet, {
-        origin: sheetCenter.add(leaf2Width / 2, 0).sub(excessTrim, 0),
+        origin: sheetCenter.add(leaf2Width / 2, 0),
         leftPage: srcPages[leaf2.front2],
         rightPage: srcPages[leaf2.front1],
         bleedArea,
@@ -99,7 +96,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
       });
 
       drawSpread(backSheet, {
-        origin: sheetCenter.sub(leaf2Width / 2, 0).add(excessTrim, 0),
+        origin: sheetCenter.sub(leaf2Width / 2, 0),
         leftPage: srcPages[leaf2.back1],
         rightPage: srcPages[leaf2.back2],
         bleedArea,

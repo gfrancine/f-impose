@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { calcExcessTrimLength, mapIndicesSaddleStitch } from "./utils";
+import { calcExcessTrim, mapIndicesSaddleStitch } from "./utils";
 
-describe("calcExcessTrimLength", () => {
+describe("calcExcessTrim", () => {
   it("returns the excess length of the trim mark when outside the bleed area", () => {
-    expect(calcExcessTrimLength(10, 10, 2)).toBe(2);
-    expect(calcExcessTrimLength(10, 5, 7)).toBe(2);
+    expect(calcExcessTrim(10, 10, 2)).toBe(2);
+    expect(calcExcessTrim(10, 5, 7)).toBe(2);
   });
 
   it("returns 0 if the trim mark is within the bleed area", () => {
-    expect(calcExcessTrimLength(10, 8, 2)).toBe(0);
-    expect(calcExcessTrimLength(10, 8, 0)).toBe(0);
+    expect(calcExcessTrim(10, 8, 2)).toBe(0);
+    expect(calcExcessTrim(10, 8, 0)).toBe(0);
   });
 });
 
