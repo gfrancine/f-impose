@@ -25,7 +25,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     getStandardSettings(rawSettings);
 
   const sheetSize = new Vec2(sheetWidth, sheetHeight);
-  const sheetCenter = sheetSize.div(2); // always work with center anchor points/origins
+  const sheetCenter = sheetSize.div(2);
 
   // validate input & settings
   // mapIndicesSaddleStitch will throw if page count isn't a multiple of 4

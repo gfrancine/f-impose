@@ -1,9 +1,6 @@
 /*
 
 Business Card 8-Up
-- 8-up
-- Long edge flip
-- One- and double-side support
 
 */
 
@@ -14,8 +11,7 @@ import { defineSettingsSchema, type RawSettings } from "../settings";
 import { setupOutPdf, standardPresetSettings } from "./helpers";
 
 const name = "Business Card 8-Up";
-const description =
-  `Imposes cards on a long edge-flip, 2x4 layout. Supports both one- and double-sided cards. (Note: The preset currently only supports landscape cards, please rotate your portrait cards before imposing!)`.trim();
+const description = `Imposes cards on a long edge-flip, 2x4 layout. Supports both landscape and portrait cards.`;
 
 const { standardSchemaItems, getStandardSettings } = standardPresetSettings({
   orientation: "portrait",

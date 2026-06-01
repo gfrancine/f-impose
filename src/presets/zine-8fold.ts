@@ -48,7 +48,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     const N_ROWS = 2;
     const N_COLS = 4;
 
-    // origin of the page on row 0 col 0, based on the sheet center
+    // bottom-left corner of row 0 col 0, based on the sheet center
     const corner = sheetCenter.sub(
       (srcSize.x * N_COLS) / 2,
       (srcSize.y * N_ROWS) / 2,
