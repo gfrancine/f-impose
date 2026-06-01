@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "test": "vitest",
     "lint": "eslint .",
-    "fmt": "prettier -w src public",
+    "fmt": "prettier -w src public docs",
     "preview": "vite preview",
     "deploy-gh": "git checkout github-pages && git merge master && git push github github-pages && git checkout master",
     "deploy-gl": "git checkout github-pages && git merge master && git push github github-pages && git checkout master"
