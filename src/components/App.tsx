@@ -100,7 +100,7 @@ function App() {
             ))}
           </select>
         </label>
-        <p>{descriptionToElements(currentPreset.description)}</p>
+        <div>{descriptionToElements(currentPreset.description)}</div>
         {currentPreset.settingsSchema && (
           <>
             <h3>Preset Settings</h3>

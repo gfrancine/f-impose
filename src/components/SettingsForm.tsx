@@ -131,24 +131,27 @@ export default function SettingsForm({
         <div>{item.inputs.map((input) => schemaItemToElement(input))}</div>
       ) : item.type === "number" ? (
         <NumberInput
+          key={item.id}
           schema={item}
           value={fallback(rawSettings[item.id], item.defaultValue)}
           onChange={(v) => setRawSettings?.(set(rawSettings, item.id, v))}
         />
       ) : item.type === "checkbox" ? (
         <CheckboxInput
+          key={item.id}
           schema={item}
           value={fallback(rawSettings[item.id], item.defaultValue)}
           onChange={(v) => setRawSettings?.(set(rawSettings, item.id, v))}
         />
       ) : item.type === "select" ? (
         <SelectInput
+          key={item.id}
           schema={item}
           value={fallback(rawSettings[item.id], item.defaultValue)}
           onChange={(v) => setRawSettings?.(set(rawSettings, item.id, v))}
         />
       ) : item.type === "buttonGroup" ? (
-        <span>
+        <span key={item.id}>
           <label>{item.name} </label>
           {item.buttons.map((button) => schemaItemToElement(button))}
         </span>
@@ -166,8 +169,8 @@ export default function SettingsForm({
   );
   return (
     <div>
-      {schema.map((item) => (
-        <div>{schemaItemToElement(item)}</div>
+      {schema.map((item, i) => (
+        <div key={i}>{schemaItemToElement(item)}</div>
       ))}
     </div>
   );
