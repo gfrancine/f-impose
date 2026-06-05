@@ -21,8 +21,14 @@ const settingsSchema = defineSettingsSchema(standardSchemaItems);
 
 async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const { outPdf, srcPages } = await setupOutPdf(srcPdf);
-  const { sheetWidth, sheetHeight, bleedArea, trimLength, trimOffset } =
-    getStandardSettings(rawSettings);
+  const {
+    sheetWidth,
+    sheetHeight,
+    srcPageScale,
+    srcBleedArea,
+    trimLength,
+    trimOffset,
+  } = getStandardSettings(rawSettings);
 
   const sheetSize = new Vec2(sheetWidth, sheetHeight);
   const sheetCenter = sheetSize.div(2);
@@ -39,7 +45,8 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
       origin: sheetCenter,
       rightPage: srcPages[indexGroup.front1],
       leftPage: srcPages[indexGroup.front2],
-      bleedArea,
+      srcPageScale,
+      srcBleedArea,
       trimLength,
       trimOffset,
     });
@@ -48,7 +55,8 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
       origin: sheetCenter,
       rightPage: srcPages[indexGroup.back2],
       leftPage: srcPages[indexGroup.back1],
-      bleedArea,
+      srcPageScale,
+      srcBleedArea,
       trimLength,
       trimOffset,
     });

@@ -20,18 +20,22 @@ const settingsSchema = defineSettingsSchema(standardSchemaItems);
 
 async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const { outPdf, srcPages } = await setupOutPdf(srcPdf);
-  const { sheetWidth, sheetHeight, bleedArea, trimLength, trimOffset } =
-    getStandardSettings(rawSettings);
+  const {
+    sheetWidth,
+    sheetHeight,
+    srcPageScale,
+    srcBleedArea,
+    trimLength,
+    trimOffset,
+  } = getStandardSettings(rawSettings);
   const sheetSize = new Vec2(sheetWidth, sheetHeight);
   const sheetCenter = sheetSize.div(2); // always work with center anchor points/origins
-
-  // validate input & settings
-  // ...
 
   for (const srcPage of srcPages) {
     const sheet = outPdf.addPage([sheetSize.x, sheetSize.y]);
     drawPageWithTrimMarks(sheet, srcPage, sheetCenter, {
-      bleedArea,
+      srcPageScale,
+      srcBleedArea,
       trimLength,
       trimOffset,
     });

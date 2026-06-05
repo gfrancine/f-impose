@@ -26,13 +26,19 @@ const settingsSchema = defineSettingsSchema(standardSchemaItems);
 
 async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const { outPdf, srcPages } = await setupOutPdf(srcPdf);
-  const { sheetWidth, sheetHeight, bleedArea, trimLength, trimOffset } =
-    getStandardSettings(rawSettings);
+  const {
+    sheetWidth,
+    sheetHeight,
+    srcPageScale,
+    srcBleedArea,
+    trimLength,
+    trimOffset,
+  } = getStandardSettings(rawSettings);
 
   const sheetSize = new Vec2(sheetWidth, sheetHeight);
   const sheetCenter = sheetSize.div(2);
   // TODO: add option to enable gutter & inner trim marks
-  // const excessTrim = calcExcessTrim(bleedArea, trimLength, trimOffset);
+  // const excessTrim = calcExcessTrim(srcBleedArea, trimLength, trimOffset);
 
   // validate input & settings
   // will throw if page count isn't a multiple of 4
@@ -40,8 +46,9 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
 
   const calcLeafTotalWidth = (leaf: SaddleStitchIndexGroup) =>
     // handle pages of  different sizes
-    Math.max(srcPages[leaf.front2].width, srcPages[leaf.back2].width) +
-    Math.max(srcPages[leaf.front1].width, srcPages[leaf.back1].width);
+    (Math.max(srcPages[leaf.front2].width, srcPages[leaf.back2].width) +
+      Math.max(srcPages[leaf.front1].width, srcPages[leaf.back1].width)) *
+    srcPageScale;
 
   for (let i = 0; i < indexGroups.length; i += 2) {
     const frontSheet = outPdf.addPage([sheetSize.x, sheetSize.y]);
@@ -66,7 +73,8 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
       origin: sheetCenter.sub(leaf1Width / 2, 0),
       leftPage: srcPages[leaf1.front2],
       rightPage: srcPages[leaf1.front1],
-      bleedArea,
+      srcPageScale,
+      srcBleedArea,
       trimLength,
       trimOffset,
       hideTrimMarks: hideRightHorizTrimMarks,
@@ -76,7 +84,8 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
       origin: sheetCenter.add(leaf1Width / 2, 0),
       leftPage: srcPages[leaf1.back1],
       rightPage: srcPages[leaf1.back2],
-      bleedArea,
+      srcPageScale,
+      srcBleedArea,
       trimLength,
       trimOffset,
       hideTrimMarks: hideLeftHorizTrimMarks,
@@ -89,7 +98,8 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
         origin: sheetCenter.add(leaf2Width / 2, 0),
         leftPage: srcPages[leaf2.front2],
         rightPage: srcPages[leaf2.front1],
-        bleedArea,
+        srcPageScale,
+        srcBleedArea,
         trimLength,
         trimOffset,
         hideTrimMarks: hideLeftHorizTrimMarks,
@@ -99,7 +109,8 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
         origin: sheetCenter.sub(leaf2Width / 2, 0),
         leftPage: srcPages[leaf2.back1],
         rightPage: srcPages[leaf2.back2],
-        bleedArea,
+        srcPageScale,
+        srcBleedArea,
         trimLength,
         trimOffset,
         hideTrimMarks: hideRightHorizTrimMarks,

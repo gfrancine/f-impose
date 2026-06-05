@@ -29,7 +29,7 @@ export async function setupOutPdf(srcPdf: PDFDocument) {
 
 // should this be UPPER_SNAKE_CASE?
 export const standardDefaults = {
-  bleedArea: 3,
+  srcBleedArea: 3,
   trimLength: 5,
   trimOffset: 2,
 };
@@ -40,7 +40,7 @@ export function standardPresetSettings({
   exclude = [],
 }: {
   orientation?: "portrait" | "landscape";
-  exclude?: ("sheetSize" | "bleedArea" | "trimMarks")[];
+  exclude?: ("sheetSize" | "srcPageScale" | "srcBleedArea" | "trimMarks")[];
 } = {}) {
   const sheetWidth = orientation === "landscape" ? 297 : 210,
     sheetHeight = orientation === "landscape" ? 210 : 297;
@@ -129,12 +129,23 @@ export function standardPresetSettings({
     );
   }
 
-  if (!exclude.includes("bleedArea")) {
+  if (!exclude.includes("srcPageScale")) {
     standardSchemaItems.push(
       numberInput({
-        id: "bleedArea",
-        name: "Bleed Area",
-        defaultValue: standardDefaults.bleedArea,
+        id: "srcPageScale",
+        name: "Scale Source Pages (%)",
+        defaultValue: 100,
+        min: 0,
+      }),
+    );
+  }
+
+  if (!exclude.includes("srcBleedArea")) {
+    standardSchemaItems.push(
+      numberInput({
+        id: "srcBleedArea",
+        name: "Source Bleed Area",
+        defaultValue: standardDefaults.srcBleedArea,
         min: 0,
       }),
     );
@@ -166,7 +177,9 @@ export function standardPresetSettings({
     return getSettings(rawSettings, {
       sheetWidth: (v) => convertUnits(asNumber(v, sheetWidth)),
       sheetHeight: (v) => convertUnits(asNumber(v, sheetHeight)),
-      bleedArea: (v) => convertUnits(asNumber(v, standardDefaults.bleedArea)),
+      srcPageScale: (v) => asNumber(v, 100) / 100,
+      srcBleedArea: (v) =>
+        convertUnits(asNumber(v, standardDefaults.srcBleedArea)),
       trimLength: (v) => convertUnits(asNumber(v, standardDefaults.trimLength)),
       trimOffset: (v) => convertUnits(asNumber(v, standardDefaults.trimOffset)),
     });

@@ -16,23 +16,23 @@ const description =
   "Removes inner bleed from PDFs with facing pages. Useful for imposing book spreads.";
 
 const { standardSchemaItems, getStandardSettings } = standardPresetSettings({
-  exclude: ["trimMarks", "sheetSize"],
+  exclude: ["trimMarks", "sheetSize", "srcPageScale"],
 });
 const settingsSchema = defineSettingsSchema(standardSchemaItems);
 
 async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const { outPdf, srcPages } = await setupOutPdf(srcPdf);
-  const { bleedArea } = getStandardSettings(rawSettings);
+  const { srcBleedArea } = getStandardSettings(rawSettings);
 
   for (let i = 0; i < srcPages.length; i++) {
     const srcPage = srcPages[i];
-    const newWidth = srcPage.width - bleedArea;
+    const newWidth = srcPage.width - srcBleedArea;
     assert(newWidth > 0, "Bleed area must be smaller than page width");
     const isRecto = (i + 1) % 2 === 1; // right-hand page
 
     const sheet = outPdf.addPage([newWidth, srcPage.height]);
     sheet.drawPage(srcPage, {
-      x: isRecto ? -bleedArea : 0,
+      x: isRecto ? -srcBleedArea : 0,
       y: 0,
       width: srcPage.width,
       height: srcPage.height,

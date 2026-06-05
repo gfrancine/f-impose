@@ -15,8 +15,16 @@ const settingsSchema = defineSettingsSchema(standardSchemaItems);
 
 async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const { outPdf, srcPages } = await setupOutPdf(srcPdf);
-  const { sheetWidth, sheetHeight, bleedArea, trimLength, trimOffset } =
-    getStandardSettings(rawSettings);
+  const {
+    sheetWidth,
+    sheetHeight,
+    srcPageScale,
+    // don't forget to multiply srcBleedarea by srcPageScale
+    // when not relying on the drawing functions in utils.ts
+    srcBleedArea,
+    trimLength,
+    trimOffset,
+  } = getStandardSettings(rawSettings);
 
   return outPdf;
 }

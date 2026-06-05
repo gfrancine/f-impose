@@ -5,7 +5,7 @@ Business Card 8-Up
 */
 
 import { PDFDocument } from "pdf-lib";
-import { drawPageRotated, drawTrimMarksRect, Vec2 } from "../utils";
+import { drawPageWithTransform, drawTrimMarksRect, Vec2 } from "../utils";
 import type { Preset } from "../types";
 import { defineSettingsSchema, type RawSettings } from "../settings";
 import { setupOutPdf, standardPresetSettings } from "./helpers";
@@ -20,8 +20,14 @@ const settingsSchema = defineSettingsSchema(standardSchemaItems);
 
 async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const { outPdf, srcPages } = await setupOutPdf(srcPdf);
-  const { sheetWidth, sheetHeight, bleedArea, trimLength, trimOffset } =
-    getStandardSettings(rawSettings);
+  const {
+    sheetWidth,
+    sheetHeight,
+    srcPageScale,
+    srcBleedArea,
+    trimLength,
+    trimOffset,
+  } = getStandardSettings(rawSettings);
 
   const sheetSize = new Vec2(sheetWidth, sheetHeight);
   const sheetCenter = sheetSize.div(2);
@@ -31,12 +37,14 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     const sheet = outPdf.addPage([sheetSize.x, sheetSize.y]);
 
     const isSrcLandscape = srcPage.width > srcPage.height;
-    const srcSize = isSrcLandscape
-      ? new Vec2(srcPage.width, srcPage.height)
-      : new Vec2(srcPage.height, srcPage.width);
+    const srcSize = (
+      isSrcLandscape
+        ? new Vec2(srcPage.width, srcPage.height)
+        : new Vec2(srcPage.height, srcPage.width)
+    ).mul(srcPageScale);
 
     // TODO: enable gutter?
-    // const excessTrim = calcExcessTrim(bleedArea, trimLength, trim)* 2;
+    // const excessTrim = calcExcessTrim(srcBleedArea, trimLength, trim)* 2;
     // const totalSize = srcSize.add( excessTrim, excessTrim )
 
     const N_ROWS = 4;
@@ -55,11 +63,16 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
           corner.y + srcSize.y * row,
         ).addVec(srcSize.div(2));
 
-        drawPageRotated(sheet, srcPage, origin, isSrcLandscape ? 0 : 90);
+        drawPageWithTransform(sheet, srcPage, origin, {
+          rotateDeg: isSrcLandscape ? 0 : 90,
+          srcPageScale,
+        });
+
+        const scaledBleedArea = srcBleedArea * 2 * srcPageScale;
 
         drawTrimMarksRect(sheet, {
           origin,
-          srcSize: srcSize.sub(bleedArea * 2, bleedArea * 2),
+          srcSize: srcSize.sub(scaledBleedArea, scaledBleedArea),
           trimLength,
           trimOffset,
           hideTrimMarks: {

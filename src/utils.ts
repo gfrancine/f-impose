@@ -32,7 +32,8 @@ export class Vec2 {
 
   add = (x: number, y: number) => new Vec2(this.x + x, this.y + y);
   sub = (x: number, y: number) => this.add(-x, -y);
-  div = (v: number) => new Vec2(this.x / v, this.y / v);
+  mul = (v: number) => new Vec2(this.x * v, this.y * v);
+  div = (v: number) => this.mul(1 / v);
 
   addVec = (v: Vec2) => this.add(v.x, v.y);
   subVec = (v: Vec2) => this.add(-v.x, -v.y);
@@ -51,12 +52,12 @@ export async function pdfToUrl(pdf: PDFDocument) {
  * for working with extra gutter space caused by this excess length.
  */
 export function calcExcessTrim(
-  bleedArea: number,
+  srcBleedArea: number,
   trimLength: number,
   trimOffset: number,
 ) {
-  return trimLength + trimOffset > bleedArea
-    ? trimLength + trimOffset - bleedArea
+  return trimLength + trimOffset > srcBleedArea
+    ? trimLength + trimOffset - srcBleedArea
     : 0;
 }
 
@@ -334,13 +335,23 @@ export function drawTrimMarksRect(
   }
 }
 
-export function drawPageRotated(
+/**
+ * drawPage with transform batteries, ie. center origin, page rotation,
+ * page scaling, for better integration with the app
+ */
+export function drawPageWithTransform(
   sheet: PDFPage,
   srcPage: PDFEmbeddedPage,
   origin: Vec2,
-  rotateDeg: number = 0,
+  {
+    rotateDeg = 0,
+    srcPageScale = 1,
+  }: {
+    rotateDeg?: number;
+    srcPageScale?: number;
+  },
 ) {
-  const size = new Vec2(srcPage.width, srcPage.height);
+  const size = new Vec2(srcPage.width, srcPage.height).mul(srcPageScale);
   const sizeHalf = size.div(2);
   const rotateRad = degToRad(rotateDeg);
 
@@ -360,6 +371,8 @@ export function drawPageRotated(
   sheet.drawPage(srcPage, {
     x: bottomLeft.x,
     y: bottomLeft.y,
+    width: size.x,
+    height: size.y,
     rotate: degrees(rotateDeg),
   });
 }
@@ -369,28 +382,35 @@ export function drawPageWithTrimMarks(
   srcPage: PDFEmbeddedPage,
   origin: Vec2,
   {
-    bleedArea = 0,
+    srcPageScale = 1,
+    srcBleedArea = 0,
     trimLength = 0,
     trimOffset = 0,
     hideTrimMarks = {},
   }: {
-    bleedArea?: number;
+    srcPageScale?: number;
+    srcBleedArea?: number;
     trimLength?: number;
     trimOffset?: number;
     hideTrimMarks?: Partial<HideTrimMarkOptions>;
   } = {},
 ) {
-  const srcSize = new Vec2(srcPage.width, srcPage.height);
+  const srcSize = new Vec2(srcPage.width, srcPage.height).mul(srcPageScale);
   const srcSizeHalf = srcSize.div(2);
 
   sheet.drawPage(srcPage, {
     x: origin.x - srcSizeHalf.x,
     y: origin.y - srcSizeHalf.y,
+    width: srcSize.x,
+    height: srcSize.y,
   });
 
   drawTrimMarksRect(sheet, {
     origin,
-    srcSize: srcSize.sub(bleedArea * 2, bleedArea * 2),
+    srcSize: srcSize.sub(
+      srcBleedArea * 2 * srcPageScale,
+      srcBleedArea * 2 * srcPageScale,
+    ),
     trimLength,
     trimOffset,
     hideTrimMarks,
@@ -403,7 +423,8 @@ export function drawSpread(
     origin,
     leftPage,
     rightPage,
-    bleedArea,
+    srcBleedArea,
+    srcPageScale = 1,
     trimLength,
     trimOffset,
     hideTrimMarks = {},
@@ -411,14 +432,15 @@ export function drawSpread(
     origin: Vec2;
     leftPage: PDFEmbeddedPage;
     rightPage: PDFEmbeddedPage;
-    bleedArea: number;
+    srcBleedArea: number;
+    srcPageScale?: number;
     trimLength: number;
     trimOffset: number;
     hideTrimMarks?: Partial<HideTrimMarkOptions>;
   },
 ) {
-  const rightPageOrigin = origin.add(leftPage.width / 2, 0);
-  const leftPageOrigin = origin.sub(rightPage.width / 2, 0);
+  const rightPageOrigin = origin.add((leftPage.width * srcPageScale) / 2, 0);
+  const leftPageOrigin = origin.sub((rightPage.width * srcPageScale) / 2, 0);
 
   const {
     topLeftHoriz,
@@ -446,7 +468,8 @@ export function drawSpread(
   };
 
   drawPageWithTrimMarks(sheet, leftPage, leftPageOrigin, {
-    bleedArea,
+    srcPageScale,
+    srcBleedArea,
     trimLength,
     trimOffset,
     hideTrimMarks: {
@@ -459,7 +482,8 @@ export function drawSpread(
   });
 
   drawPageWithTrimMarks(sheet, rightPage, rightPageOrigin, {
-    bleedArea,
+    srcPageScale,
+    srcBleedArea,
     trimLength,
     trimOffset,
     hideTrimMarks: {

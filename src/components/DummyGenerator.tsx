@@ -27,13 +27,13 @@ export default function DummyGenerator() {
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
   const generateDummyPdf = async () => {
-    const { sheetWidth, sheetHeight, bleedArea } =
+    const { sheetWidth, sheetHeight, srcBleedArea } =
       getStandardSettings(rawSettings);
     const pageCount = getSetting(rawSettings, "pageCount", (v) =>
       asNumber(v as string, 1),
     );
-    const outerWidth = sheetWidth + bleedArea * 2;
-    const outerHeight = sheetHeight + bleedArea * 2;
+    const outerWidth = sheetWidth + srcBleedArea * 2;
+    const outerHeight = sheetHeight + srcBleedArea * 2;
 
     const outPdf = await PDFDocument.create();
     const helveticaFont = await outPdf.embedFont(StandardFonts.Helvetica);
@@ -41,7 +41,7 @@ export default function DummyGenerator() {
     for (let i = 0; i < pageCount; i++) {
       const page = outPdf.addPage([outerWidth, outerHeight]);
 
-      if (bleedArea > 0) {
+      if (srcBleedArea > 0) {
         page.drawRectangle({
           x: 0,
           y: 0,
@@ -53,8 +53,8 @@ export default function DummyGenerator() {
       }
 
       page.drawRectangle({
-        x: bleedArea,
-        y: bleedArea,
+        x: srcBleedArea,
+        y: srcBleedArea,
         width: sheetWidth,
         height: sheetHeight,
         borderWidth: 1,
@@ -62,8 +62,8 @@ export default function DummyGenerator() {
       });
 
       page.drawText((i + 1).toString(), {
-        x: bleedArea,
-        y: bleedArea,
+        x: srcBleedArea,
+        y: srcBleedArea,
         size: Math.min(sheetWidth, sheetHeight) / 2,
         color: rgb(0, 0, 0),
         font: helveticaFont,

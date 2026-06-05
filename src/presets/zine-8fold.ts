@@ -5,7 +5,12 @@ Zine 8-Fold
 */
 
 import { PDFDocument } from "pdf-lib";
-import { assert, drawPageRotated, drawTrimMarksRect, Vec2 } from "../utils";
+import {
+  assert,
+  drawPageWithTransform,
+  drawTrimMarksRect,
+  Vec2,
+} from "../utils";
 import type { Preset } from "../types";
 import { defineSettingsSchema, type RawSettings } from "../settings";
 import { setupOutPdf, standardPresetSettings } from "./helpers";
@@ -15,7 +20,7 @@ const description = "A typical 8-fold mini zine. (Bleed areas not supported)";
 
 const { standardSchemaItems, getStandardSettings } = standardPresetSettings({
   orientation: "landscape",
-  exclude: ["bleedArea"],
+  exclude: ["srcBleedArea"],
 });
 const settingsSchema = defineSettingsSchema(standardSchemaItems);
 
@@ -26,7 +31,7 @@ const indexMap = [
 
 async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const { outPdf, srcPages } = await setupOutPdf(srcPdf);
-  const { sheetWidth, sheetHeight, trimLength, trimOffset } =
+  const { sheetWidth, sheetHeight, srcPageScale, trimLength, trimOffset } =
     getStandardSettings(rawSettings);
 
   assert(
@@ -36,7 +41,9 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
 
   const sheetSize = new Vec2(sheetWidth, sheetHeight);
   const sheetCenter = sheetSize.div(2);
-  const srcSize = new Vec2(srcPages[0].width, srcPages[0].height);
+  const srcSize = new Vec2(srcPages[0].width, srcPages[0].height).mul(
+    srcPageScale,
+  );
   const srcSizeHalf = srcSize.div(2);
   const nSheets = srcPages.length / 8;
 
@@ -63,8 +70,11 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
           corner.y + srcSize.y * row,
         ).addVec(srcSizeHalf);
 
-        const rotation = row === 1 ? 180 : 0;
-        drawPageRotated(sheet, srcPage, origin, rotation);
+        const rotateDeg = row === 1 ? 180 : 0;
+        drawPageWithTransform(sheet, srcPage, origin, {
+          rotateDeg,
+          srcPageScale,
+        });
       }
     }
 
