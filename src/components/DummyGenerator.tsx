@@ -14,7 +14,7 @@ import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
 const { standardSchemaItems, getStandardSettings } = standardPresetSettings({
   orientation: "portrait",
-  exclude: ["trimMarks"],
+  exclude: ["trimMarks", "srcPageScale"],
 });
 
 const dummyGeneratorSchema: SettingsSchema = [
