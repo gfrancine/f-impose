@@ -166,19 +166,19 @@ export function getSettings<T extends Record<string, (v: string) => unknown>>(
 export function getSetting<T>(
   rawSettings: RawSettings,
   id: string,
-  processValue: (v: unknown) => T,
+  processValue: (v: string | undefined) => T,
 ) {
   return processValue(rawSettings[id]);
 }
 
 // Authored by Big Pickle
-export function asNumber(v: string, defaultValue: number): number {
+export function asNumber(v: string | undefined, defaultValue: number): number {
   const n = Number(v);
   if (!Number.isNaN(n)) return n;
   return defaultValue; // null/undefined, nan, gibberish / invalid numbers
 }
 
-export function asBool(v: string, defaultValue: boolean) {
+export function asBool(v: string | undefined, defaultValue: boolean) {
   if (v === "true") return true;
   if (v === "false") return false;
   return defaultValue;
