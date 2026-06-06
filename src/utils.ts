@@ -53,11 +53,13 @@ export async function pdfToUrl(pdf: PDFDocument) {
  */
 export function calcExcessTrim(
   srcBleedArea: number,
+  srcPageScale: number,
   trimLength: number,
   trimOffset: number,
 ) {
-  return trimLength + trimOffset > srcBleedArea
-    ? trimLength + trimOffset - srcBleedArea
+  const scaledBleed = srcBleedArea * srcPageScale;
+  return trimLength + trimOffset > scaledBleed
+    ? trimLength + trimOffset - scaledBleed
     : 0;
 }
 
