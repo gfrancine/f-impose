@@ -12,45 +12,23 @@ import {
   Vec2,
 } from "../utils";
 import type { Preset } from "../types";
+import { defineSettingsSchema, type RawSettings } from "../settings";
 import {
-  asBool,
-  asNumber,
-  checkboxInput,
-  defineSettingsSchema,
-  getSettings,
-  inputRow,
-  numberInput,
-  type RawSettings,
-} from "../settings";
-import { setupOutPdf, commonPresetSettings } from "./helpers";
+  setupOutPdf,
+  commonPresetSettings,
+  gridPresetSettings,
+} from "./helpers";
 
 const name = "Flexible Grid Imposition";
-const description = `Imposes PDFs on a flexible amount of rows and columns per page.`;
+const description = `Imposes PDFs with a flexible amount of rows and columns per page.`;
 
 const { commonSchemaItems, getCommonSettings } = commonPresetSettings({
   orientation: "portrait",
 });
+const { gridSchemaItems, getGridSettings } = gridPresetSettings();
 const settingsSchema = defineSettingsSchema([
   ...commonSchemaItems,
-  inputRow([
-    numberInput({
-      id: "nRows",
-      name: "Rows",
-      min: 1,
-      defaultValue: 1,
-    }),
-    numberInput({
-      id: "nCols",
-      name: "Columns",
-      min: 1,
-      defaultValue: 1,
-    }),
-  ]),
-  checkboxInput({
-    id: "excessTrimEnabled",
-    name: "Show all trim marks (creates an extra gutter in the layout)",
-    defaultValue: false,
-  }),
+  ...gridSchemaItems,
 ]);
 
 async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
@@ -63,11 +41,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     trimLength,
     trimOffset,
   } = getCommonSettings(rawSettings);
-  const { nCols, nRows, excessTrimEnabled } = getSettings(rawSettings, {
-    nRows: (v: string) => asNumber(v, 1),
-    nCols: (v: string) => asNumber(v, 1),
-    excessTrimEnabled: (v: string) => asBool(v, false),
-  });
+  const { nCols, nRows, excessTrimEnabled } = getGridSettings(rawSettings);
 
   const sheetSize = new Vec2(sheetWidth, sheetHeight);
   const sheetCenter = sheetSize.div(2);

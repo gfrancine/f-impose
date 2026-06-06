@@ -16,6 +16,8 @@ import {
   type RawSettings,
   type SettingsItemSchema,
   getSetting,
+  checkboxInput,
+  asBool,
 } from "../settings";
 import { inToPts, mmToPts } from "../utils";
 
@@ -189,4 +191,47 @@ export function commonPresetSettings({
     commonSchemaItems,
     getCommonSettings,
   };
+}
+
+/** addon common preset settings for grid-based layout presets */
+export function gridPresetSettings({
+  exclude,
+}: { exclude?: ("rowsCols" | "excessTrim")[] } = {}) {
+  const gridSchemaItems: SettingsItemSchema[] = [];
+
+  if (!exclude?.includes("rowsCols"))
+    gridSchemaItems.push(
+      inputRow([
+        numberInput({
+          id: "nRows",
+          name: "Rows",
+          min: 1,
+          defaultValue: 1,
+        }),
+        numberInput({
+          id: "nCols",
+          name: "Columns",
+          min: 1,
+          defaultValue: 1,
+        }),
+      ]),
+    );
+
+  if (!exclude?.includes("excessTrim"))
+    gridSchemaItems.push(
+      checkboxInput({
+        id: "excessTrimEnabled",
+        name: "Show all trim marks (creates an extra gutter in the layout)",
+        defaultValue: false,
+      }),
+    );
+
+  const getGridSettings = (rawSettings: RawSettings) =>
+    getSettings(rawSettings, {
+      nRows: (v: string) => asNumber(v, 1),
+      nCols: (v: string) => asNumber(v, 1),
+      excessTrimEnabled: (v: string) => asBool(v, false),
+    });
+
+  return { gridSchemaItems, getGridSettings };
 }
