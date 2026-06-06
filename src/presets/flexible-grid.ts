@@ -48,7 +48,7 @@ const settingsSchema = defineSettingsSchema([
   ]),
   checkboxInput({
     id: "excessTrimEnabled",
-    name: "Show All Trim Marks (Creates an extra gutter in the layout)",
+    name: "Show all trim marks (creates an extra gutter in the layout)",
     defaultValue: false,
   }),
 ]);
