@@ -3,13 +3,13 @@ import { calcExcessTrim, mapIndicesSaddleStitch } from "./utils";
 
 describe("calcExcessTrim", () => {
   it("returns the excess length of the trim mark when outside the bleed area", () => {
-    expect(calcExcessTrim(10, 10, 2)).toBe(2);
-    expect(calcExcessTrim(10, 5, 7)).toBe(2);
+    expect(calcExcessTrim(10, 1, 10, 2)).toBe(2);
+    expect(calcExcessTrim(10, 1, 5, 7)).toBe(2);
   });
 
   it("returns 0 if the trim mark is within the bleed area", () => {
-    expect(calcExcessTrim(10, 8, 2)).toBe(0);
-    expect(calcExcessTrim(10, 8, 0)).toBe(0);
+    expect(calcExcessTrim(10, 1, 8, 2)).toBe(0);
+    expect(calcExcessTrim(10, 1, 8, 0)).toBe(0);
   });
 });
 
