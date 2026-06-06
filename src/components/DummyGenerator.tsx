@@ -9,16 +9,16 @@ import {
   type RawSettings,
   type SettingsSchema,
 } from "../settings";
-import { standardPresetSettings } from "../presets/helpers";
+import { commonPresetSettings } from "../presets/helpers";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
-const { standardSchemaItems, getStandardSettings } = standardPresetSettings({
+const { commonSchemaItems, getCommonSettings } = commonPresetSettings({
   orientation: "portrait",
   exclude: ["trimMarks", "srcPageScale"],
 });
 
 const dummyGeneratorSchema: SettingsSchema = [
-  ...standardSchemaItems,
+  ...commonSchemaItems,
   numberInput({ id: "pageCount", name: "Page Count", defaultValue: 1, min: 1 }),
 ];
 
@@ -28,7 +28,7 @@ export default function DummyGenerator() {
 
   const generateDummyPdf = async () => {
     const { sheetWidth, sheetHeight, srcBleedArea } =
-      getStandardSettings(rawSettings);
+      getCommonSettings(rawSettings);
     const pageCount = getSetting(rawSettings, "pageCount", (v) =>
       asNumber(v as string, 1),
     );

@@ -22,16 +22,16 @@ import {
   numberInput,
   type RawSettings,
 } from "../settings";
-import { setupOutPdf, standardPresetSettings } from "./helpers";
+import { setupOutPdf, commonPresetSettings } from "./helpers";
 
 const name = "Flexible Grid Imposition";
 const description = `Imposes PDFs on a flexible amount of rows and columns per page.`;
 
-const { standardSchemaItems, getStandardSettings } = standardPresetSettings({
+const { commonSchemaItems, getCommonSettings } = commonPresetSettings({
   orientation: "portrait",
 });
 const settingsSchema = defineSettingsSchema([
-  ...standardSchemaItems,
+  ...commonSchemaItems,
   inputRow([
     numberInput({
       id: "nRows",
@@ -62,7 +62,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     srcBleedArea,
     trimLength,
     trimOffset,
-  } = getStandardSettings(rawSettings);
+  } = getCommonSettings(rawSettings);
   const { nCols, nRows, excessTrimEnabled } = getSettings(rawSettings, {
     nRows: (v: string) => asNumber(v, 1),
     nCols: (v: string) => asNumber(v, 1),

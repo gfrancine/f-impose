@@ -13,16 +13,16 @@ import {
 } from "../utils";
 import type { Preset } from "../types";
 import { defineSettingsSchema, type RawSettings } from "../settings";
-import { setupOutPdf, standardPresetSettings } from "./helpers";
+import { setupOutPdf, commonPresetSettings } from "./helpers";
 
 const name = "Zine 8-Fold";
 const description = "A typical 8-fold mini zine. (Bleed areas not supported)";
 
-const { standardSchemaItems, getStandardSettings } = standardPresetSettings({
+const { commonSchemaItems, getCommonSettings } = commonPresetSettings({
   orientation: "landscape",
   exclude: ["srcBleedArea"],
 });
-const settingsSchema = defineSettingsSchema(standardSchemaItems);
+const settingsSchema = defineSettingsSchema(commonSchemaItems);
 
 const indexMap = [
   [5, 4, 3, 2],
@@ -32,7 +32,7 @@ const indexMap = [
 async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const { outPdf, srcPages } = await setupOutPdf(srcPdf);
   const { sheetWidth, sheetHeight, srcPageScale, trimLength, trimOffset } =
-    getStandardSettings(rawSettings);
+    getCommonSettings(rawSettings);
 
   assert(
     srcPages.length % 8 === 0,

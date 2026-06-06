@@ -9,20 +9,20 @@ import { PDFDocument } from "pdf-lib";
 import { assert } from "../utils";
 import type { Preset } from "../types";
 import { defineSettingsSchema, type RawSettings } from "../settings";
-import { setupOutPdf, standardPresetSettings } from "./helpers";
+import { setupOutPdf, commonPresetSettings } from "./helpers";
 
 const name = "Remove Inner Bleed";
 const description =
   "Removes inner bleed from PDFs with facing pages. Useful for imposing book spreads.";
 
-const { standardSchemaItems, getStandardSettings } = standardPresetSettings({
+const { commonSchemaItems, getCommonSettings } = commonPresetSettings({
   exclude: ["trimMarks", "sheetSize", "srcPageScale"],
 });
-const settingsSchema = defineSettingsSchema(standardSchemaItems);
+const settingsSchema = defineSettingsSchema(commonSchemaItems);
 
 async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const { outPdf, srcPages } = await setupOutPdf(srcPdf);
-  const { srcBleedArea } = getStandardSettings(rawSettings);
+  const { srcBleedArea } = getCommonSettings(rawSettings);
 
   for (let i = 0; i < srcPages.length; i++) {
     const srcPage = srcPages[i];

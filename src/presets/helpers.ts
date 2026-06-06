@@ -28,14 +28,14 @@ export async function setupOutPdf(srcPdf: PDFDocument) {
 }
 
 // should this be UPPER_SNAKE_CASE?
-export const standardDefaults = {
+export const commonDefaults = {
   srcBleedArea: 3,
   trimLength: 5,
   trimOffset: 2,
 };
 
 /** preset utility/prelude to set up and retrieve the most commmon preset settings */
-export function standardPresetSettings({
+export function commonPresetSettings({
   orientation = "portrait",
   exclude = [],
 }: {
@@ -45,12 +45,12 @@ export function standardPresetSettings({
   const sheetWidth = orientation === "landscape" ? 297 : 210,
     sheetHeight = orientation === "landscape" ? 210 : 297;
 
-  const standardSchemaItems: SettingsItemSchema[] = [];
+  const commonSchemaItems: SettingsItemSchema[] = [];
 
   const getUnitsSetting = (rawSettings: RawSettings) =>
     getSetting(rawSettings, "units", (v) => (v ? (v as string) : "mm"));
 
-  standardSchemaItems.push(
+  commonSchemaItems.push(
     selectInput({
       id: "units",
       name: "Units",
@@ -105,7 +105,7 @@ export function standardPresetSettings({
       },
     });
 
-    standardSchemaItems.push(
+    commonSchemaItems.push(
       inputRow([
         numberInput({
           id: "sheetWidth",
@@ -130,7 +130,7 @@ export function standardPresetSettings({
   }
 
   if (!exclude.includes("srcPageScale")) {
-    standardSchemaItems.push(
+    commonSchemaItems.push(
       numberInput({
         id: "srcPageScale",
         name: "Scale Source Pages (%)",
@@ -141,36 +141,36 @@ export function standardPresetSettings({
   }
 
   if (!exclude.includes("srcBleedArea")) {
-    standardSchemaItems.push(
+    commonSchemaItems.push(
       numberInput({
         id: "srcBleedArea",
         name: "Source Bleed Area",
-        defaultValue: standardDefaults.srcBleedArea,
+        defaultValue: commonDefaults.srcBleedArea,
         min: 0,
       }),
     );
   }
 
   if (!exclude.includes("trimMarks")) {
-    standardSchemaItems.push(
+    commonSchemaItems.push(
       inputRow([
         numberInput({
           id: "trimLength",
           name: "Trim Mark Length",
-          defaultValue: standardDefaults.trimLength,
+          defaultValue: commonDefaults.trimLength,
           min: 0,
         }),
         numberInput({
           id: "trimOffset",
           name: "Trim Mark Offset",
-          defaultValue: standardDefaults.trimOffset,
+          defaultValue: commonDefaults.trimOffset,
           min: 0,
         }),
       ]),
     );
   }
 
-  const getStandardSettings = (rawSettings: RawSettings) => {
+  const getCommonSettings = (rawSettings: RawSettings) => {
     const units = getUnitsSetting(rawSettings);
     const convertUnits = units === "mm" ? mmToPts : inToPts;
 
@@ -179,14 +179,14 @@ export function standardPresetSettings({
       sheetHeight: (v) => convertUnits(asNumber(v, sheetHeight)),
       srcPageScale: (v) => asNumber(v, 100) / 100,
       srcBleedArea: (v) =>
-        convertUnits(asNumber(v, standardDefaults.srcBleedArea)),
-      trimLength: (v) => convertUnits(asNumber(v, standardDefaults.trimLength)),
-      trimOffset: (v) => convertUnits(asNumber(v, standardDefaults.trimOffset)),
+        convertUnits(asNumber(v, commonDefaults.srcBleedArea)),
+      trimLength: (v) => convertUnits(asNumber(v, commonDefaults.trimLength)),
+      trimOffset: (v) => convertUnits(asNumber(v, commonDefaults.trimOffset)),
     });
   };
 
   return {
-    standardSchemaItems,
-    getStandardSettings,
+    commonSchemaItems,
+    getCommonSettings,
   };
 }

@@ -3,15 +3,15 @@
 import { PDFDocument } from "pdf-lib";
 import type { Preset } from "../types";
 import { defineSettingsSchema, type RawSettings } from "../settings";
-import { setupOutPdf, standardPresetSettings } from "./helpers";
+import { setupOutPdf, commonPresetSettings } from "./helpers";
 
 const name = "";
 const description = "";
 
-const { standardSchemaItems, getStandardSettings } = standardPresetSettings({
+const { commonSchemaItems, getCommonSettings } = commonPresetSettings({
   orientation: "landscape",
 });
-const settingsSchema = defineSettingsSchema(standardSchemaItems);
+const settingsSchema = defineSettingsSchema(commonSchemaItems);
 
 async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const { outPdf, srcPages } = await setupOutPdf(srcPdf);
@@ -24,7 +24,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     srcBleedArea,
     trimLength,
     trimOffset,
-  } = getStandardSettings(rawSettings);
+  } = getCommonSettings(rawSettings);
 
   return outPdf;
 }

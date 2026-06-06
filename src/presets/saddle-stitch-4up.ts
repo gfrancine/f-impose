@@ -13,15 +13,15 @@ import {
 } from "../utils";
 import type { Preset } from "../types";
 import { defineSettingsSchema, type RawSettings } from "../settings";
-import { setupOutPdf, standardPresetSettings } from "./helpers";
+import { setupOutPdf, commonPresetSettings } from "./helpers";
 
 const name = "Saddle-Stitched Booklet 4-Up";
 const description = "Imposes two saddle-stitched booklet spreads per sheet.";
 
-const { standardSchemaItems, getStandardSettings } = standardPresetSettings({
+const { commonSchemaItems, getCommonSettings } = commonPresetSettings({
   orientation: "portrait",
 });
-const settingsSchema = defineSettingsSchema(standardSchemaItems);
+const settingsSchema = defineSettingsSchema(commonSchemaItems);
 
 async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const { outPdf, srcPages } = await setupOutPdf(srcPdf);
@@ -32,7 +32,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     srcBleedArea,
     trimLength,
     trimOffset,
-  } = getStandardSettings(rawSettings);
+  } = getCommonSettings(rawSettings);
 
   const sheetSize = new Vec2(sheetWidth, sheetHeight);
   const sheetCenter = sheetSize.div(2);
