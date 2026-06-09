@@ -25,8 +25,8 @@ const { commonSchemaItems, getCommonSettings } = commonPresetSettings({
 const settingsSchema = defineSettingsSchema(commonSchemaItems);
 
 const indexMap = [
-  [5, 4, 3, 2],
-  [6, 7, 0, 1],
+  [6, 5, 4, 3],
+  [7, 0, 1, 2],
 ].reverse();
 
 async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
