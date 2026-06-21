@@ -3,16 +3,26 @@
 import { PDFDocument } from "pdf-lib";
 import type { Preset } from "../types";
 import { defineSettingsSchema, type RawSettings } from "../settings";
-import { setupOutPdf, commonPresetSettings } from "./helpers";
+import {
+  setupOutPdf,
+  commonPresetSettings,
+  gridPresetSettings,
+} from "./helpers";
 
 const name = "";
 const description = "";
 
+// Preset settings
 const { commonSchemaItems, getCommonSettings } = commonPresetSettings({
   orientation: "landscape",
 });
-const settingsSchema = defineSettingsSchema(commonSchemaItems);
+const { gridSchemaItems, getGridSettings } = gridPresetSettings();
+const settingsSchema = defineSettingsSchema([
+  ...commonSchemaItems,
+  ...gridSchemaItems,
+]);
 
+// Imposition
 async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const { outPdf, srcPages } = await setupOutPdf(srcPdf);
   const {
@@ -25,6 +35,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     trimLength,
     trimOffset,
   } = getCommonSettings(rawSettings);
+  const { nRows, nCols, excessTrimEnabled } = getGridSettings(rawSettings);
 
   return outPdf;
 }
