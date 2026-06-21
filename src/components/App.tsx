@@ -79,9 +79,9 @@ function App() {
     <div className="app">
       <h1>F-Impose</h1>
       <p>
-        Imposition tools for indie printmaking. Upload your source PDF(s),
-        select a layout preset, adjust the settings, and click the 'Impose'
-        button to generate an output!
+        Imposition tools for indie printmaking. Upload your PDFs, select a
+        layout preset, adjust the settings, then click the 'Impose' button to
+        generate an output!
       </p>
       <p>
         To contribute, suggest features, or report issues please see the{" "}
@@ -117,14 +117,10 @@ function App() {
           onDelete={i > 0 ? () => deletePresetStep(i) : undefined}
         />
       ))}
-      {/* <fieldset>
-        <legend>Chain Presets</legend>
-        <p>You can apply more than one preset to a PDF!</p> */}
-      <div>
+      <p>
+        You can apply more than one preset to a PDF!{" "}
         <button onClick={addPresetStep}>+ Add another preset</button>
-      </div>
-      {/* </fieldset> */}
-      <br />
+      </p>
       <button onClick={impose} disabled={inputFiles.length === 0}>
         Impose!
       </button>
