@@ -108,9 +108,9 @@ function App() {
     <div className="app">
       <h1>F-Impose</h1>
       <p>
-        Imposition tools for indie printmaking. Select a preset, upload your
-        source PDFs, adjust the settings, and click the 'Impose' button to
-        generate an output!
+        Imposition tools for indie printmaking. Upload your source PDF(s),
+        select a layout preset, adjust the settings, and click the 'Impose'
+        button to generate an output!
       </p>
       <p>
         To contribute, suggest features, or report issues please see the{" "}
@@ -128,10 +128,11 @@ function App() {
           disabled={isProcessing}
         />
       </fieldset>
+      {/* {{inputFiles.length > 0 && (<>} */}
       <fieldset>
-        <legend>Layout Preset</legend>
+        <legend>Preset</legend>
         <label>
-          Select Preset{" "}
+          Select Layout Preset{" "}
           <select
             value={currentPresetId}
             onChange={(e) => setCurrentPresetId(e.target.value as PresetId)}
@@ -157,9 +158,10 @@ function App() {
       </fieldset>
       <br />
       <button onClick={impose} disabled={inputFiles.length === 0}>
-        Impose
+        Impose!
       </button>
       <br />
+      {/* {</>)}} */}
       {isProcessing && <p>Processing...</p>}
       {results.length > 0 && (
         <>
