@@ -1,6 +1,31 @@
+![f-impose thumbnail](thumbnail.png)
+
 # F-Impose
 
-Web-based PDF imposition tools for indie printmaking. Try it out: https://gfrancine.github.io/f-impose/
+F-impose is a set of web-based PDF imposition tools made for indie printmaking. Try it out: https://gfrancine.github.io/f-impose/
+
+## Features
+
+As of now, these layouts are supported:
+
+- 8-fold mini zines (trim marks supported)
+- Saddle stitch booklets, 2-up
+- Saddle stitch booklets, 4-up
+- Business cards, 8-up
+- Repeating grid imposition (set columns & rows)
+
+And comes with several print utilities:
+
+- Remove inner/spine bleeds
+- Add trim marks
+- Convert short/long edge documents
+- Reduce opacity/ink usage
+
+And it can also:
+
+- Batch-process multiple files at once
+- Chain multiple layouts and steps together
+- Generate dummy page-numbered PDFs for proofing/testing
 
 # Contributing
 
