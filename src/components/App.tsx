@@ -1,34 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { PDFDocument } from "pdf-lib";
-import { presets, defaultPresetId, type PresetId } from "../presets";
+import { presets } from "../presets";
 import DummyGenerator from "./DummyGenerator";
 import PdfOutput from "./PdfOutput";
 import "./App.css";
-import { pdfToUrl } from "../utils";
-import SettingsForm from "./SettingsForm";
-import type {
-  RawSettings,
-  SettingsItemSchema,
-  SettingsSchema,
-} from "../settings";
-
-// authored by BigPickle
-// Splits paragraphs from double line breaks "\n\n" and turns single ones "\n"
-// into a <br/> element. Used for preset descriptions in place of a full-blown
-// Markdown processor.
-function descriptionToElements(description: string) {
-  return description
-    .split("\n\n")
-    .map((paragraph, i) => (
-      <p key={i}>
-        {paragraph
-          .split("\n")
-          .flatMap((line, j) =>
-            j === 0 ? [line] : [<br key={`${i}-${j}`} />, line],
-          )}
-      </p>
-    ));
-}
+import { pdfToUrl, removeFromArray, setArray } from "../utils";
+import PresetStepForm, {
+  newPresetStep,
+  type PresetStep,
+} from "./PresetStepForm";
 
 function App() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -36,9 +16,9 @@ function App() {
   const [results, setResults] = useState<
     { fileName: string; downloadUrl: string }[]
   >([]);
-  const [currentPresetId, setCurrentPresetId] =
-    useState<PresetId>(defaultPresetId);
-  const [rawSettings, setRawSettings] = useState<RawSettings>({});
+  const [presetSteps, setPresetSteps] = useState<PresetStep[]>([
+    newPresetStep(),
+  ]);
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -49,6 +29,10 @@ function App() {
     setResults([]);
   };
 
+  const addPresetStep = () => setPresetSteps([...presetSteps, newPresetStep()]);
+  const deletePresetStep = (i: number) =>
+    setPresetSteps(removeFromArray(presetSteps, i));
+
   const impose = async () => {
     if (inputFiles.length === 0) return;
     setIsProcessing(true);
@@ -57,10 +41,21 @@ function App() {
       const results = await Promise.all(
         inputFiles.map(async (file) => {
           // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Typed_arrays
-          const srcPdf = await PDFDocument.load(await file.arrayBuffer());
-          const preset = presets[currentPresetId];
-          const outPdf = await preset.impose(srcPdf, rawSettings);
-          return { fileName: file.name, downloadUrl: await pdfToUrl(outPdf) };
+          let pdf = await PDFDocument.load(await file.arrayBuffer());
+
+          for (const presetStep of presetSteps) {
+            const { presetId, rawSettings } = presetStep;
+            const preset = presets[presetId];
+            const newPdf = await preset.impose(pdf, rawSettings);
+            // pdf-lib can't handle nested embedded pages. The output needs
+            // to be rendered to file before feeding it to the next step
+            pdf = await PDFDocument.load(await newPdf.save());
+          }
+
+          return {
+            fileName: file.name,
+            downloadUrl: await pdfToUrl(pdf),
+          };
         }),
       );
       setResults(results);
@@ -80,30 +75,6 @@ function App() {
       a.click();
     });
 
-  const currentPreset = presets[currentPresetId];
-
-  // initialize raw settings with default values
-  useEffect(() => {
-    const settingsSchema = currentPreset.settingsSchema;
-    if (!settingsSchema) return;
-
-    const filledRawSettings: RawSettings = {};
-    const populateDefaultValues = (item: SettingsItemSchema) => {
-      if (item.type === "inputRow") {
-        item.inputs.forEach((input) => populateDefaultValues(input));
-      } else if (
-        "defaultValue" in item &&
-        filledRawSettings[item.id] === undefined
-      ) {
-        filledRawSettings[item.id] = item.defaultValue + "";
-      }
-    };
-
-    settingsSchema.forEach((item) => populateDefaultValues(item));
-    /* eslint-disable-next-line react-hooks/set-state-in-effect */
-    setRawSettings(filledRawSettings);
-  }, [currentPreset]);
-
   return (
     <div className="app">
       <h1>F-Impose</h1>
@@ -120,6 +91,7 @@ function App() {
       </p>
       <fieldset>
         <legend>Upload PDFs</legend>
+        <p>Multiple file uploads are also supported!</p>
         <input
           type="file"
           accept=".pdf"
@@ -129,33 +101,29 @@ function App() {
         />
       </fieldset>
       {/* {{inputFiles.length > 0 && (<>} */}
-      <fieldset>
-        <legend>Preset</legend>
-        <label>
-          Select Layout Preset{" "}
-          <select
-            value={currentPresetId}
-            onChange={(e) => setCurrentPresetId(e.target.value as PresetId)}
-          >
-            {Object.entries(presets).map(([id, preset]) => (
-              <option key={id} value={id}>
-                {preset.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <div>{descriptionToElements(currentPreset.description)}</div>
-        {currentPreset.settingsSchema && (
-          <>
-            <h3>Preset Settings</h3>
-            <SettingsForm
-              schema={presets[currentPresetId].settingsSchema as SettingsSchema}
-              rawSettings={rawSettings}
-              setRawSettings={setRawSettings}
-            />
-          </>
-        )}
-      </fieldset>
+      {presetSteps.map((presetStep, i) => (
+        <PresetStepForm
+          key={i}
+          presetId={presetStep.presetId}
+          rawSettings={presetStep.rawSettings}
+          onPresetIdChange={(presetId) =>
+            setPresetSteps(setArray(presetSteps, i, newPresetStep(presetId)))
+          }
+          onRawSettingsChange={(rawSettings) =>
+            setPresetSteps(
+              setArray(presetSteps, i, { ...presetStep, rawSettings }),
+            )
+          }
+          onDelete={i > 0 ? () => deletePresetStep(i) : undefined}
+        />
+      ))}
+      {/* <fieldset>
+        <legend>Chain Presets</legend>
+        <p>You can apply more than one preset to a PDF!</p> */}
+      <div>
+        <button onClick={addPresetStep}>+ Add another preset</button>
+      </div>
+      {/* </fieldset> */}
       <br />
       <button onClick={impose} disabled={inputFiles.length === 0}>
         Impose!

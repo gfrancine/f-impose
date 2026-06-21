@@ -15,6 +15,19 @@ export function set<O, K extends keyof O>(object: O, key: K, value: O[K]) {
   return { ...object, [key]: value };
 }
 
+/** immutable set array */
+export function setArray<T>(array: T[], index: number, value: T) {
+  const newArray = [...array];
+  newArray[index] = value;
+  return newArray;
+}
+
+export function removeFromArray<T extends unknown[]>(array: T, index: number) {
+  const newArray = [...array];
+  newArray.splice(index, 1);
+  return newArray;
+}
+
 export const mmToPts = (mm: number) => mm * 2.83465;
 export const mmToIn = (mm: number) => mm / 25.4;
 export const inToPts = (inches: number) => inches * 72;
