@@ -163,8 +163,10 @@ function App() {
           )}
           {results.map((result, i) => (
             <div key={i}>
-              <h4>{result.fileName}</h4>
-              <PdfOutput downloadUrl={result.downloadUrl} />
+              <PdfOutput
+                fileName={result.fileName}
+                downloadUrl={result.downloadUrl}
+              />
             </div>
           ))}
         </>

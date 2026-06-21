@@ -1,7 +1,7 @@
 import "./PdfOutput.css";
 
 export default function PdfOutput({
-  fileName = "download",
+  fileName,
   downloadUrl,
 }: {
   fileName?: string;
@@ -9,11 +9,14 @@ export default function PdfOutput({
 }) {
   return (
     <div className="pdf-output">
+      <p>
+        <span>{fileName}</span>{" "}
+        <a href={downloadUrl} download={fileName}>
+          Download
+        </a>
+      </p>
       <iframe src={downloadUrl} className="output" />
       <br />
-      <a href={downloadUrl} download={fileName + ".pdf"}>
-        Download PDF
-      </a>
     </div>
   );
 }
