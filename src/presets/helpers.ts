@@ -19,7 +19,7 @@ import {
   checkboxInput,
   asBool,
 } from "../settings";
-import { inToPts, mmToPts } from "../utils";
+import { inToMm, inToPts, mmToIn, mmToPts } from "../utils";
 
 /** sets up a a PDFDocument and embeds the source pages */
 export async function setupOutPdf(srcPdf: PDFDocument) {
@@ -36,6 +36,36 @@ export const commonDefaults = {
   trimOffset: 2,
 };
 
+/** shortcut for getting a 2-decimal-place number for sheet size presets (see below) */
+const cleanDim = (n: number) => Number(n.toFixed(2));
+
+// [width, height]
+const SHEET_SIZE_PRESET_DIMS = {
+  A4: {
+    mm: [210, 297],
+    in: [cleanDim(mmToIn(210)), cleanDim(mmToIn(297))],
+  },
+  Letter: {
+    mm: [cleanDim(inToMm(8.5)), cleanDim(inToMm(11))],
+    in: [8.5, 11],
+  },
+};
+
+type SheetSizePresetName = keyof typeof SHEET_SIZE_PRESET_DIMS;
+type LengthUnit = "mm" | "in";
+
+function getPresetSheetDims(
+  preset: SheetSizePresetName,
+  units: LengthUnit,
+  orientation: "portrait" | "landscape",
+) {
+  const dims = SHEET_SIZE_PRESET_DIMS[preset][units];
+  return {
+    sheetWidth: orientation === "landscape" ? dims[1] : dims[0],
+    sheetHeight: orientation === "landscape" ? dims[0] : dims[1],
+  };
+}
+
 /** preset utility/prelude to set up and retrieve the most commmon preset settings */
 export function commonPresetSettings({
   orientation = "portrait",
@@ -44,13 +74,18 @@ export function commonPresetSettings({
   orientation?: "portrait" | "landscape";
   exclude?: ("sheetSize" | "srcPageScale" | "srcBleedArea" | "trimMarks")[];
 } = {}) {
-  const sheetWidth = orientation === "landscape" ? 297 : 210,
-    sheetHeight = orientation === "landscape" ? 210 : 297;
+  const { sheetWidth, sheetHeight } = getPresetSheetDims(
+    "A4",
+    "mm",
+    orientation,
+  );
 
   const commonSchemaItems: SettingsItemSchema[] = [];
 
   const getUnitsSetting = (rawSettings: RawSettings) =>
-    getSetting(rawSettings, "units", (v) => (v ? (v as string) : "mm"));
+    getSetting(rawSettings, "units", (v) =>
+      v ? (v as string) : "mm",
+    ) as LengthUnit;
 
   commonSchemaItems.push(
     selectInput({
@@ -65,47 +100,25 @@ export function commonPresetSettings({
   );
 
   if (!exclude.includes("sheetSize")) {
-    const a4Button = buttonInput({
-      id: "setA4Size",
-      name: "A4",
-      onClick: (rawSettings, setRawSettings) => {
-        const units = getUnitsSetting(rawSettings);
-        if (units === "in") {
+    /** shortcut for defining a preset button based on the SHEET_DIMS lookup */
+    const sheetPresetButton = (presetName: SheetSizePresetName) =>
+      buttonInput({
+        id: `set${presetName}Size`,
+        name: presetName,
+        onClick: (rawSettings, setRawSettings) => {
+          const units = getUnitsSetting(rawSettings);
+          const { sheetWidth, sheetHeight } = getPresetSheetDims(
+            presetName,
+            units,
+            orientation,
+          );
           setRawSettings({
             ...rawSettings,
-            sheetWidth: orientation === "landscape" ? "11.69" : "8.27",
-            sheetHeight: orientation === "landscape" ? "8.27" : "11.69",
+            sheetWidth: sheetWidth + "",
+            sheetHeight: sheetHeight + "",
           });
-        } else {
-          setRawSettings({
-            ...rawSettings,
-            sheetWidth: orientation === "landscape" ? "297" : "210",
-            sheetHeight: orientation === "landscape" ? "210" : "297",
-          });
-        }
-      },
-    });
-
-    const letterButton = buttonInput({
-      id: "setLetterSize",
-      name: "Letter",
-      onClick: (rawSettings, setRawSettings) => {
-        const units = getUnitsSetting(rawSettings);
-        if (units === "in") {
-          setRawSettings({
-            ...rawSettings,
-            sheetWidth: orientation === "landscape" ? "11" : "8.5",
-            sheetHeight: orientation === "landscape" ? "8.5" : "11",
-          });
-        } else {
-          setRawSettings({
-            ...rawSettings,
-            sheetWidth: orientation === "landscape" ? "279.4" : "215.9",
-            sheetHeight: orientation === "landscape" ? "215.9" : "279.4",
-          });
-        }
-      },
-    });
+        },
+      });
 
     commonSchemaItems.push(
       inputRow([
@@ -125,7 +138,7 @@ export function commonPresetSettings({
         buttonGroup({
           id: "sizePresets",
           name: "Presets",
-          buttons: [a4Button, letterButton],
+          buttons: [sheetPresetButton("A4"), sheetPresetButton("Letter")],
         }),
       ]),
     );

@@ -16,8 +16,11 @@ export function set<O, K extends keyof O>(object: O, key: K, value: O[K]) {
 }
 
 export const mmToPts = (mm: number) => mm * 2.83465;
+export const mmToIn = (mm: number) => mm / 25.4;
 export const inToPts = (inches: number) => inches * 72;
+export const inToMm = (inches: number) => inches * 25.4;
 export const ptsToMm = (pt: number) => pt / 2.83465;
+export const ptsToIn = (pt: number) => pt / 72;
 export const degToRad = (deg: number) => (deg * Math.PI) / 180;
 
 /** a fancy immutable {x, y} container */
