@@ -31,9 +31,11 @@ function descriptionToElements(description: string) {
 }
 
 function App() {
-  const [inputFile, setInputFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [inputFiles, setInputFiles] = useState<File[]>([]);
+  const [results, setResults] = useState<
+    { fileName: string; downloadUrl: string }[]
+  >([]);
   const [currentPresetId, setCurrentPresetId] =
     useState<PresetId>(defaultPresetId);
   const [rawSettings, setRawSettings] = useState<RawSettings>({});
@@ -41,28 +43,42 @@ function App() {
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    setInputFile(file);
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+    setInputFiles(Array.from(files));
+    setResults([]);
   };
 
   const impose = async () => {
-    if (!inputFile) return;
+    if (inputFiles.length === 0) return;
     setIsProcessing(true);
 
     try {
-      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Typed_arrays
-      const srcPdf = await PDFDocument.load(await inputFile.arrayBuffer());
-      const preset = presets[currentPresetId];
-      const outPdf = await preset.impose(srcPdf, rawSettings);
-      setDownloadUrl(await pdfToUrl(outPdf));
+      const results = await Promise.all(
+        inputFiles.map(async (file) => {
+          // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Typed_arrays
+          const srcPdf = await PDFDocument.load(await file.arrayBuffer());
+          const preset = presets[currentPresetId];
+          const outPdf = await preset.impose(srcPdf, rawSettings);
+          return { fileName: file.name, downloadUrl: await pdfToUrl(outPdf) };
+        }),
+      );
+      setResults(results);
     } catch (err) {
-      console.error("Error processing PDF:", err);
+      console.error("Error processing PDFs:", err);
       alert(`Failed to process PDF: ${err}\n\nCheck console for details.`);
     } finally {
       setIsProcessing(false);
     }
   };
+
+  const downloadAll = () =>
+    results.forEach((result) => {
+      const a = document.createElement("a");
+      a.href = result.downloadUrl;
+      a.download = result.fileName;
+      a.click();
+    });
 
   const currentPreset = presets[currentPresetId];
 
@@ -93,7 +109,7 @@ function App() {
       <h1>F-Impose</h1>
       <p>
         Imposition tools for indie printmaking. Select a preset, upload your
-        source PDF, adjust the settings, and click the 'Impose' button to
+        source PDFs, adjust the settings, and click the 'Impose' button to
         generate an output!
       </p>
       <p>
@@ -103,10 +119,11 @@ function App() {
         <a href="https://instagram.com/gracefrancines">@gracefrancines</a>
       </p>
       <fieldset>
-        <legend>Upload PDF</legend>
+        <legend>Upload PDFs</legend>
         <input
           type="file"
           accept=".pdf"
+          multiple
           onChange={handleFileUpload}
           disabled={isProcessing}
         />
@@ -139,13 +156,21 @@ function App() {
         )}
       </fieldset>
       <br />
-      <button onClick={impose}>Impose</button>
+      <button onClick={impose} disabled={inputFiles.length === 0}>
+        Impose
+      </button>
       <br />
       {isProcessing && <p>Processing...</p>}
-      {downloadUrl && (
+      {results.length > 0 && (
         <>
           <h2>Output</h2>
-          <PdfOutput downloadUrl={downloadUrl} />
+          <button onClick={downloadAll}>Download All</button>
+          {results.map((result, i) => (
+            <div key={i}>
+              <h4>{result.fileName}</h4>
+              <PdfOutput downloadUrl={result.downloadUrl} />
+            </div>
+          ))}
         </>
       )}
       <br />
