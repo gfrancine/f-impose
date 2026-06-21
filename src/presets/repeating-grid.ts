@@ -1,6 +1,6 @@
 /*
 
-Flexible grid imposition
+Repeating grid imposition
 
 */
 
@@ -19,8 +19,8 @@ import {
   gridPresetSettings,
 } from "./helpers";
 
-const name = "Flexible Grid Imposition";
-const description = `Imposes PDFs with a flexible amount of rows and columns per page.`;
+const name = "Repeating Grid Imposition";
+const description = `Imposes pages on a repeating grid with a flexible amount of rows and columns.`;
 
 const { commonSchemaItems, getCommonSettings } = commonPresetSettings({
   orientation: "portrait",
