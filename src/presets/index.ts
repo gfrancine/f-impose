@@ -1,6 +1,7 @@
 import addTrimMarks from "./add-trim-marks";
 import removeInnerBleed from "./remove-inner-bleed";
 import longShortEdgeFlip from "./long-short-edge-flip";
+import reduceInk from "./reduce-ink";
 import businessCard from "./business-card-8up";
 import flexibleGrid from "./flexible-grid";
 import saddleStitch from "./saddle-stitch-2up";
@@ -12,6 +13,7 @@ export const presets = {
   addTrimMarks,
   removeInnerBleed,
   longShortEdgeFlip,
+  reduceInk,
   businessCard,
   flexibleGrid,
   saddleStitch,
