@@ -100,19 +100,21 @@ export type InputSchema =
   | NumberInputSchema
   | CheckboxInputSchema
   | SelectInputSchema
-  | ButtonInputSchema
-  | ButtonGroupSchema;
+  | ButtonInputSchema;
 
 export type InputRowSchema = {
   type: "inputRow";
-  inputs: InputSchema[];
+  inputs: SettingsItemSchema[];
 };
 
-export function inputRow(inputs: InputSchema[]): InputRowSchema {
+export function inputRow(inputs: SettingsItemSchema[]): InputRowSchema {
   return { type: "inputRow", inputs };
 }
 
-export type SettingsItemSchema = InputRowSchema | InputSchema;
+export type SettingsItemSchema =
+  | InputRowSchema
+  | InputSchema
+  | ButtonGroupSchema;
 
 export type SettingsSchema = SettingsItemSchema[];
 

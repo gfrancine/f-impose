@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { PDFDocument } from "pdf-lib";
 import { presets, defaultPresetId, type PresetId } from "../presets";
 import DummyGenerator from "./DummyGenerator";
@@ -6,7 +6,11 @@ import PdfOutput from "./PdfOutput";
 import "./App.css";
 import { pdfToUrl } from "../utils";
 import SettingsForm from "./SettingsForm";
-import type { RawSettings, SettingsSchema } from "../settings";
+import type {
+  RawSettings,
+  SettingsItemSchema,
+  SettingsSchema,
+} from "../settings";
 
 // authored by BigPickle
 // Splits paragraphs from double line breaks "\n\n" and turns single ones "\n"
@@ -61,6 +65,28 @@ function App() {
   };
 
   const currentPreset = presets[currentPresetId];
+
+  // initialize raw settings with default values
+  useEffect(() => {
+    const settingsSchema = currentPreset.settingsSchema;
+    if (!settingsSchema) return;
+
+    const filledRawSettings: RawSettings = {};
+    const populateDefaultValues = (item: SettingsItemSchema) => {
+      if (item.type === "inputRow") {
+        item.inputs.forEach((input) => populateDefaultValues(input));
+      } else if (
+        "defaultValue" in item &&
+        filledRawSettings[item.id] === undefined
+      ) {
+        filledRawSettings[item.id] = item.defaultValue + "";
+      }
+    };
+
+    settingsSchema.forEach((item) => populateDefaultValues(item));
+    /* eslint-disable-next-line react-hooks/set-state-in-effect */
+    setRawSettings(filledRawSettings);
+  }, [currentPreset]);
 
   return (
     <div className="app">
