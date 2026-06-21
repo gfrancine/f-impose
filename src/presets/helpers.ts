@@ -39,20 +39,28 @@ export const commonDefaults = {
 /** shortcut for getting a 2-decimal-place number for sheet size presets (see below) */
 const cleanDim = (n: number) => Number(n.toFixed(2));
 
+type LengthUnit = "mm" | "in" | "pts";
+
 // [width, height]
 const SHEET_SIZE_PRESET_DIMS = {
   A4: {
     mm: [210, 297],
     in: [cleanDim(mmToIn(210)), cleanDim(mmToIn(297))],
+    pts: [cleanDim(mmToPts(210)), cleanDim(mmToPts(297))],
+  },
+  A3: {
+    mm: [297, 420],
+    in: [cleanDim(mmToIn(297)), cleanDim(mmToIn(420))],
+    pts: [cleanDim(mmToPts(297)), cleanDim(mmToPts(420))],
   },
   Letter: {
     mm: [cleanDim(inToMm(8.5)), cleanDim(inToMm(11))],
     in: [8.5, 11],
+    pts: [cleanDim(inToPts(8.5)), cleanDim(inToPts(11))],
   },
 };
 
 type SheetSizePresetName = keyof typeof SHEET_SIZE_PRESET_DIMS;
-type LengthUnit = "mm" | "in";
 
 function getPresetSheetDims(
   preset: SheetSizePresetName,
@@ -95,6 +103,7 @@ export function commonPresetSettings({
       options: [
         { id: "mm", name: "Millimeters" },
         { id: "in", name: "Inches" },
+        { id: "pts", name: "Points" },
       ],
     }),
   );
@@ -120,6 +129,22 @@ export function commonPresetSettings({
         },
       });
 
+    const flipButton = buttonInput({
+      id: "flipSheetSizes",
+      name: "Flip",
+      onClick: (rawSettings, setRawSettings) => {
+        const { sheetWidth, sheetHeight } = getSettings(rawSettings, {
+          sheetWidth: (v: string) => v,
+          sheetHeight: (v: string) => v,
+        });
+        setRawSettings({
+          ...rawSettings,
+          sheetWidth: sheetHeight,
+          sheetHeight: sheetWidth,
+        });
+      },
+    });
+
     commonSchemaItems.push(
       inputRow([
         numberInput({
@@ -134,13 +159,15 @@ export function commonPresetSettings({
           defaultValue: sheetHeight,
           min: 1,
         }),
-
-        buttonGroup({
-          id: "sizePresets",
-          name: "Presets",
-          buttons: [sheetPresetButton("A4"), sheetPresetButton("Letter")],
-        }),
+        flipButton,
       ]),
+      buttonGroup({
+        id: "sheetSizePresets",
+        name: "Sheet Presets",
+        buttons: Object.keys(SHEET_SIZE_PRESET_DIMS).map((presetName) =>
+          sheetPresetButton(presetName as SheetSizePresetName),
+        ),
+      }),
     );
   }
 
@@ -187,16 +214,16 @@ export function commonPresetSettings({
 
   const getCommonSettings = (rawSettings: RawSettings) => {
     const units = getUnitsSetting(rawSettings);
-    const convertUnits = units === "mm" ? mmToPts : inToPts;
+    const toPts =
+      units === "mm" ? mmToPts : units == "in" ? inToPts : (v: number) => v; // pts
 
     return getSettings(rawSettings, {
-      sheetWidth: (v) => convertUnits(asNumber(v, sheetWidth)),
-      sheetHeight: (v) => convertUnits(asNumber(v, sheetHeight)),
+      sheetWidth: (v) => toPts(asNumber(v, sheetWidth)),
+      sheetHeight: (v) => toPts(asNumber(v, sheetHeight)),
       srcPageScale: (v) => asNumber(v, 100) / 100,
-      srcBleedArea: (v) =>
-        convertUnits(asNumber(v, commonDefaults.srcBleedArea)),
-      trimLength: (v) => convertUnits(asNumber(v, commonDefaults.trimLength)),
-      trimOffset: (v) => convertUnits(asNumber(v, commonDefaults.trimOffset)),
+      srcBleedArea: (v) => toPts(asNumber(v, commonDefaults.srcBleedArea)),
+      trimLength: (v) => toPts(asNumber(v, commonDefaults.trimLength)),
+      trimOffset: (v) => toPts(asNumber(v, commonDefaults.trimOffset)),
     });
   };
 
