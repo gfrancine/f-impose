@@ -4,7 +4,7 @@ import { presets } from "../presets";
 import DummyGenerator from "./DummyGenerator";
 import PdfOutput from "./PdfOutput";
 import "./App.css";
-import { pdfToUrl, removeFromArray, setArray } from "../utils";
+import { mergePdfs, pdfToUrl, removeFromArray, setArray } from "../utils";
 import PresetStepForm, {
   newPresetStep,
   type PresetStep,
@@ -13,12 +13,13 @@ import PresetStepForm, {
 function App() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [inputFiles, setInputFiles] = useState<File[]>([]);
-  const [results, setResults] = useState<
-    { fileName: string; downloadUrl: string }[]
-  >([]);
   const [presetSteps, setPresetSteps] = useState<PresetStep[]>([
     newPresetStep(),
   ]);
+  const [results, setResults] = useState<
+    { fileName: string; downloadUrl: string }[]
+  >([]);
+  const [shouldMergeResults, setShouldMergeResults] = useState(false);
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -26,7 +27,6 @@ function App() {
     const files = event.target.files;
     if (!files || files.length === 0) return;
     setInputFiles(Array.from(files));
-    setResults([]);
   };
 
   const addPresetStep = () => setPresetSteps([...presetSteps, newPresetStep()]);
@@ -38,27 +38,42 @@ function App() {
     setIsProcessing(true);
 
     try {
-      const results = await Promise.all(
-        inputFiles.map(async (file) => {
-          // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Typed_arrays
-          let pdf = await PDFDocument.load(await file.arrayBuffer());
+      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Typed_arrays
+      const processFile = async (file: File) => {
+        let pdf = await PDFDocument.load(await file.arrayBuffer());
+        for (const presetStep of presetSteps) {
+          const { presetId, rawSettings } = presetStep;
+          const preset = presets[presetId];
+          const newPdf = await preset.impose(pdf, rawSettings);
+          // pdf-lib can't handle nested embedded pages. The output needs
+          // to be rendered to file before feeding it to the next step
+          pdf = await PDFDocument.load(await newPdf.save());
+        }
+        return pdf;
+      };
 
-          for (const presetStep of presetSteps) {
-            const { presetId, rawSettings } = presetStep;
-            const preset = presets[presetId];
-            const newPdf = await preset.impose(pdf, rawSettings);
-            // pdf-lib can't handle nested embedded pages. The output needs
-            // to be rendered to file before feeding it to the next step
-            pdf = await PDFDocument.load(await newPdf.save());
-          }
-
-          return {
-            fileName: file.name,
-            downloadUrl: await pdfToUrl(pdf),
-          };
-        }),
-      );
-      setResults(results);
+      if (shouldMergeResults) {
+        const pdfs = await Promise.all(
+          inputFiles.map((file) => processFile(file)),
+        );
+        const mergedPdf = await mergePdfs(pdfs);
+        const result = {
+          fileName: "merged.pdf",
+          downloadUrl: await pdfToUrl(mergedPdf),
+        };
+        setResults([result]);
+      } else {
+        const results = await Promise.all(
+          inputFiles.map(async (file) => {
+            const pdf = await processFile(file);
+            return {
+              fileName: file.name,
+              downloadUrl: await pdfToUrl(pdf),
+            };
+          }),
+        );
+        setResults(results);
+      }
     } catch (err) {
       console.error("Error processing PDFs:", err);
       alert(`Failed to process PDF: ${err}\n\nCheck console for details.`);
@@ -99,6 +114,18 @@ function App() {
           onChange={handleFileUpload}
           disabled={isProcessing}
         />
+        {inputFiles.length > 1 && (
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                checked={shouldMergeResults}
+                onChange={(e) => setShouldMergeResults(e.target.checked)}
+              />
+              Merge all the results into one PDF file
+            </label>
+          </p>
+        )}
       </fieldset>
       {/* {{inputFiles.length > 0 && (<>} */}
       {presetSteps.map((presetStep, i) => (
@@ -121,16 +148,19 @@ function App() {
         You can apply more than one preset to a PDF!{" "}
         <button onClick={addPresetStep}>+ Add another preset</button>
       </p>
-      <button onClick={impose} disabled={inputFiles.length === 0}>
-        Impose!
-      </button>
-      <br />
+      <p>
+        <button onClick={impose} disabled={inputFiles.length === 0}>
+          Impose!
+        </button>
+      </p>
       {/* {</>)}} */}
       {isProcessing && <p>Processing...</p>}
       {results.length > 0 && (
         <>
           <h2>Output</h2>
-          <button onClick={downloadAll}>Download All</button>
+          {results.length > 1 && (
+            <button onClick={downloadAll}>Download All</button>
+          )}
           {results.map((result, i) => (
             <div key={i}>
               <h4>{result.fileName}</h4>

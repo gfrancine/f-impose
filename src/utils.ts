@@ -107,6 +107,15 @@ export function mapIndicesSaddleStitch(pageCount: number) {
   return indexGroups;
 }
 
+export async function mergePdfs(srcPdfs: PDFDocument[]) {
+  const outPdf = await PDFDocument.create();
+  for (const srcPdf of srcPdfs) {
+    const pages = await outPdf.copyPages(srcPdf, srcPdf.getPageIndices());
+    pages.forEach((page) => outPdf.addPage(page));
+  }
+  return outPdf;
+}
+
 // pdf-lib drawing utils
 // --------
 

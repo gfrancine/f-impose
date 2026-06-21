@@ -24,6 +24,7 @@ And comes with several print utilities:
 And it can also:
 
 - Batch-process multiple files at once
+- Merge the results into a single PDF file
 - Chain multiple layouts and steps together
 - Generate dummy page-numbered PDFs for proofing/testing
 
