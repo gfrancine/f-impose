@@ -91,7 +91,7 @@ function App() {
     });
 
   return (
-    <div className="app">
+    <main className="app">
       <h1>F-Impose</h1>
       <p>
         Imposition tools for indie printmaking. Upload your PDFs, select a
@@ -154,7 +154,7 @@ function App() {
         </button>
       </p>
       {/* {</>)}} */}
-      {isProcessing && <p>Processing...</p>}
+      {isProcessing && <p role="status">Processing...</p>}
       {results.length > 0 && (
         <>
           <h2>Output</h2>
@@ -173,7 +173,7 @@ function App() {
       )}
       <br />
       <DummyGenerator />
-    </div>
+    </main>
   );
 }
 

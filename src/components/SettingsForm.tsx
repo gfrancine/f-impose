@@ -21,9 +21,10 @@ function NumberInput({
   const { name, min, max } = schema;
 
   return (
-    <label>
+    <label htmlFor={schema.id}>
       {name}{" "}
       <input
+        id={schema.id}
         type="number"
         min={min}
         max={max}
@@ -57,8 +58,9 @@ function CheckboxInput({
   const { name } = schema;
 
   return (
-    <label>
+    <label htmlFor={schema.id}>
       <input
+        id={schema.id}
         type="checkbox"
         checked={value === "true"}
         onChange={(e) => onChange?.(e.target.checked + "")}
@@ -80,9 +82,13 @@ function SelectInput({
   const { name, options } = schema;
 
   return (
-    <label>
+    <label htmlFor={schema.id}>
       {name}{" "}
-      <select value={value} onChange={(e) => onChange?.(e.target.value)}>
+      <select
+        id={schema.id}
+        value={value}
+        onChange={(e) => onChange?.(e.target.value)}
+      >
         {options.map((opt) => (
           <option key={opt.id} value={opt.id}>
             {opt.name}
