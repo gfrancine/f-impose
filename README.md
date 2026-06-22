@@ -20,6 +20,7 @@ And comes with several print utilities:
 - Add trim marks
 - Convert short/long edge documents
 - Reduce opacity/ink usage
+- Mark spine holes (for bookbinding)
 
 And it can also:
 
