@@ -36,10 +36,34 @@ export const commonDefaults = {
   trimOffset: 2,
 };
 
+type LengthUnit = "mm" | "in" | "pts";
+
+export function unitsSettings() {
+  const getUnitsSetting = (rawSettings: RawSettings) =>
+    getSetting(rawSettings, "units", (v) =>
+      v ? (v as string) : "mm",
+    ) as LengthUnit;
+
+  const unitsInputSchema = selectInput({
+    id: "units",
+    name: "Units",
+    defaultValue: "mm",
+    options: [
+      { id: "mm", name: "Millimeters" },
+      { id: "in", name: "Inches" },
+      { id: "pts", name: "Points" },
+    ],
+  });
+
+  return { getUnitsSetting, unitsInputSchema };
+}
+
+export function getUnitToPtsConversion(units: LengthUnit) {
+  return units === "mm" ? mmToPts : units == "in" ? inToPts : (v: number) => v;
+}
+
 /** shortcut for getting a 2-decimal-place number for sheet size presets (see below) */
 const cleanDim = (n: number) => Number(n.toFixed(2));
-
-type LengthUnit = "mm" | "in" | "pts";
 
 // [width, height]
 const SHEET_SIZE_PRESET_DIMS = {
@@ -90,23 +114,8 @@ export function commonPresetSettings({
 
   const commonSchemaItems: SettingsItemSchema[] = [];
 
-  const getUnitsSetting = (rawSettings: RawSettings) =>
-    getSetting(rawSettings, "units", (v) =>
-      v ? (v as string) : "mm",
-    ) as LengthUnit;
-
-  commonSchemaItems.push(
-    selectInput({
-      id: "units",
-      name: "Units",
-      defaultValue: "mm",
-      options: [
-        { id: "mm", name: "Millimeters" },
-        { id: "in", name: "Inches" },
-        { id: "pts", name: "Points" },
-      ],
-    }),
-  );
+  const { getUnitsSetting, unitsInputSchema } = unitsSettings();
+  commonSchemaItems.push(unitsInputSchema);
 
   if (!exclude.includes("sheetSize")) {
     /** shortcut for defining a preset button based on the SHEET_DIMS lookup */
@@ -214,17 +223,19 @@ export function commonPresetSettings({
 
   const getCommonSettings = (rawSettings: RawSettings) => {
     const units = getUnitsSetting(rawSettings);
-    const toPts =
-      units === "mm" ? mmToPts : units == "in" ? inToPts : (v: number) => v; // pts
+    const toPts = getUnitToPtsConversion(units); // pts
 
-    return getSettings(rawSettings, {
-      sheetWidth: (v) => toPts(asNumber(v, sheetWidth)),
-      sheetHeight: (v) => toPts(asNumber(v, sheetHeight)),
-      srcPageScale: (v) => asNumber(v, 100) / 100,
-      srcBleedArea: (v) => toPts(asNumber(v, commonDefaults.srcBleedArea)),
-      trimLength: (v) => toPts(asNumber(v, commonDefaults.trimLength)),
-      trimOffset: (v) => toPts(asNumber(v, commonDefaults.trimOffset)),
-    });
+    return {
+      ...getSettings(rawSettings, {
+        sheetWidth: (v) => toPts(asNumber(v, sheetWidth)),
+        sheetHeight: (v) => toPts(asNumber(v, sheetHeight)),
+        srcPageScale: (v) => asNumber(v, 100) / 100,
+        srcBleedArea: (v) => toPts(asNumber(v, commonDefaults.srcBleedArea)),
+        trimLength: (v) => toPts(asNumber(v, commonDefaults.trimLength)),
+        trimOffset: (v) => toPts(asNumber(v, commonDefaults.trimOffset)),
+      }),
+      units,
+    };
   };
 
   return {
