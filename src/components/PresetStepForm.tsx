@@ -4,7 +4,7 @@ import {
   LAYOUT_PRESETS,
   PRESETS,
   UTILITY_PRESETS,
-  defaultPresetId,
+  DEFAULT_PRESET_ID,
   type PresetId,
 } from "../presets";
 import "./App.css";
@@ -56,7 +56,7 @@ export function getDefaultRawSettings(settingsSchema: SettingsSchema) {
 }
 
 export function newPresetStep(
-  presetId: PresetId = defaultPresetId,
+  presetId: PresetId = DEFAULT_PRESET_ID,
 ): PresetStep {
   const preset = PRESETS[presetId];
   return {

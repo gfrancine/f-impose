@@ -4,6 +4,7 @@ import longShortEdgeFlip from "./long-short-edge-flip";
 import reduceInk from "./reduce-ink";
 import removeInnerBleed from "./remove-inner-bleed";
 import markSpineHoles from "./mark-spine-holes";
+
 // Layouts
 import saddleStitch from "./saddle-stitch-2up";
 import saddleStitch4Up from "./saddle-stitch-4up";
@@ -36,4 +37,4 @@ export const PRESETS = {
 
 export type PresetId = keyof typeof PRESETS;
 
-export const defaultPresetId: PresetId = "reduceInk";
+export const DEFAULT_PRESET_ID: PresetId = "addTrimMarks";
