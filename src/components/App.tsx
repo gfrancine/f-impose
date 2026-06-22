@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { PDFDocument } from "pdf-lib";
-import { presets } from "../presets";
+import { PRESETS } from "../presets";
 import DummyGenerator from "./DummyGenerator";
 import PdfOutput from "./PdfOutput";
 import "./App.css";
@@ -43,7 +43,7 @@ function App() {
         let pdf = await PDFDocument.load(await file.arrayBuffer());
         for (const presetStep of presetSteps) {
           const { presetId, rawSettings } = presetStep;
-          const preset = presets[presetId];
+          const preset = PRESETS[presetId];
           const newPdf = await preset.impose(pdf, rawSettings);
           // pdf-lib can't handle nested embedded pages. The output needs
           // to be rendered to file before feeding it to the next step

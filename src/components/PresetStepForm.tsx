@@ -1,6 +1,12 @@
 /* eslint-disable react-refresh/only-export-components */
 
-import { presets, defaultPresetId, type PresetId } from "../presets";
+import {
+  LAYOUT_PRESETS,
+  PRESETS,
+  UTILITY_PRESETS,
+  defaultPresetId,
+  type PresetId,
+} from "../presets";
 import "./App.css";
 import SettingsForm from "./SettingsForm";
 import type {
@@ -52,7 +58,7 @@ export function getDefaultRawSettings(settingsSchema: SettingsSchema) {
 export function newPresetStep(
   presetId: PresetId = defaultPresetId,
 ): PresetStep {
-  const preset = presets[presetId];
+  const preset = PRESETS[presetId];
   return {
     presetId,
     rawSettings: getDefaultRawSettings(preset.settingsSchema || []),
@@ -72,7 +78,7 @@ export default function PresetStepForm({
   onRawSettingsChange?: (rawSettings: RawSettings) => unknown;
   onDelete?: () => unknown;
 }) {
-  const currentPreset = presets[presetId];
+  const currentPreset = PRESETS[presetId];
 
   return (
     <fieldset>
@@ -91,11 +97,20 @@ export default function PresetStepForm({
           value={presetId}
           onChange={(e) => onPresetIdChange?.(e.target.value as PresetId)}
         >
-          {Object.entries(presets).map(([id, preset]) => (
-            <option key={id} value={id}>
-              {preset.name}
-            </option>
-          ))}
+          <optgroup label="Utilities">
+            {Object.entries(UTILITY_PRESETS).map(([id, preset]) => (
+              <option key={id} value={id}>
+                {preset.name}
+              </option>
+            ))}
+          </optgroup>
+          <optgroup label="Layouts">
+            {Object.entries(LAYOUT_PRESETS).map(([id, preset]) => (
+              <option key={id} value={id}>
+                {preset.name}
+              </option>
+            ))}
+          </optgroup>
         </select>
       </label>
       <div>{descriptionToElements(currentPreset.description)}</div>

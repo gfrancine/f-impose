@@ -1,27 +1,39 @@
+// Utilities
 import addTrimMarks from "./add-trim-marks";
-import removeInnerBleed from "./remove-inner-bleed";
 import longShortEdgeFlip from "./long-short-edge-flip";
 import reduceInk from "./reduce-ink";
-import businessCard from "./business-card-8up";
+import removeInnerBleed from "./remove-inner-bleed";
+import markSpineHoles from "./mark-spine-holes";
+// Layouts
 import saddleStitch from "./saddle-stitch-2up";
 import saddleStitch4Up from "./saddle-stitch-4up";
 import saddleStitch4UpTall from "./saddle-stitch-4up-tall";
 import zine8Fold from "./zine-8fold";
+import businessCard from "./business-card-8up";
 import repeatingGrid from "./repeating-grid";
 
-export const presets = {
+export const UTILITY_PRESETS = {
   addTrimMarks,
-  removeInnerBleed,
   longShortEdgeFlip,
+  removeInnerBleed,
   reduceInk,
-  businessCard,
+  markSpineHoles,
+};
+
+export const LAYOUT_PRESETS = {
   saddleStitch,
   saddleStitch4Up,
   saddleStitch4UpTall,
   zine8Fold,
+  businessCard,
   repeatingGrid,
 };
 
-export type PresetId = keyof typeof presets;
+export const PRESETS = {
+  ...UTILITY_PRESETS,
+  ...LAYOUT_PRESETS,
+};
 
-export const defaultPresetId = Object.keys(presets)[0] as PresetId;
+export type PresetId = keyof typeof PRESETS;
+
+export const defaultPresetId: PresetId = "reduceInk";
