@@ -62,7 +62,7 @@ const settingsSchema = defineSettingsSchema([
     defaultValue: 0.5,
   }),
   selectInput({
-    id: "markSize",
+    id: "markColor",
     name: "Marker Color",
     defaultValue: "black",
     options: [
