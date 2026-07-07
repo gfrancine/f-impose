@@ -42,7 +42,7 @@ npm run lint
 npm run test
 
 # Deploy the site to GitHub Pages
-# Merges the master branch to the `github-pages` branch
+# Merges the main branch to the `github-pages` branch
 # and pushes it upstream to the `github` remote.
 npm run deploy-gh
 npm run deploy-gl # equivalent command for Gitlab Pages
