@@ -19,7 +19,7 @@ import {
   gridPresetSettings,
 } from "./helpers";
 
-const name = "Repeating Grid Imposition";
+const name = "Repeating Grid";
 const description = `Imposes pages on a repeating grid with a flexible amount of rows and columns.`;
 
 const { commonSchemaItems, getCommonSettings } = commonPresetSettings({
