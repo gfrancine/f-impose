@@ -54,20 +54,20 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     const excessTrim = excessTrimEnabled
       ? calcExcessTrim(srcBleedArea, srcPageScale, trimLength, trimOffset) * 2
       : 0;
-    const totalSize = srcSize.add(excessTrim, excessTrim);
+    const totalSrcPageSize = srcSize.add(excessTrim, excessTrim);
 
     // bottom-left corner of row 0 col 0, based on the sheet center
     const corner = sheetCenter.sub(
-      (totalSize.x * nCols) / 2,
-      (totalSize.y * nRows) / 2,
+      (totalSrcPageSize.x * nCols) / 2,
+      (totalSrcPageSize.y * nRows) / 2,
     );
 
     for (let row = 0; row < nRows; row++) {
       for (let col = 0; col < nCols; col++) {
         const origin = new Vec2(
-          corner.x + totalSize.x * col,
-          corner.y + totalSize.y * row,
-        ).addVec(totalSize.div(2));
+          corner.x + totalSrcPageSize.x * col,
+          corner.y + totalSrcPageSize.y * row,
+        ).addVec(totalSrcPageSize.div(2));
 
         drawPageWithTransform(sheet, srcPage, origin, {
           srcPageScale,

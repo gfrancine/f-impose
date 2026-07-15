@@ -12,6 +12,7 @@ import saddleStitch4UpTall from "./saddle-stitch-4up-tall";
 import zine8Fold from "./zine-8fold";
 import businessCard from "./business-card-8up";
 import repeatingGrid from "./repeating-grid";
+import sequentialGrid from "./sequential-grid";
 
 export const UTILITY_PRESETS = {
   addTrimMarks,
@@ -28,6 +29,7 @@ export const LAYOUT_PRESETS = {
   zine8Fold,
   businessCard,
   repeatingGrid,
+  sequentialGrid,
 };
 
 export const PRESETS = {
