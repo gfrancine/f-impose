@@ -35,6 +35,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     srcBleedArea,
     trimLength,
     trimOffset,
+    trimType,
   } = getCommonSettings(rawSettings);
   const { nCols, nRows, excessTrimEnabled } = getGridSettings(rawSettings);
 
@@ -98,6 +99,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
           srcBleedArea,
           trimLength,
           trimOffset,
+          trimType,
           hideTrimMarks: excessTrimEnabled
             ? {}
             : {

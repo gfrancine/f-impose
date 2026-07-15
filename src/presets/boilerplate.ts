@@ -34,6 +34,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     srcBleedArea,
     trimLength,
     trimOffset,
+    trimType,
   } = getCommonSettings(rawSettings);
   const { nRows, nCols, excessTrimEnabled } = getGridSettings(rawSettings);
 

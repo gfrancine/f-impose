@@ -218,6 +218,15 @@ export function commonPresetSettings({
           min: 0,
         }),
       ]),
+      selectInput({
+        id: "trimType",
+        name: "Trim Mark Color",
+        defaultValue: "default",
+        options: [
+          { id: "default", name: "Default" },
+          { id: "inverted", name: "Inverted" },
+        ],
+      }),
     );
   }
 
@@ -233,6 +242,7 @@ export function commonPresetSettings({
         srcBleedArea: (v) => toPts(asNumber(v, commonDefaults.srcBleedArea)),
         trimLength: (v) => toPts(asNumber(v, commonDefaults.trimLength)),
         trimOffset: (v) => toPts(asNumber(v, commonDefaults.trimOffset)),
+        trimType: (v) => (v === "default" ? v : "inverted"),
       }),
       units,
     };

@@ -28,6 +28,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     srcBleedArea,
     trimLength,
     trimOffset,
+    trimType,
   } = getCommonSettings(rawSettings);
 
   const sheetSize = new Vec2(sheetWidth, sheetHeight);
@@ -49,6 +50,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
       srcBleedArea,
       trimLength,
       trimOffset,
+      trimType,
     });
 
     drawSpread(backOutPage, {
@@ -59,6 +61,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
       srcBleedArea,
       trimLength,
       trimOffset,
+      trimType,
     });
   }
 

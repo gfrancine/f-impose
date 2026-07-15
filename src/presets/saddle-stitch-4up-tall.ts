@@ -33,6 +33,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     srcBleedArea,
     trimLength,
     trimOffset,
+    trimType,
   } = getCommonSettings(rawSettings);
 
   const sheetSize = new Vec2(sheetWidth, sheetHeight);
@@ -77,6 +78,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
       srcBleedArea,
       trimLength,
       trimOffset,
+      trimType,
       hideTrimMarks: hideRightHorizTrimMarks,
     });
 
@@ -88,6 +90,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
       srcBleedArea,
       trimLength,
       trimOffset,
+      trimType,
       hideTrimMarks: hideLeftHorizTrimMarks,
     });
 
@@ -102,6 +105,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
         srcBleedArea,
         trimLength,
         trimOffset,
+        trimType,
         hideTrimMarks: hideLeftHorizTrimMarks,
       });
 
@@ -113,6 +117,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
         srcBleedArea,
         trimLength,
         trimOffset,
+        trimType,
         hideTrimMarks: hideRightHorizTrimMarks,
       });
     }

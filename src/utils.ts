@@ -4,6 +4,7 @@ import {
   type PDFPage,
   rgb,
   degrees,
+  grayscale,
 } from "pdf-lib";
 
 export function assert(condition: unknown, err: string) {
@@ -129,12 +130,15 @@ export function debugPoint(page: PDFPage, origin: Vec2) {
   });
 }
 
+type TrimMarkType = "default" | "inverted";
+
 export function drawTrimMark(
   page: PDFPage,
   fromX: number,
   fromY: number,
   toX: number,
   toY: number,
+  type: TrimMarkType, //= "default"
 ) {
   const start = { x: fromX, y: fromY };
   const end = { x: toX, y: toY };
@@ -143,14 +147,14 @@ export function drawTrimMark(
     start,
     end,
     thickness: 1.5,
-    color: rgb(1, 1, 1),
+    color: type === "default" ? grayscale(1) : grayscale(0),
   });
 
   page.drawLine({
     start,
     end,
     thickness: 0.5,
-    color: rgb(0, 0, 0),
+    color: type === "default" ? grayscale(0) : grayscale(1),
   });
 }
 
@@ -161,6 +165,7 @@ export function drawTrimMarksLine(
     srcLength,
     trimOffset,
     trimLength,
+    trimType,
     orientation,
     hideTrimMarks = {},
   }: {
@@ -168,6 +173,7 @@ export function drawTrimMarksLine(
     srcLength: number;
     trimOffset: number;
     trimLength: number;
+    trimType: TrimMarkType;
     orientation: "horiz" | "vert";
     // line1 is the left trim mark when horizontal, top when vertical, and so on
     hideTrimMarks?: Partial<{ line1: boolean; line2: boolean }>;
@@ -185,6 +191,7 @@ export function drawTrimMarksLine(
       // to
       origin.x,
       origin.y + srcLengthHalf + trimOffset,
+      trimType,
     );
   }
 
@@ -198,6 +205,7 @@ export function drawTrimMarksLine(
       // to
       origin.x,
       origin.y - srcLengthHalf - trimOffset,
+      trimType,
     );
   }
 
@@ -211,6 +219,7 @@ export function drawTrimMarksLine(
       // to
       origin.x - srcLengthHalf - trimOffset,
       origin.y,
+      trimType,
     );
   }
 
@@ -224,6 +233,7 @@ export function drawTrimMarksLine(
       // to
       origin.x + srcLengthHalf + trimOffset + trimLength,
       origin.y,
+      trimType,
     );
   }
 }
@@ -246,12 +256,14 @@ export function drawTrimMarksRect(
     srcSize,
     trimOffset,
     trimLength,
+    trimType,
     hideTrimMarks = {},
   }: {
     origin: Vec2;
     srcSize: Vec2;
     trimOffset: number;
     trimLength: number;
+    trimType: TrimMarkType;
     hideTrimMarks?: Partial<HideTrimMarkOptions>;
   },
 ) {
@@ -267,6 +279,7 @@ export function drawTrimMarksRect(
       // to
       origin.x - srcSizeHalf.x - trimOffset,
       origin.y - srcSizeHalf.y,
+      trimType,
     );
   }
 
@@ -280,6 +293,7 @@ export function drawTrimMarksRect(
       // to
       origin.x - srcSizeHalf.x,
       origin.y - srcSizeHalf.y - trimOffset,
+      trimType,
     );
   }
 
@@ -293,6 +307,7 @@ export function drawTrimMarksRect(
       // to
       origin.x + srcSizeHalf.x + trimOffset + trimLength,
       origin.y - srcSizeHalf.y,
+      trimType,
     );
   }
 
@@ -306,6 +321,7 @@ export function drawTrimMarksRect(
       // to
       origin.x + srcSizeHalf.x,
       origin.y - srcSizeHalf.y - trimOffset,
+      trimType,
     );
   }
 
@@ -319,6 +335,7 @@ export function drawTrimMarksRect(
       // to
       origin.x - srcSizeHalf.x - trimOffset,
       origin.y + srcSizeHalf.y,
+      trimType,
     );
   }
 
@@ -332,6 +349,7 @@ export function drawTrimMarksRect(
       // to
       origin.x - srcSizeHalf.x,
       origin.y + srcSizeHalf.y + trimOffset,
+      trimType,
     );
   }
 
@@ -345,6 +363,7 @@ export function drawTrimMarksRect(
       // to
       origin.x + srcSizeHalf.x + trimOffset + trimLength,
       origin.y + srcSizeHalf.y,
+      trimType,
     );
   }
 
@@ -358,6 +377,7 @@ export function drawTrimMarksRect(
       // to
       origin.x + srcSizeHalf.x,
       origin.y + srcSizeHalf.y + trimOffset,
+      trimType,
     );
   }
 }
@@ -413,12 +433,14 @@ export function drawPageWithTrimMarks(
     srcBleedArea = 0,
     trimLength = 0,
     trimOffset = 0,
+    trimType = "default",
     hideTrimMarks = {},
   }: {
     srcPageScale?: number;
     srcBleedArea?: number;
     trimLength?: number;
     trimOffset?: number;
+    trimType?: TrimMarkType;
     hideTrimMarks?: Partial<HideTrimMarkOptions>;
   } = {},
 ) {
@@ -441,6 +463,7 @@ export function drawPageWithTrimMarks(
     trimLength,
     trimOffset,
     hideTrimMarks,
+    trimType,
   });
 }
 
@@ -454,6 +477,7 @@ export function drawSpread(
     srcPageScale = 1,
     trimLength,
     trimOffset,
+    trimType,
     hideTrimMarks = {},
   }: {
     origin: Vec2;
@@ -463,6 +487,7 @@ export function drawSpread(
     srcPageScale?: number;
     trimLength: number;
     trimOffset: number;
+    trimType: TrimMarkType;
     hideTrimMarks?: Partial<HideTrimMarkOptions>;
   },
 ) {
@@ -499,6 +524,7 @@ export function drawSpread(
     srcBleedArea,
     trimLength,
     trimOffset,
+    trimType,
     hideTrimMarks: {
       ...hideRightTrimMarks,
       topLeftHoriz,
@@ -513,6 +539,7 @@ export function drawSpread(
     srcBleedArea,
     trimLength,
     trimOffset,
+    trimType,
     hideTrimMarks: {
       ...hideLeftTrimMarks,
       topRightHoriz,

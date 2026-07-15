@@ -27,6 +27,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     srcBleedArea,
     trimLength,
     trimOffset,
+    trimType,
   } = getCommonSettings(rawSettings);
 
   const sheetSize = new Vec2(sheetWidth, sheetHeight);
@@ -75,6 +76,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
           srcSize: srcSize.sub(scaledBleedArea, scaledBleedArea),
           trimLength,
           trimOffset,
+          trimType,
           hideTrimMarks: {
             bottomLeftHoriz: col > 0,
             bottomLeftVert: row > 0,

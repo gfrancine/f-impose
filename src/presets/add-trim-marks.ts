@@ -27,6 +27,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     srcBleedArea,
     trimLength,
     trimOffset,
+    trimType,
   } = getCommonSettings(rawSettings);
   const sheetSize = new Vec2(sheetWidth, sheetHeight);
   const sheetCenter = sheetSize.div(2); // always work with center anchor points/origins
@@ -38,6 +39,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
       srcBleedArea,
       trimLength,
       trimOffset,
+      trimType,
     });
   }
 

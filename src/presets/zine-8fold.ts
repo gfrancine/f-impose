@@ -31,8 +31,14 @@ const indexMap = [
 
 async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const { outPdf, srcPages } = await setupOutPdf(srcPdf);
-  const { sheetWidth, sheetHeight, srcPageScale, trimLength, trimOffset } =
-    getCommonSettings(rawSettings);
+  const {
+    sheetWidth,
+    sheetHeight,
+    srcPageScale,
+    trimLength,
+    trimOffset,
+    trimType,
+  } = getCommonSettings(rawSettings);
 
   assert(
     srcPages.length % 8 === 0,
@@ -83,6 +89,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
       srcSize: new Vec2(srcSize.x * N_COLS, srcSize.y * N_ROWS),
       trimLength,
       trimOffset,
+      trimType,
     });
   }
 
