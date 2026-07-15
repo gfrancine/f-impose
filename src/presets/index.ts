@@ -15,14 +15,14 @@ import repeatingGrid from "./repeating-grid";
 import sequentialGrid from "./sequential-grid";
 
 export const UTILITY_PRESETS = {
-  addTrimMarks,
+  reduceInk,
   longShortEdgeFlip,
   removeInnerBleed,
-  reduceInk,
   markSpineHoles,
 };
 
 export const LAYOUT_PRESETS = {
+  addTrimMarks,
   saddleStitch,
   saddleStitch4Up,
   saddleStitch4UpTall,
@@ -39,4 +39,4 @@ export const PRESETS = {
 
 export type PresetId = keyof typeof PRESETS;
 
-export const DEFAULT_PRESET_ID: PresetId = "addTrimMarks";
+export const DEFAULT_PRESET_ID: PresetId = "reduceInk";
