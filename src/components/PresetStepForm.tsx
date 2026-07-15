@@ -92,7 +92,7 @@ export default function PresetStepForm({
         </>
       )}
       <label>
-        Select Layout Preset{" "}
+        Select Imposition Preset{" "}
         <select
           value={presetId}
           onChange={(e) => onPresetIdChange?.(e.target.value as PresetId)}

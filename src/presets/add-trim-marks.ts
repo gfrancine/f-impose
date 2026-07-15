@@ -11,7 +11,7 @@ import { defineSettingsSchema, type RawSettings } from "../settings";
 import { setupOutPdf, commonPresetSettings } from "./helpers";
 
 const name = "Add Trim Marks";
-const description = "Generic preset for imposing any PDF file with trim marks.";
+const description = "Impose any PDF file with trim marks.";
 
 const { commonSchemaItems, getCommonSettings } = commonPresetSettings({
   orientation: "portrait",
