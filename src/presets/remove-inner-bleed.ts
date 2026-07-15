@@ -30,8 +30,8 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     assert(newWidth > 0, "Bleed area must be smaller than page width");
     const isRecto = (i + 1) % 2 === 1; // right-hand page
 
-    const sheet = outPdf.addPage([newWidth, srcPage.height]);
-    sheet.drawPage(srcPage, {
+    const outPage = outPdf.addPage([newWidth, srcPage.height]);
+    outPage.drawPage(srcPage, {
       x: isRecto ? -srcBleedArea : 0,
       y: 0,
       width: srcPage.width,

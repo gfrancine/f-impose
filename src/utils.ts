@@ -119,8 +119,8 @@ export async function mergePdfs(srcPdfs: PDFDocument[]) {
 // pdf-lib drawing utils
 // --------
 
-export function debugPoint(sheet: PDFPage, origin: Vec2) {
-  sheet.drawRectangle({
+export function debugPoint(page: PDFPage, origin: Vec2) {
+  page.drawRectangle({
     x: origin.x,
     y: origin.y,
     width: 10,
@@ -130,7 +130,7 @@ export function debugPoint(sheet: PDFPage, origin: Vec2) {
 }
 
 export function drawTrimMark(
-  sheet: PDFPage,
+  page: PDFPage,
   fromX: number,
   fromY: number,
   toX: number,
@@ -139,14 +139,14 @@ export function drawTrimMark(
   const start = { x: fromX, y: fromY };
   const end = { x: toX, y: toY };
 
-  sheet.drawLine({
+  page.drawLine({
     start,
     end,
     thickness: 1.5,
     color: rgb(1, 1, 1),
   });
 
-  sheet.drawLine({
+  page.drawLine({
     start,
     end,
     thickness: 0.5,
@@ -155,7 +155,7 @@ export function drawTrimMark(
 }
 
 export function drawTrimMarksLine(
-  sheet: PDFPage,
+  page: PDFPage,
   {
     origin,
     srcLength,
@@ -178,7 +178,7 @@ export function drawTrimMarksLine(
   // top
   if (orientation === "vert" && !hideTrimMarks.line1) {
     drawTrimMark(
-      sheet,
+      page,
       // from
       origin.x,
       origin.y + srcLengthHalf + trimOffset + trimLength,
@@ -191,7 +191,7 @@ export function drawTrimMarksLine(
   // bottom
   if (orientation === "vert" && !hideTrimMarks.line2) {
     drawTrimMark(
-      sheet,
+      page,
       // from
       origin.x,
       origin.y - srcLengthHalf - trimOffset - trimLength,
@@ -204,7 +204,7 @@ export function drawTrimMarksLine(
   // left
   if (orientation === "horiz" && !hideTrimMarks.line1) {
     drawTrimMark(
-      sheet,
+      page,
       // from
       origin.x - srcLengthHalf - trimOffset - trimLength,
       origin.y,
@@ -217,7 +217,7 @@ export function drawTrimMarksLine(
   // right
   if (orientation === "horiz" && !hideTrimMarks.line2) {
     drawTrimMark(
-      sheet,
+      page,
       // from
       origin.x + srcLengthHalf + trimOffset,
       origin.y,
@@ -240,7 +240,7 @@ type HideTrimMarkOptions = {
 };
 
 export function drawTrimMarksRect(
-  sheet: PDFPage,
+  page: PDFPage,
   {
     origin,
     srcSize,
@@ -260,7 +260,7 @@ export function drawTrimMarksRect(
   // bottom left, horiz
   if (!hideTrimMarks.bottomLeftHoriz) {
     drawTrimMark(
-      sheet,
+      page,
       // from
       origin.x - srcSizeHalf.x - trimOffset - trimLength,
       origin.y - srcSizeHalf.y,
@@ -273,7 +273,7 @@ export function drawTrimMarksRect(
   // bottom left, vert
   if (!hideTrimMarks.bottomLeftVert) {
     drawTrimMark(
-      sheet,
+      page,
       // from
       origin.x - srcSizeHalf.x,
       origin.y - srcSizeHalf.y - trimOffset - trimLength,
@@ -286,7 +286,7 @@ export function drawTrimMarksRect(
   // bottom right, horiz
   if (!hideTrimMarks.bottomRightHoriz) {
     drawTrimMark(
-      sheet,
+      page,
       // from
       origin.x + srcSizeHalf.x + trimOffset,
       origin.y - srcSizeHalf.y,
@@ -299,7 +299,7 @@ export function drawTrimMarksRect(
   // bottom right, vert
   if (!hideTrimMarks.bottomRightVert) {
     drawTrimMark(
-      sheet,
+      page,
       // from
       origin.x + srcSizeHalf.x,
       origin.y - srcSizeHalf.y - trimOffset - trimLength,
@@ -312,7 +312,7 @@ export function drawTrimMarksRect(
   // top left, horiz
   if (!hideTrimMarks.topLeftHoriz) {
     drawTrimMark(
-      sheet,
+      page,
       // from
       origin.x - srcSizeHalf.x - trimOffset - trimLength,
       origin.y + srcSizeHalf.y,
@@ -325,7 +325,7 @@ export function drawTrimMarksRect(
   // top left, vert
   if (!hideTrimMarks.topLeftVert) {
     drawTrimMark(
-      sheet,
+      page,
       // from
       origin.x - srcSizeHalf.x,
       origin.y + srcSizeHalf.y + trimOffset + trimLength,
@@ -338,7 +338,7 @@ export function drawTrimMarksRect(
   // top right, horiz
   if (!hideTrimMarks.topRightHoriz) {
     drawTrimMark(
-      sheet,
+      page,
       // from
       origin.x + srcSizeHalf.x + trimOffset,
       origin.y + srcSizeHalf.y,
@@ -351,7 +351,7 @@ export function drawTrimMarksRect(
   // top right, vert
   if (!hideTrimMarks.topRightVert) {
     drawTrimMark(
-      sheet,
+      page,
       // from
       origin.x + srcSizeHalf.x,
       origin.y + srcSizeHalf.y + trimOffset + trimLength,
@@ -367,7 +367,7 @@ export function drawTrimMarksRect(
  * page scaling, for better integration with the app
  */
 export function drawPageWithTransform(
-  sheet: PDFPage,
+  outPage: PDFPage,
   srcPage: PDFEmbeddedPage,
   origin: Vec2,
   {
@@ -395,7 +395,7 @@ export function drawPageWithTransform(
     sizeHalf.x * s + sizeHalf.y * c,
   );
 
-  sheet.drawPage(srcPage, {
+  outPage.drawPage(srcPage, {
     x: bottomLeft.x,
     y: bottomLeft.y,
     width: size.x,
@@ -405,7 +405,7 @@ export function drawPageWithTransform(
 }
 
 export function drawPageWithTrimMarks(
-  sheet: PDFPage,
+  outPage: PDFPage,
   srcPage: PDFEmbeddedPage,
   origin: Vec2,
   {
@@ -425,14 +425,14 @@ export function drawPageWithTrimMarks(
   const srcSize = new Vec2(srcPage.width, srcPage.height).mul(srcPageScale);
   const srcSizeHalf = srcSize.div(2);
 
-  sheet.drawPage(srcPage, {
+  outPage.drawPage(srcPage, {
     x: origin.x - srcSizeHalf.x,
     y: origin.y - srcSizeHalf.y,
     width: srcSize.x,
     height: srcSize.y,
   });
 
-  drawTrimMarksRect(sheet, {
+  drawTrimMarksRect(outPage, {
     origin,
     srcSize: srcSize.sub(
       srcBleedArea * 2 * srcPageScale,
@@ -445,7 +445,7 @@ export function drawPageWithTrimMarks(
 }
 
 export function drawSpread(
-  sheet: PDFPage,
+  outPage: PDFPage,
   {
     origin,
     leftPage,
@@ -494,7 +494,7 @@ export function drawSpread(
     bottomRightVert: true,
   };
 
-  drawPageWithTrimMarks(sheet, leftPage, leftPageOrigin, {
+  drawPageWithTrimMarks(outPage, leftPage, leftPageOrigin, {
     srcPageScale,
     srcBleedArea,
     trimLength,
@@ -508,7 +508,7 @@ export function drawSpread(
     },
   });
 
-  drawPageWithTrimMarks(sheet, rightPage, rightPageOrigin, {
+  drawPageWithTrimMarks(outPage, rightPage, rightPageOrigin, {
     srcPageScale,
     srcBleedArea,
     trimLength,

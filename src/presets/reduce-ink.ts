@@ -40,14 +40,14 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   for (const srcPage of srcPages) {
     const w = srcPage.width;
     const h = srcPage.height;
-    const sheet = outPdf.addPage([w, h]);
+    const outPage = outPdf.addPage([w, h]);
 
     // For some reason the `opacity` option doesn't affect trim marks
     // drawn by this app. Use a white rectangle monkey-patch for now
-    // sheet.drawPage(srcPage, { x: 0, y: 0, width: w, height: h, opacity });
+    // outPage.drawPage(srcPage, { x: 0, y: 0, width: w, height: h, opacity });
 
-    sheet.drawPage(srcPage, { x: 0, y: 0, width: w, height: h });
-    sheet.drawRectangle({
+    outPage.drawPage(srcPage, { x: 0, y: 0, width: w, height: h });
+    outPage.drawRectangle({
       // white rectangle
       x: 0,
       y: 0,

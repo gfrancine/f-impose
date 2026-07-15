@@ -33,8 +33,8 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const sheetCenter = sheetSize.div(2);
 
   for (const srcPage of srcPages) {
-    // create sheet
-    const sheet = outPdf.addPage([sheetSize.x, sheetSize.y]);
+    // create outPage
+    const outPage = outPdf.addPage([sheetSize.x, sheetSize.y]);
 
     const isSrcLandscape = srcPage.width > srcPage.height;
     const srcSize = (
@@ -50,7 +50,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     const N_ROWS = 4;
     const N_COLS = 2;
 
-    // bottom-left corner of row 0 col 0, based on the sheet center
+    // bottom-left corner of row 0 col 0, based on the outPage center
     const corner = sheetCenter.sub(
       (srcSize.x * N_COLS) / 2,
       (srcSize.y * N_ROWS) / 2,
@@ -63,14 +63,14 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
           corner.y + srcSize.y * row,
         ).addVec(srcSize.div(2));
 
-        drawPageWithTransform(sheet, srcPage, origin, {
+        drawPageWithTransform(outPage, srcPage, origin, {
           rotateDeg: isSrcLandscape ? 0 : 90,
           srcPageScale,
         });
 
         const scaledBleedArea = srcBleedArea * 2 * srcPageScale;
 
-        drawTrimMarksRect(sheet, {
+        drawTrimMarksRect(outPage, {
           origin,
           srcSize: srcSize.sub(scaledBleedArea, scaledBleedArea),
           trimLength,

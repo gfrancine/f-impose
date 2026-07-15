@@ -51,8 +51,8 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     srcPageScale;
 
   for (let i = 0; i < indexGroups.length; i += 2) {
-    const frontSheet = outPdf.addPage([sheetSize.x, sheetSize.y]);
-    const backSheet = outPdf.addPage([sheetSize.x, sheetSize.y]);
+    const frontOutPage = outPdf.addPage([sheetSize.x, sheetSize.y]);
+    const backOutPage = outPdf.addPage([sheetSize.x, sheetSize.y]);
 
     const leaf1 = indexGroups[i];
     const leaf2: SaddleStitchIndexGroup | undefined = indexGroups[i + 1]; // may not exist. test handling with odd leaf count booklets
@@ -69,7 +69,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
 
     const leaf1Width = calcLeafTotalWidth(leaf1);
 
-    drawSpread(frontSheet, {
+    drawSpread(frontOutPage, {
       origin: sheetCenter.sub(leaf1Width / 2, 0),
       leftPage: srcPages[leaf1.front2],
       rightPage: srcPages[leaf1.front1],
@@ -80,7 +80,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
       hideTrimMarks: hideRightHorizTrimMarks,
     });
 
-    drawSpread(backSheet, {
+    drawSpread(backOutPage, {
       origin: sheetCenter.add(leaf1Width / 2, 0),
       leftPage: srcPages[leaf1.back1],
       rightPage: srcPages[leaf1.back2],
@@ -94,7 +94,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     if (leaf2) {
       const leaf2Width = calcLeafTotalWidth(leaf2);
 
-      drawSpread(frontSheet, {
+      drawSpread(frontOutPage, {
         origin: sheetCenter.add(leaf2Width / 2, 0),
         leftPage: srcPages[leaf2.front2],
         rightPage: srcPages[leaf2.front1],
@@ -105,7 +105,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
         hideTrimMarks: hideLeftHorizTrimMarks,
       });
 
-      drawSpread(backSheet, {
+      drawSpread(backOutPage, {
         origin: sheetCenter.sub(leaf2Width / 2, 0),
         leftPage: srcPages[leaf2.back1],
         rightPage: srcPages[leaf2.back2],

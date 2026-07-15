@@ -32,8 +32,8 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const sheetCenter = sheetSize.div(2); // always work with center anchor points/origins
 
   for (const srcPage of srcPages) {
-    const sheet = outPdf.addPage([sheetSize.x, sheetSize.y]);
-    drawPageWithTrimMarks(sheet, srcPage, sheetCenter, {
+    const outPage = outPdf.addPage([sheetSize.x, sheetSize.y]);
+    drawPageWithTrimMarks(outPage, srcPage, sheetCenter, {
       srcPageScale,
       srcBleedArea,
       trimLength,

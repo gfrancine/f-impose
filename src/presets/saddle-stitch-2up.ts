@@ -38,10 +38,10 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const indexGroups = mapIndicesSaddleStitch(srcPages.length);
 
   for (const indexGroup of indexGroups) {
-    const frontSheet = outPdf.addPage([sheetSize.x, sheetSize.y]);
-    const backSheet = outPdf.addPage([sheetSize.x, sheetSize.y]);
+    const frontOutPage = outPdf.addPage([sheetSize.x, sheetSize.y]);
+    const backOutPage = outPdf.addPage([sheetSize.x, sheetSize.y]);
 
-    drawSpread(frontSheet, {
+    drawSpread(frontOutPage, {
       origin: sheetCenter,
       rightPage: srcPages[indexGroup.front1],
       leftPage: srcPages[indexGroup.front2],
@@ -51,7 +51,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
       trimOffset,
     });
 
-    drawSpread(backSheet, {
+    drawSpread(backOutPage, {
       origin: sheetCenter,
       rightPage: srcPages[indexGroup.back2],
       leftPage: srcPages[indexGroup.back1],

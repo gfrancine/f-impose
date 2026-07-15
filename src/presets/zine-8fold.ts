@@ -49,13 +49,13 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
 
   // should we enforce a strict 8-page length instead?
   for (let s = 0; s < nSheets; s++) {
-    const sheet = outPdf.addPage([sheetWidth, sheetHeight]);
+    const outPage = outPdf.addPage([sheetWidth, sheetHeight]);
     const srcPagesOffset = s * 8; // index offset of the first page in the srcPages array
 
     const N_ROWS = 2;
     const N_COLS = 4;
 
-    // bottom-left corner of row 0 col 0, based on the sheet center
+    // bottom-left corner of row 0 col 0, based on the outPage center
     const corner = sheetCenter.sub(
       (srcSize.x * N_COLS) / 2,
       (srcSize.y * N_ROWS) / 2,
@@ -71,14 +71,14 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
         ).addVec(srcSizeHalf);
 
         const rotateDeg = row === 1 ? 180 : 0;
-        drawPageWithTransform(sheet, srcPage, origin, {
+        drawPageWithTransform(outPage, srcPage, origin, {
           rotateDeg,
           srcPageScale,
         });
       }
     }
 
-    drawTrimMarksRect(sheet, {
+    drawTrimMarksRect(outPage, {
       origin: sheetCenter,
       srcSize: new Vec2(srcSize.x * N_COLS, srcSize.y * N_ROWS),
       trimLength,
