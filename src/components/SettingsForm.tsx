@@ -8,6 +8,7 @@ import type {
   SettingsSchema,
 } from "../settings";
 import { set } from "../utils";
+import { useId } from "react";
 
 function NumberInput({
   schema,
@@ -19,12 +20,13 @@ function NumberInput({
   onChange?: (value: string) => unknown;
 }) {
   const { name, min, max } = schema;
+  const htmlId = useId();
 
   return (
-    <label htmlFor={schema.id}>
+    <label htmlFor={htmlId} title={schema.tooltip}>
       {name}{" "}
       <input
-        id={schema.id}
+        id={htmlId}
         type="number"
         min={min}
         max={max}
@@ -56,11 +58,12 @@ function CheckboxInput({
   onChange?: (value: string) => unknown;
 }) {
   const { name } = schema;
+  const htmlId = useId();
 
   return (
-    <label htmlFor={schema.id}>
+    <label htmlFor={htmlId} title={schema.tooltip}>
       <input
-        id={schema.id}
+        id={htmlId}
         type="checkbox"
         checked={value === "true"}
         onChange={(e) => onChange?.(e.target.checked + "")}
@@ -80,12 +83,13 @@ function SelectInput({
   onChange?: (value: string) => unknown;
 }) {
   const { name, options } = schema;
+  const htmlId = useId();
 
   return (
-    <label htmlFor={schema.id}>
+    <label htmlFor={htmlId} title={schema.tooltip}>
       {name}{" "}
       <select
-        id={schema.id}
+        id={htmlId}
         value={value}
         onChange={(e) => onChange?.(e.target.value)}
       >
@@ -110,6 +114,7 @@ function ButtonInput({
 }) {
   return (
     <button
+      title={schema.tooltip}
       onClick={() =>
         schema.onClick(rawSettings, (updated) => setRawSettings?.(updated))
       }
@@ -158,7 +163,7 @@ export default function SettingsForm({
         />
       ) : item.type === "buttonGroup" ? (
         <span key={item.id}>
-          <label>{item.name} </label>
+          <label title={item.tooltip}>{item.name} </label>
           {item.buttons.map((button) => schemaItemToElement(button))}
         </span>
       ) : item.type === "button" ? (

@@ -47,6 +47,7 @@ export function unitsSettings() {
   const unitsInputSchema = selectInput({
     id: "units",
     name: "Units",
+    tooltip: "Sets the measurement units used in this preset's settings.",
     defaultValue: "mm",
     options: [
       { id: "mm", name: "Millimeters" },
@@ -141,6 +142,7 @@ export function commonPresetSettings({
     const flipButton = buttonInput({
       id: "flipSheetSizes",
       name: "Flip",
+      tooltip: "Flips the output sheet's width and height.",
       onClick: (rawSettings, setRawSettings) => {
         const { sheetWidth, sheetHeight } = getSettings(rawSettings, {
           sheetWidth: (v: string) => v,
@@ -158,13 +160,15 @@ export function commonPresetSettings({
       inputRow([
         numberInput({
           id: "sheetWidth",
-          name: "Sheet Width",
+          name: "Output Sheet Width",
+          // tooltip: "The output sheet's width.",
           defaultValue: sheetWidth,
           min: 1,
         }),
         numberInput({
           id: "sheetHeight",
-          name: "Sheet Height",
+          name: "Output Sheet Height",
+          // tooltip: "The output sheet's height.",
           defaultValue: sheetHeight,
           min: 1,
         }),
@@ -172,7 +176,7 @@ export function commonPresetSettings({
       ]),
       buttonGroup({
         id: "sheetSizePresets",
-        name: "Sheet Presets",
+        name: "Output Sheet Presets",
         buttons: Object.keys(SHEET_SIZE_PRESET_DIMS).map((presetName) =>
           sheetPresetButton(presetName as SheetSizePresetName),
         ),
@@ -184,7 +188,8 @@ export function commonPresetSettings({
     commonSchemaItems.push(
       numberInput({
         id: "srcPageScale",
-        name: "Scale Source Pages (%)",
+        name: "Resize Source PDF Pages (%)",
+        tooltip: "How much to resize the original PDF's pages when imposed.",
         defaultValue: 100,
         min: 0,
       }),
@@ -195,7 +200,9 @@ export function commonPresetSettings({
     commonSchemaItems.push(
       numberInput({
         id: "srcBleedArea",
-        name: "Source Bleed Area",
+        name: "Source PDF Bleed Area",
+        tooltip:
+          "Set this to the original PDF's bleed area, if it comes with one. Affects the position of the trim marks.",
         defaultValue: commonDefaults.srcBleedArea,
         min: 0,
       }),
@@ -208,12 +215,14 @@ export function commonPresetSettings({
         numberInput({
           id: "trimLength",
           name: "Trim Mark Length",
+          tooltip: "The length of the trim marks.",
           defaultValue: commonDefaults.trimLength,
           min: 0,
         }),
         numberInput({
           id: "trimOffset",
           name: "Trim Mark Offset",
+          tooltip: "How far the trim marks will be offset from the crop area.",
           defaultValue: commonDefaults.trimOffset,
           min: 0,
         }),
@@ -222,6 +231,8 @@ export function commonPresetSettings({
         id: "trimType",
         name: "Trim Mark Color",
         defaultValue: "default",
+        tooltip:
+          "Sets the trim mark style. The default trim mark is a single black line with white margins and good for darker artwork. The inverted trim mark is a white line with black margins.",
         options: [
           { id: "default", name: "Default" },
           { id: "inverted", name: "Inverted" },
@@ -282,7 +293,9 @@ export function gridPresetSettings({
     gridSchemaItems.push(
       checkboxInput({
         id: "excessTrimEnabled",
-        name: "Show all trim marks (creates an extra gutter in the layout)",
+        name: "Show all in-between trim marks (creates an extra gutter in the layout)",
+        tooltip:
+          "When disabled, hides the in-between trim marks in grid layouts to save space.",
         defaultValue: false,
       }),
     );

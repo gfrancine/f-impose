@@ -21,7 +21,7 @@ import { assert } from "../utils";
 
 const name = "Mark Spine Holes";
 const description =
-  "Takes a PDF with facing pages and adds small markers on the spine/inner side of pages, where holes can be punched for bookbinding.";
+  "Takes a PDF with facing pages and adds small markers on the spine or centerfold, where holes can be punched for stitching/binding.";
 
 // Preset settings
 const { getUnitsSetting, unitsInputSchema } = unitsSettings();

@@ -18,6 +18,7 @@ type OptionalDefaultValue<T extends Record<"defaultValue", unknown>> =
 export interface BaseInputSchema {
   id: string;
   name: string;
+  tooltip?: string;
 }
 
 export interface NumberInputSchema extends BaseInputSchema {
@@ -27,14 +28,10 @@ export interface NumberInputSchema extends BaseInputSchema {
   max?: number;
 }
 
-export function numberInput({
-  id,
-  name,
-  min,
-  max,
-  defaultValue = 0,
-}: NoType<OptionalDefaultValue<NumberInputSchema>>): NumberInputSchema {
-  return { type: "number", id, name, min, max, defaultValue };
+export function numberInput(
+  schema: NoType<OptionalDefaultValue<NumberInputSchema>>,
+): NumberInputSchema {
+  return { type: "number", defaultValue: 0, ...schema };
 }
 
 export interface CheckboxInputSchema extends BaseInputSchema {
@@ -42,12 +39,10 @@ export interface CheckboxInputSchema extends BaseInputSchema {
   defaultValue: boolean;
 }
 
-export function checkboxInput({
-  id,
-  name,
-  defaultValue = false,
-}: NoType<OptionalDefaultValue<CheckboxInputSchema>>): CheckboxInputSchema {
-  return { type: "checkbox", id, name, defaultValue };
+export function checkboxInput(
+  schema: NoType<OptionalDefaultValue<CheckboxInputSchema>>,
+): CheckboxInputSchema {
+  return { type: "checkbox", defaultValue: false, ...schema };
 }
 
 export interface SelectInputSchema extends BaseInputSchema {
@@ -56,13 +51,10 @@ export interface SelectInputSchema extends BaseInputSchema {
   options: { id: string; name: string }[];
 }
 
-export function selectInput({
-  id,
-  name,
-  defaultValue, // required
-  options,
-}: NoType<SelectInputSchema>): SelectInputSchema {
-  return { type: "select", id, name, defaultValue, options };
+export function selectInput(
+  schema: NoType<SelectInputSchema>,
+): SelectInputSchema {
+  return { type: "select", ...schema };
 }
 
 export interface ButtonInputSchema extends BaseInputSchema {
@@ -73,27 +65,24 @@ export interface ButtonInputSchema extends BaseInputSchema {
   ) => void;
 }
 
-export function buttonInput({
-  id,
-  name,
-  onClick,
-}: NoType<ButtonInputSchema>): ButtonInputSchema {
-  return { type: "button", id, name, onClick };
+export function buttonInput(
+  schema: NoType<ButtonInputSchema>,
+): ButtonInputSchema {
+  return { type: "button", ...schema };
 }
 
 export type ButtonGroupSchema = {
   type: "buttonGroup";
   id: string;
   name: string;
+  tooltip?: string;
   buttons: ButtonInputSchema[];
 };
 
-export function buttonGroup({
-  id,
-  name,
-  buttons,
-}: NoType<ButtonGroupSchema>): ButtonGroupSchema {
-  return { type: "buttonGroup", id, name, buttons };
+export function buttonGroup(
+  schema: NoType<ButtonGroupSchema>,
+): ButtonGroupSchema {
+  return { type: "buttonGroup", ...schema };
 }
 
 export type InputSchema =
