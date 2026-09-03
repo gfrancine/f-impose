@@ -4,7 +4,7 @@ Repeating grid imposition
 
 */
 
-import { PDFDocument } from "pdf-lib";
+import { PDFDocument, PDFEmbeddedPage } from "pdf-lib";
 import {
   calcExcessTrim,
   drawPageWithTransform,
@@ -31,9 +31,12 @@ const settingsSchema = defineSettingsSchema([
   ...gridSchemaItems,
 ]);
 
-async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
-  const { outPdf, srcPages } = await setupOutPdf(srcPdf);
-  const {
+export async function imposeRepeatingGrid(
+  outPdf: PDFDocument,
+  srcPages: PDFEmbeddedPage[],
+  {
+    nCols,
+    nRows,
     sheetWidth,
     sheetHeight,
     srcPageScale,
@@ -41,9 +44,9 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     trimLength,
     trimOffset,
     trimType,
-  } = getCommonSettings(rawSettings);
-  const { nCols, nRows, excessTrimEnabled } = getGridSettings(rawSettings);
-
+    excessTrimEnabled,
+  }: ReturnType<typeof getCommonSettings> & ReturnType<typeof getGridSettings>,
+) {
   const sheetSize = new Vec2(sheetWidth, sheetHeight);
   const sheetCenter = sheetSize.div(2);
 
@@ -98,6 +101,15 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
       }
     }
   }
+}
+
+async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
+  const { outPdf, srcPages } = await setupOutPdf(srcPdf);
+
+  await imposeRepeatingGrid(outPdf, srcPages, {
+    ...getCommonSettings(rawSettings),
+    ...getGridSettings(rawSettings),
+  });
 
   return [outPdf];
 }

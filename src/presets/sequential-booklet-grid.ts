@@ -20,7 +20,7 @@ import {
 } from "./helpers";
 
 const name = "Sequential Booklet Grid";
-const description = `Imposes booklets (left-to-right, top-to-bottom) on a grid with a flexible amount of rows and columns. (Note: all pages must have the same size!)`;
+const description = `Imposes saddle-stitched booklets or signatures on a grid (left-to-right, top-to-bottom) with a flexible amount of rows and columns. (Note: all pages must have the same size!)`;
 
 const { commonSchemaItems, getCommonSettings } = commonPresetSettings({
   orientation: "landscape",
@@ -31,9 +31,12 @@ const settingsSchema = defineSettingsSchema([
   ...gridSchemaItems,
 ]);
 
-async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
-  const { outPdf, srcPages } = await setupOutPdf(srcPdf);
-  const {
+export async function imposeSequentialBookletGrid(
+  outPdf: PDFDocument,
+  srcPages: PDFEmbeddedPage[],
+  {
+    nCols,
+    nRows,
     sheetWidth,
     sheetHeight,
     srcPageScale,
@@ -41,9 +44,9 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     trimLength,
     trimOffset,
     trimType,
-  } = getCommonSettings(rawSettings);
-  const { nCols, nRows, excessTrimEnabled } = getGridSettings(rawSettings);
-
+    excessTrimEnabled,
+  }: ReturnType<typeof getCommonSettings> & ReturnType<typeof getGridSettings>,
+) {
   const sheetSize = new Vec2(sheetWidth, sheetHeight);
   const sheetCenter = sheetSize.div(2);
 
@@ -162,6 +165,15 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
       }
     }
   }
+}
+
+async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
+  const { outPdf, srcPages } = await setupOutPdf(srcPdf);
+
+  await imposeSequentialBookletGrid(outPdf, srcPages, {
+    ...getCommonSettings(rawSettings),
+    ...getGridSettings(rawSettings),
+  });
 
   return [outPdf];
 }
