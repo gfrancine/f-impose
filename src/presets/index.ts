@@ -13,6 +13,7 @@ import zine8Fold from "./zine-8fold";
 import businessCard from "./business-card-8up";
 import repeatingGrid from "./repeating-grid";
 import sequentialGrid from "./sequential-grid";
+import sequentialBookletGrid from "./sequential-booklet-grid";
 
 export const UTILITY_PRESETS = {
   reduceInk,
@@ -30,6 +31,7 @@ export const LAYOUT_PRESETS = {
   businessCard,
   repeatingGrid,
   sequentialGrid,
+  sequentialBookletGrid,
 };
 
 export const PRESETS = {
