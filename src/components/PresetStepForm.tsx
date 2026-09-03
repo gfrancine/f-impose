@@ -71,26 +71,38 @@ export default function PresetStepForm({
   onPresetIdChange,
   onRawSettingsChange,
   onDelete,
+  onMoveUp,
+  onMoveDown,
 }: {
   presetId: PresetId;
   rawSettings: RawSettings;
   onPresetIdChange?: (presetId: PresetId) => unknown;
   onRawSettingsChange?: (rawSettings: RawSettings) => unknown;
   onDelete?: () => unknown;
+  onMoveUp?: () => unknown;
+  onMoveDown?: () => unknown;
 }) {
   const currentPreset = PRESETS[presetId];
 
   return (
     <fieldset>
       <legend>Preset</legend>
-      {onDelete && (
-        <>
-          <div>
-            <button onClick={onDelete}>Delete Step</button>
-          </div>
-          <br />
-        </>
-      )}
+      <div>
+        {onDelete && <button onClick={onDelete}>Delete Step</button>}
+        {onMoveUp && (
+          <>
+            {" "}
+            <button onClick={onMoveUp}>Move Up</button>
+          </>
+        )}
+        {onMoveDown && (
+          <>
+            {" "}
+            <button onClick={onMoveDown}>Move Down</button>
+          </>
+        )}
+      </div>
+      {onDelete || onMoveUp || onMoveDown ? <br /> : <></>}
       <label>
         Select Imposition Preset{" "}
         <select

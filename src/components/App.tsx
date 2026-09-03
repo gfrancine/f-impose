@@ -21,6 +21,21 @@ function App() {
   >([]);
   const [shouldMergeResults, setShouldMergeResults] = useState(false);
 
+  const addPresetStep = () => setPresetSteps([...presetSteps, newPresetStep()]);
+
+  const deletePresetStep = (i: number) =>
+    setPresetSteps(removeFromArray(presetSteps, i));
+
+  const movePresetStep = (from: number, to: number) => {
+    const newPresetSteps = [...presetSteps];
+    const step = newPresetSteps.splice(from, 1)[0];
+    newPresetSteps.splice(to, 0, step);
+    setPresetSteps(newPresetSteps);
+  };
+
+  const movePresetStepUp = (i: number) => movePresetStep(i, i - 1);
+  const movePresetStepDown = (i: number) => movePresetStep(i, i + 1);
+
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -28,10 +43,6 @@ function App() {
     if (!files || files.length === 0) return;
     setInputFiles(Array.from(files));
   };
-
-  const addPresetStep = () => setPresetSteps([...presetSteps, newPresetStep()]);
-  const deletePresetStep = (i: number) =>
-    setPresetSteps(removeFromArray(presetSteps, i));
 
   const impose = async () => {
     if (inputFiles.length === 0) return;
@@ -141,7 +152,19 @@ function App() {
               setArray(presetSteps, i, { ...presetStep, rawSettings }),
             )
           }
-          onDelete={i > 0 ? () => deletePresetStep(i) : undefined}
+          onDelete={
+            presetSteps.length > 1 ? () => deletePresetStep(i) : undefined
+          }
+          onMoveDown={
+            presetSteps.length > 1 && i < presetSteps.length - 1
+              ? () => movePresetStepDown(i)
+              : undefined
+          }
+          onMoveUp={
+            presetSteps.length > 1 && i > 0
+              ? () => movePresetStepUp(i)
+              : undefined
+          }
         />
       ))}
       <p>
