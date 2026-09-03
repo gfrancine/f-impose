@@ -81,12 +81,12 @@ export function calcExcessTrim(
 }
 
 // one leaf
-export type SaddleStitchIndexGroup = {
+export interface SaddleStitchIndexGroup {
   front1: number; // front page, right-hand side
   front2: number; // front page, left-hand side
   back1: number; // back page of front1
   back2: number; // back page of front2
-};
+}
 
 /**
  * Map saddle stitch page indices. Takes a page length and groups per sheet
@@ -238,7 +238,7 @@ export function drawTrimMarksLine(
   }
 }
 
-type HideTrimMarkOptions = {
+interface HideTrimMarkOptions {
   bottomLeftHoriz: boolean;
   bottomLeftVert: boolean;
   bottomRightHoriz: boolean;
@@ -247,7 +247,7 @@ type HideTrimMarkOptions = {
   topLeftVert: boolean;
   topRightHoriz: boolean;
   topRightVert: boolean;
-};
+}
 
 export function drawTrimMarksRect(
   page: PDFPage,

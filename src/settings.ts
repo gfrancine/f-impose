@@ -15,17 +15,17 @@ type NoType<T> = Omit<T, "type">;
 type OptionalDefaultValue<T extends Record<"defaultValue", unknown>> =
   PartialKeys<T, "defaultValue">;
 
-export type BaseInputSchema = {
+export interface BaseInputSchema {
   id: string;
   name: string;
-};
+}
 
-export type NumberInputSchema = BaseInputSchema & {
+export interface NumberInputSchema extends BaseInputSchema {
   type: "number";
   defaultValue: number;
   min?: number;
   max?: number;
-};
+}
 
 export function numberInput({
   id,
@@ -37,10 +37,10 @@ export function numberInput({
   return { type: "number", id, name, min, max, defaultValue };
 }
 
-export type CheckboxInputSchema = BaseInputSchema & {
+export interface CheckboxInputSchema extends BaseInputSchema {
   type: "checkbox";
   defaultValue: boolean;
-};
+}
 
 export function checkboxInput({
   id,
@@ -50,11 +50,11 @@ export function checkboxInput({
   return { type: "checkbox", id, name, defaultValue };
 }
 
-export type SelectInputSchema = BaseInputSchema & {
+export interface SelectInputSchema extends BaseInputSchema {
   type: "select";
   defaultValue: string;
   options: { id: string; name: string }[];
-};
+}
 
 export function selectInput({
   id,
@@ -65,13 +65,13 @@ export function selectInput({
   return { type: "select", id, name, defaultValue, options };
 }
 
-export type ButtonInputSchema = BaseInputSchema & {
+export interface ButtonInputSchema extends BaseInputSchema {
   type: "button";
   onClick: (
     rawSettings: RawSettings,
     setRawSettings: (updated: RawSettings) => void,
   ) => void;
-};
+}
 
 export function buttonInput({
   id,
@@ -102,10 +102,10 @@ export type InputSchema =
   | SelectInputSchema
   | ButtonInputSchema;
 
-export type InputRowSchema = {
+export interface InputRowSchema {
   type: "inputRow";
   inputs: SettingsItemSchema[];
-};
+}
 
 export function inputRow(inputs: SettingsItemSchema[]): InputRowSchema {
   return { type: "inputRow", inputs };

@@ -1,7 +1,7 @@
 import type { PDFDocument } from "pdf-lib";
 import type { RawSettings, SettingsSchema } from "./settings";
 
-export type Preset = {
+export interface Preset {
   name: string;
   description: string;
   settingsSchema?: SettingsSchema;
@@ -9,4 +9,4 @@ export type Preset = {
     srcPdf: PDFDocument,
     rawSettings: RawSettings,
   ) => Promise<PDFDocument>;
-};
+}
