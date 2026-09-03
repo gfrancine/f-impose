@@ -38,7 +38,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   } = getCommonSettings(rawSettings);
   const { nRows, nCols, excessTrimEnabled } = getGridSettings(rawSettings);
 
-  return outPdf;
+  return [outPdf];
 }
 
 export const preset: Preset = {

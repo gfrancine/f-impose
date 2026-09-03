@@ -30,7 +30,7 @@ async function impose(srcPdf: PDFDocument) {
     }
   }
 
-  return outPdf;
+  return [outPdf];
 }
 
 const preset: Preset = {

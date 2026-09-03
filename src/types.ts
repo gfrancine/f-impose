@@ -8,5 +8,5 @@ export interface Preset {
   impose: (
     srcPdf: PDFDocument,
     rawSettings: RawSettings,
-  ) => Promise<PDFDocument>;
+  ) => Promise<PDFDocument[]>;
 }

@@ -149,7 +149,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
     }
   }
 
-  return outPdf;
+  return [outPdf];
 }
 
 export const preset: Preset = {

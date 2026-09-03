@@ -4,7 +4,13 @@ import { PRESETS } from "../presets";
 import DummyGenerator from "./DummyGenerator";
 import PdfOutput from "./PdfOutput";
 import "./App.css";
-import { mergePdfs, pdfToUrl, removeFromArray, setArray } from "../utils";
+import {
+  mergePdfs,
+  pdfToUrl,
+  removeFromArray,
+  setArray,
+  toFilenameSafeDate,
+} from "../utils";
 import PresetStepForm, {
   newPresetStep,
   type PresetStep,
@@ -47,41 +53,46 @@ function App() {
   const impose = async () => {
     if (inputFiles.length === 0) return;
     setIsProcessing(true);
+    const jobTimestamp = new Date();
+    const jobFilenameSuffix = toFilenameSafeDate(jobTimestamp);
 
     try {
       // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Typed_arrays
-      const processFile = async (file: File) => {
-        let pdf = await PDFDocument.load(await file.arrayBuffer());
-        for (const presetStep of presetSteps) {
-          const { presetId, rawSettings } = presetStep;
-          const preset = PRESETS[presetId];
-          const newPdf = await preset.impose(pdf, rawSettings);
-          // pdf-lib can't handle nested embedded pages. The output needs
-          // to be rendered to file before feeding it to the next step
-          pdf = await PDFDocument.load(await newPdf.save());
-        }
-        return pdf;
-      };
+
+      let pdfs = await Promise.all(
+        inputFiles.map(
+          async (file) => await PDFDocument.load(await file.arrayBuffer()),
+        ),
+      );
+
+      const reloadPdf = async (pdf: PDFDocument) =>
+        await PDFDocument.load(await pdf.save());
+
+      for (const presetStep of presetSteps) {
+        const { presetId, rawSettings } = presetStep;
+        const preset = PRESETS[presetId];
+        const newPdfs = await Promise.all(
+          pdfs.map(async (pdf) => {
+            const outPdfs = await preset.impose(pdf, rawSettings);
+            return Promise.all(outPdfs.map(reloadPdf));
+          }),
+        );
+        pdfs = newPdfs.flat();
+      }
 
       if (shouldMergeResults) {
-        const pdfs = await Promise.all(
-          inputFiles.map((file) => processFile(file)),
-        );
         const mergedPdf = await mergePdfs(pdfs);
         const result = {
-          fileName: "merged.pdf",
+          fileName: `merged-${jobFilenameSuffix}.pdf`,
           downloadUrl: await pdfToUrl(mergedPdf),
         };
         setResults([result]);
       } else {
         const results = await Promise.all(
-          inputFiles.map(async (file) => {
-            const pdf = await processFile(file);
-            return {
-              fileName: file.name,
-              downloadUrl: await pdfToUrl(pdf),
-            };
-          }),
+          pdfs.map(async (pdf, i) => ({
+            fileName: `output-${i + 1}-${jobFilenameSuffix}.pdf`,
+            downloadUrl: await pdfToUrl(pdf),
+          })),
         );
         setResults(results);
       }

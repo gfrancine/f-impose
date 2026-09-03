@@ -1,7 +1,7 @@
 # Writing Presets
 
 - F-impose is essentially a preset engine, which means it can support any kind of imposition layout imaginable.
-- Every layout preset has the freedom to do whatever it wants as long as it takes a source `PDFDocument` and returns an output `PDFDocument`.
+- Every layout preset has the freedom to do whatever it wants as long as it takes a source `PDFDocument` and returns an array of output `PDFDocument`s.
 
 - A preset is a JavaScript object that consists of:
   - A string name

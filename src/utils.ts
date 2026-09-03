@@ -29,6 +29,17 @@ export function removeFromArray<T extends unknown[]>(array: T, index: number) {
   return newArray;
 }
 
+// "2026-09-03_14-45-00"
+// written by Gemini Fast 3
+export function toFilenameSafeDate(date: Date) {
+  return date
+    .toISOString()
+    .replace(/T/, "_") // replace T with an underscore
+    .replace(/:/g, "-") // replace colons with dashes
+    .split(".")[0]; // remove milliseconds
+}
+
+// Units
 export const mmToPts = (mm: number) => mm * 2.83465;
 export const mmToIn = (mm: number) => mm / 25.4;
 export const inToPts = (inches: number) => inches * 72;
