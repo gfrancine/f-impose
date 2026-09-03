@@ -31,7 +31,7 @@ export async function setupOutPdf(srcPdf: PDFDocument) {
 
 // should this be UPPER_SNAKE_CASE?
 export const commonDefaults = {
-  srcBleedArea: 3,
+  srcBleedArea: 0,
   trimLength: 5,
   trimOffset: 2,
 };
