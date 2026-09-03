@@ -67,6 +67,7 @@ export function newPresetStep(
 
 export default function PresetStepForm({
   presetId,
+  presetOrder,
   rawSettings,
   onPresetIdChange,
   onRawSettingsChange,
@@ -75,6 +76,7 @@ export default function PresetStepForm({
   onMoveDown,
 }: {
   presetId: PresetId;
+  presetOrder?: number; // used in the fieldset legend; starts at 1
   rawSettings: RawSettings;
   onPresetIdChange?: (presetId: PresetId) => unknown;
   onRawSettingsChange?: (rawSettings: RawSettings) => unknown;
@@ -86,7 +88,7 @@ export default function PresetStepForm({
 
   return (
     <fieldset>
-      <legend>Preset</legend>
+      <legend>{presetOrder ? `Preset #${presetOrder}` : "Preset"}</legend>
       <div>
         {onDelete && <button onClick={onDelete}>Delete Step</button>}
         {onMoveUp && (

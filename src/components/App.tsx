@@ -143,6 +143,7 @@ function App() {
         <PresetStepForm
           key={i}
           presetId={presetStep.presetId}
+          presetOrder={presetSteps.length > 1 ? i + 1 : undefined}
           rawSettings={presetStep.rawSettings}
           onPresetIdChange={(presetId) =>
             setPresetSteps(setArray(presetSteps, i, newPresetStep(presetId)))
