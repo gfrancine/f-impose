@@ -3,6 +3,7 @@ import addTrimMarks from "./add-trim-marks";
 import longShortEdgeFlip from "./long-short-edge-flip";
 import reduceInk from "./reduce-ink";
 import removeInnerBleed from "./remove-inner-bleed";
+import cropPages from "./crop-pages";
 import markSpineHoles from "./mark-spine-holes";
 
 // Layouts
@@ -19,6 +20,7 @@ export const UTILITY_PRESETS = {
   reduceInk,
   longShortEdgeFlip,
   removeInnerBleed,
+  cropPages,
   markSpineHoles,
 };
 
