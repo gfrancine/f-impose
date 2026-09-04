@@ -82,73 +82,70 @@ export async function imposeSequentialBookletGrid(
       indexGroupListOffset + nCells,
     );
     const getCell1dIndex = (col: number, row: number) => row * nCols + col;
-    console.log(indexGroupListSlice);
+
+    const drawCellSpread = (
+      outPage: PDFPage,
+      {
+        col,
+        row,
+        leftPage,
+        rightPage,
+      }: {
+        col: number;
+        row: number;
+        leftPage: PDFEmbeddedPage;
+        rightPage: PDFEmbeddedPage;
+      },
+    ) => {
+      const origin = new Vec2(
+        topLeftCorner.x + totalSrcSpreadSize.x * col,
+        topLeftCorner.y - totalSrcSpreadSize.y - totalSrcSpreadSize.y * row,
+      ).addVec(totalSrcSpreadSize.div(2));
+
+      // handle hiding trim marks,
+      const hasLeftCell = col > 0,
+        hasCellAbove = row > 0,
+        // only worry about the bottom-right sides
+        hasRightCell =
+          col < nCols - 1
+            ? indexGroupListSlice[getCell1dIndex(col + 1, row)] !== undefined
+            : false,
+        hasCellBelow =
+          row < nRows - 1
+            ? indexGroupListSlice[getCell1dIndex(col, row + 1)] !== undefined
+            : false;
+
+      drawSpread(outPage, {
+        origin: origin,
+        leftPage,
+        rightPage,
+        srcPageScale,
+        srcBleedArea,
+        trimLength,
+        trimOffset,
+        trimType,
+        hideTrimMarks: excessTrimEnabled
+          ? {}
+          : {
+              bottomLeftHoriz: hasLeftCell,
+              bottomLeftVert: hasCellBelow,
+              bottomRightHoriz: hasRightCell,
+              bottomRightVert: hasCellBelow,
+              topLeftHoriz: hasLeftCell,
+              topLeftVert: hasCellAbove,
+              topRightHoriz: hasRightCell,
+              topRightVert: hasCellAbove,
+            },
+      });
+    };
 
     for (let col = 0; col < nCols; col++) {
       for (let row = 0; row < nRows; row++) {
         const indexGroup = indexGroupListSlice[getCell1dIndex(col, row)];
         if (!indexGroup) break;
 
-        const drawGridSpread = (
-          outPage: PDFPage,
-          {
-            col,
-            row,
-            leftPage,
-            rightPage,
-          }: {
-            col: number;
-            row: number;
-            leftPage: PDFEmbeddedPage;
-            rightPage: PDFEmbeddedPage;
-          },
-        ) => {
-          const origin = new Vec2(
-            topLeftCorner.x + totalSrcSpreadSize.x * col,
-            topLeftCorner.y - totalSrcSpreadSize.y - totalSrcSpreadSize.y * row,
-          ).addVec(totalSrcSpreadSize.div(2));
-
-          // handle hiding trim marks, especially when pages don't
-          const hasLeftCell = col > 0,
-            hasCellAbove = row > 0,
-            // only worry about the bottom-right sides
-            hasRightCell =
-              col < nCols - 1
-                ? indexGroupListSlice[getCell1dIndex(col + 1, row)] !==
-                  undefined
-                : false,
-            hasCellBelow =
-              row < nRows - 1
-                ? indexGroupListSlice[getCell1dIndex(col, row + 1)] !==
-                  undefined
-                : false;
-
-          drawSpread(outPage, {
-            origin: origin,
-            leftPage,
-            rightPage,
-            srcPageScale,
-            srcBleedArea,
-            trimLength,
-            trimOffset,
-            trimType,
-            hideTrimMarks: excessTrimEnabled
-              ? {}
-              : {
-                  bottomLeftHoriz: hasLeftCell,
-                  bottomLeftVert: hasCellBelow,
-                  bottomRightHoriz: hasRightCell,
-                  bottomRightVert: hasCellBelow,
-                  topLeftHoriz: hasLeftCell,
-                  topLeftVert: hasCellAbove,
-                  topRightHoriz: hasRightCell,
-                  topRightVert: hasCellAbove,
-                },
-          });
-        };
-
         // front page
-        drawGridSpread(outPageFront, {
+        drawCellSpread(outPageFront, {
           col,
           row,
           leftPage: srcPages[indexGroup.front1],
@@ -156,7 +153,7 @@ export async function imposeSequentialBookletGrid(
         });
 
         // back page
-        drawGridSpread(outPageBack, {
+        drawCellSpread(outPageBack, {
           col: nCols - 1 - col, // flip horizontally
           row,
           leftPage: srcPages[indexGroup.back2],
