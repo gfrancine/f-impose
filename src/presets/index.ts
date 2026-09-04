@@ -5,6 +5,7 @@ import reduceInk from "./reduce-ink";
 import removeInnerBleed from "./remove-inner-bleed";
 import cropPages from "./crop-pages";
 import markSpineHoles from "./mark-spine-holes";
+import splitIntoSignatures from "./split-into-signatures";
 
 // Layouts
 import saddleStitch from "./saddle-stitch-2up";
@@ -21,6 +22,7 @@ export const UTILITY_PRESETS = {
   longShortEdgeFlip,
   removeInnerBleed,
   cropPages,
+  splitIntoSignatures,
   markSpineHoles,
 };
 
