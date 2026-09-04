@@ -12,14 +12,17 @@ As of now, these layouts are supported:
 - Saddle stitch booklets, 2-up
 - Saddle stitch booklets, 4-up
 - Business cards, 8-up
-- Repeating grid imposition (set columns & rows)
+- Grid imposition (set columns & rows)
+- Grid booklet imposition
 
 And comes with several print utilities:
 
-- Remove inner/spine bleeds
-- Add trim marks
-- Convert short/long edge documents
 - Reduce opacity/ink usage
+- Convert short/long edge documents
+- Remove inner/spine bleeds
+- Crop PDFs
+- Add trim marks
+- Split PDF into signatures
 - Mark spine holes (for bookbinding)
 
 And it can also:
