@@ -148,16 +148,16 @@ export async function imposeSequentialBookletGrid(
         drawCellSpread(outPageFront, {
           col,
           row,
-          leftPage: srcPages[indexGroup.front1],
-          rightPage: srcPages[indexGroup.front2],
+          leftPage: srcPages[indexGroup.front2],
+          rightPage: srcPages[indexGroup.front1],
         });
 
         // back page
         drawCellSpread(outPageBack, {
           col: nCols - 1 - col, // flip horizontally
           row,
-          leftPage: srcPages[indexGroup.back2],
-          rightPage: srcPages[indexGroup.back1],
+          leftPage: srcPages[indexGroup.back1],
+          rightPage: srcPages[indexGroup.back2],
         });
       }
     }
