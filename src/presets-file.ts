@@ -9,9 +9,18 @@ import { getPrefilledRawSettings } from "./settings";
 import type { PresetStep } from "./types";
 import { assert, toFilenameSafeDate } from "./utils";
 
+const CURRENT_VERSION = 1;
+
+type PresetsFile = {
+  version: number;
+  presetSteps: PresetStep[];
+};
+
 export function exportPresetsFile(presetSteps: PresetStep[]) {
+  const data: PresetsFile = { version: CURRENT_VERSION, presetSteps };
+
   const filename = "f-impose-presets-" + toFilenameSafeDate(new Date());
-  const textContents = JSON.stringify(presetSteps, null, 2);
+  const textContents = JSON.stringify(data, null, 2);
   const blob = new Blob([textContents], { type: "application/json" });
   const dataUrl = URL.createObjectURL(blob);
 
@@ -27,15 +36,25 @@ export function exportPresetsFile(presetSteps: PresetStep[]) {
 export async function importPresetsFile(file: File): Promise<PresetStep[]> {
   // assumes the file is guaranteed to be a .json file
   const textContents = await file.text();
-  const rawPresetSteps = JSON.parse(textContents);
+  const rawData = JSON.parse(textContents);
 
-  // validate, migrate versions possibly, et cetera
-  assert(Array.isArray(rawPresetSteps), "Invalid preset file, not an array");
+  // validate, migrate versions, et cetera
+  assert(typeof rawData === "object", "Invalid preset file: not an object");
+  assert(
+    typeof rawData.version === "number",
+    "Invalid preset file: version is not a number",
+  );
+  assert(
+    Array.isArray(rawData.presetSteps),
+    "Invalid preset file: presetSteps is not an array",
+  );
+  const rawPresetFile: PresetsFile = rawData; // migrate(rawData);
 
+  // extract presets
+  // only really need to validate presetId, everything else is handled
+  // either by preset-level settings retrieval or getPrefilled
   const presetSteps: PresetStep[] = [];
-  rawPresetSteps.forEach((rawPresetStep: PresetStep) => {
-    // only really need to validate presetId, everything else is handled
-    // either by preset-level settings retrieval or getPrefilled
+  rawPresetFile.presetSteps.forEach((rawPresetStep: PresetStep) => {
     const presetExists = PRESETS[rawPresetStep.presetId] !== undefined;
     let presetId = rawPresetStep.presetId;
     if (!presetExists) {
