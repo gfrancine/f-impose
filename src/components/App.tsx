@@ -85,6 +85,10 @@ function App() {
       const reloadPdf = async (pdf: PDFDocument) =>
         await PDFDocument.load(await pdf.save());
 
+      // if the number of outputs changed at any point, use our own filename
+      // TODO: make presets explicitly declare this?
+      let nOutputsChanged = false;
+
       for (const presetStep of presetSteps) {
         const { presetId, rawSettings } = presetStep;
         const preset = PRESETS[presetId];
@@ -93,8 +97,10 @@ function App() {
             const outPdfs = await preset.impose(pdf, rawSettings);
             return Promise.all(outPdfs.map(reloadPdf));
           }),
-        );
-        pdfs = newPdfs.flat();
+        ).then((pdfs) => pdfs.flat());
+
+        if (pdfs.length !== newPdfs.length) nOutputsChanged = true;
+        pdfs = newPdfs;
       }
 
       if (shouldMergeResults) {
@@ -107,7 +113,9 @@ function App() {
       } else {
         const results = await Promise.all(
           pdfs.map(async (pdf, i) => ({
-            fileName: `output-${i + 1}-${jobFilenameSuffix}.pdf`,
+            fileName: nOutputsChanged
+              ? `output-${i + 1}-${jobFilenameSuffix}.pdf`
+              : inputFiles[i].name,
             downloadUrl: await pdfToUrl(pdf),
           })),
         );
