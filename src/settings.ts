@@ -178,6 +178,7 @@ export function asBool(v: string | undefined, defaultValue: boolean) {
 /** get a pre-populated raw settings object from a schema. Guarantees every setting with a default value is filled */
 export function getPrefilledRawSettings(settingsSchema: SettingsSchema) {
   const filledRawSettings: RawSettings = {};
+
   const populateDefaultValues = (item: SettingsItemSchema) => {
     if (item.type === "inputRow") {
       item.inputs.forEach((input) => populateDefaultValues(input));

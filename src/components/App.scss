@@ -1,5 +1,9 @@
 @use "./common.scss";
 
+.hidden {
+  display: none;
+}
+
 .app {
   width: 90%;
   max-width: 48rem;

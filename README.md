@@ -30,6 +30,7 @@ And it can also:
 - Batch-process multiple files at once
 - Merge the results into a single PDF file
 - Chain multiple layouts and steps together
+- Save all steps and settings to re-import at a later time
 - Generate dummy page-numbered PDFs for proofing/testing
 
 # Contributing

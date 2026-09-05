@@ -14,6 +14,8 @@ import {
 import PresetStepForm from "./PresetStepForm";
 import type { PresetStep } from "../types";
 import { newPresetStep } from "./helpers";
+import FileInputButton from "./FileInputButton";
+import { exportPresetsFile, importPresetsFile } from "../presets-file";
 
 function App() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -40,6 +42,22 @@ function App() {
 
   const movePresetStepUp = (i: number) => movePresetStep(i, i - 1);
   const movePresetStepDown = (i: number) => movePresetStep(i, i + 1);
+
+  const handleExportPresets = () => exportPresetsFile(presetSteps);
+  const handleImportPresets = async (files: File[]) => {
+    try {
+      const presetSteps = await importPresetsFile(files[0]);
+      setPresetSteps(presetSteps);
+      alert(
+        `Successfully imported presets! Check console for any errors and warnings.`,
+      );
+    } catch (err) {
+      alert(
+        `Failed to import preset steps file: ${err}\n\nCheck console for details.`,
+      );
+      console.error(err);
+    }
+  };
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -182,10 +200,17 @@ function App() {
         You can apply more than one preset to a PDF!{" "}
         <button onClick={addPresetStep}>+ Add another preset</button>
       </p>
-      {/* <p>
-        You can also export all current presets/settings and import them anytime
-        later. <button>Export presets</button> <button>Import presets</button>
-      </p> */}
+      <p>
+        You can also save all your current preset settings to a file and
+        re-import it at a later time.{" "}
+        <button onClick={handleExportPresets}>Export Presets</button>{" "}
+        <FileInputButton
+          accept="application/json"
+          onUpload={handleImportPresets}
+        >
+          Import Presets...
+        </FileInputButton>
+      </p>
       <p>
         <button onClick={impose} disabled={inputFiles.length === 0}>
           Impose!
