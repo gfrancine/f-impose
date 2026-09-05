@@ -1,4 +1,4 @@
-![f-impose thumbnail](thumbnail.png)
+![f-impose thumbnail](assets/thumbnail.png)
 
 # F-Impose
 
@@ -32,6 +32,8 @@ And it can also:
 - Chain multiple layouts and steps together
 - Save all steps and settings to re-import at a later time
 - Generate dummy page-numbered PDFs for proofing/testing
+
+Examples can be found in the [`assets/example-pdfs`](./assets/example-pdfs) folder.
 
 # Contributing
 

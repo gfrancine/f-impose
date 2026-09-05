@@ -6,7 +6,7 @@
 - A preset is a JavaScript object that consists of:
   - A string name
   - A string description
-  - An optional thumbnail image path
+  - An optional thumbnail image path (usually in the `public/thumbnails` folder)
   - A preset settings definition schema
   - An `impose` function that takes a source PDF and outputs a new PDF.
     > See the `Preset` type within the `types.ts` module.
@@ -87,3 +87,4 @@ const settingsSchema = defineSettingsSchema([
   - Longer variable names are always preferred for clarity.
   - Try to share as many words in variable names to denote relations or similar behavior, e.g., `srcPage`, `srcPdf`, or `drawTrimMark`, `drawTrimMarksRect`, `drawSpread`.
   - Performance and optimisation is not critical. If a choice had to be made between verbose but readable and performant code always prefer readable.
+- See `Thumbnail Guidelines.md` for more details on the thumbnail design workflow.
