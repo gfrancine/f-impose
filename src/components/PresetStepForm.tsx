@@ -1,19 +1,12 @@
-/* eslint-disable react-refresh/only-export-components */
-
 import {
   LAYOUT_PRESETS,
   PRESETS,
   UTILITY_PRESETS,
-  DEFAULT_PRESET_ID,
   type PresetId,
 } from "../presets";
-import "./App.css";
 import SettingsForm from "./SettingsForm";
-import type {
-  RawSettings,
-  SettingsItemSchema,
-  SettingsSchema,
-} from "../settings";
+import { type RawSettings } from "../settings";
+import "./PresetStepForm.scss";
 
 // authored by Big Pickle
 // Splits paragraphs from double line breaks "\n\n" and turns single ones "\n"
@@ -31,38 +24,6 @@ function descriptionToElements(description: string) {
           )}
       </p>
     ));
-}
-
-export type PresetStep = {
-  presetId: PresetId;
-  rawSettings: RawSettings;
-};
-
-export function getDefaultRawSettings(settingsSchema: SettingsSchema) {
-  const filledRawSettings: RawSettings = {};
-  const populateDefaultValues = (item: SettingsItemSchema) => {
-    if (item.type === "inputRow") {
-      item.inputs.forEach((input) => populateDefaultValues(input));
-    } else if (
-      "defaultValue" in item &&
-      filledRawSettings[item.id] === undefined
-    ) {
-      filledRawSettings[item.id] = item.defaultValue + "";
-    }
-  };
-
-  settingsSchema.forEach((item) => populateDefaultValues(item));
-  return filledRawSettings;
-}
-
-export function newPresetStep(
-  presetId: PresetId = DEFAULT_PRESET_ID,
-): PresetStep {
-  const preset = PRESETS[presetId];
-  return {
-    presetId,
-    rawSettings: getDefaultRawSettings(preset.settingsSchema || []),
-  };
 }
 
 export default function PresetStepForm({
@@ -87,7 +48,7 @@ export default function PresetStepForm({
   const currentPreset = PRESETS[presetId];
 
   return (
-    <fieldset>
+    <fieldset className="preset-step-form">
       <legend>{presetOrder ? `Preset #${presetOrder}` : "Preset"}</legend>
       <div>
         {onDelete && <button onClick={onDelete}>Delete Step</button>}
@@ -127,7 +88,27 @@ export default function PresetStepForm({
           </optgroup>
         </select>
       </label>
-      <div>{descriptionToElements(currentPreset.description)}</div>
+      {currentPreset.thumbnail ? (
+        <div className="description two-column">
+          <div className="col">
+            {descriptionToElements(currentPreset.description)}
+          </div>
+          <div className="col right">
+            <p>
+              <img
+                className="thumbnail"
+                src={currentPreset.thumbnail}
+                alt={currentPreset.name + " thumbnail"}
+              />
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="description">
+          {descriptionToElements(currentPreset.description)}
+        </div>
+      )}
+
       {currentPreset.settingsSchema && (
         <>
           <h3>Preset Settings</h3>

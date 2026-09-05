@@ -7,10 +7,12 @@ import {
   setupOutPdf,
   commonPresetSettings,
   gridPresetSettings,
+  getThumbnailPath,
 } from "./helpers";
 
 const name = "";
 const description = "";
+const thumbnail = getThumbnailPath("thumbnail.png");
 
 // Preset settings
 const { commonSchemaItems, getCommonSettings } = commonPresetSettings({
@@ -44,6 +46,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
 export const preset: Preset = {
   name,
   description,
+  thumbnail,
   settingsSchema,
   impose,
 };

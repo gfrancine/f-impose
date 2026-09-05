@@ -6,11 +6,12 @@
 - A preset is a JavaScript object that consists of:
   - A string name
   - A string description
+  - An optional thumbnail image path
   - A preset settings definition schema
   - An `impose` function that takes a source PDF and outputs a new PDF.
     > See the `Preset` type within the `types.ts` module.
 
-## How it Works (At a Glance)
+## How it Works (at a Glance)
 
 1. The user selects a preset from the dropdown.
 2. The app gets its `Preset` object from the lookup at `presets/index.ts`.

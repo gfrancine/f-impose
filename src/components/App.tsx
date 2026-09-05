@@ -3,7 +3,7 @@ import { PDFDocument } from "pdf-lib";
 import { PRESETS } from "../presets";
 import DummyGenerator from "./DummyGenerator";
 import PdfOutput from "./PdfOutput";
-import "./App.css";
+import "./App.scss";
 import {
   mergePdfs,
   pdfToUrl,
@@ -11,10 +11,9 @@ import {
   setArray,
   toFilenameSafeDate,
 } from "../utils";
-import PresetStepForm, {
-  newPresetStep,
-  type PresetStep,
-} from "./PresetStepForm";
+import PresetStepForm from "./PresetStepForm";
+import type { PresetStep } from "../types";
+import { newPresetStep } from "./helpers";
 
 function App() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -183,6 +182,10 @@ function App() {
         You can apply more than one preset to a PDF!{" "}
         <button onClick={addPresetStep}>+ Add another preset</button>
       </p>
+      {/* <p>
+        You can also export all current presets/settings and import them anytime
+        later. <button>Export presets</button> <button>Import presets</button>
+      </p> */}
       <p>
         <button onClick={impose} disabled={inputFiles.length === 0}>
           Impose!

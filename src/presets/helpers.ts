@@ -21,11 +21,12 @@ import {
 } from "../settings";
 import { inToMm, inToPts, mmToIn, mmToPts } from "../utils";
 
+export const getThumbnailPath = (fileName: string) => "thumbnails/" + fileName;
+
 /** sets up a a PDFDocument and embeds the source pages */
 export async function setupOutPdf(srcPdf: PDFDocument) {
   const outPdf = await PDFDocument.create();
   const srcPages = await outPdf.embedPages(srcPdf.getPages()); // embed pages into the output
-
   return { outPdf, srcPages };
 }
 

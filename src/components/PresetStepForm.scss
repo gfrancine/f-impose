@@ -1,0 +1,30 @@
+@use "./common.scss";
+
+.preset-step-form {
+  .description.two-column {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    @include common.on-mobile {
+      display: block;
+    }
+
+    .col {
+      flex: 1;
+    }
+
+    .col.right {
+      // thumbnail column
+      text-align: right;
+      @include common.on-mobile {
+        text-align: center;
+      }
+    }
+
+    .thumbnail {
+      width: (100%);
+      max-width: 20em;
+      max-height: 20em;
+    }
+  }
+}
