@@ -13,10 +13,11 @@ import {
 } from "../utils";
 import type { Preset } from "../types";
 import { defineSettingsSchema, type RawSettings } from "../settings";
-import { setupOutPdf, commonPresetSettings } from "./helpers";
+import { setupOutPdf, commonPresetSettings, getThumbnailPath } from "./helpers";
 
 const name = "Zine 8-Fold";
 const description = "A typical 8-fold mini zine. (Bleed areas not supported)";
+const thumbnail = getThumbnailPath("zine-8up.png");
 
 const { commonSchemaItems, getCommonSettings } = commonPresetSettings({
   orientation: "landscape",
@@ -99,6 +100,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
 const preset: Preset = {
   name,
   description,
+  thumbnail,
   settingsSchema,
   impose,
 };

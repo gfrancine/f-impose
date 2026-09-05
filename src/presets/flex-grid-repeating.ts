@@ -17,10 +17,12 @@ import {
   setupOutPdf,
   commonPresetSettings,
   gridPresetSettings,
+  getThumbnailPath,
 } from "./helpers";
 
-const name = "Repeating Grid";
+const name = "Flexible Repeating Grid";
 const description = `Imposes pages on a repeating grid with a flexible amount of rows and columns.`;
+const thumbnail = getThumbnailPath("flex-grid-repeating.png");
 
 const { commonSchemaItems, getCommonSettings } = commonPresetSettings({
   orientation: "portrait",
@@ -117,6 +119,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
 const preset: Preset = {
   name,
   description,
+  thumbnail,
   settingsSchema,
   impose,
 };

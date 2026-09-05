@@ -8,14 +8,14 @@ import markSpineHoles from "./mark-spine-holes";
 import splitIntoSignatures from "./split-into-signatures";
 
 // Layouts
-import saddleStitch from "./saddle-stitch-2up";
-import saddleStitch4Up from "./saddle-stitch-4up";
-import saddleStitch4UpTall from "./saddle-stitch-4up-tall";
-import zine8Fold from "./zine-8fold";
-import businessCard from "./business-card-8up";
-import repeatingGrid from "./repeating-grid";
-import sequentialGrid from "./sequential-grid";
-import sequentialBookletGrid from "./sequential-booklet-grid";
+import booklet2Up from "./booklet-2up";
+import booklet4Up from "./booklet-4up";
+import booklet4UpTall from "./booklet-4up-tall";
+import bookletFlexGrid from "./booklet-flex-grid";
+import zine8Up from "./zine-8up";
+import bizcard8Up from "./bizcard-8up";
+import flexGrid from "./flex-grid";
+import flexGridRepeating from "./flex-grid-repeating";
 
 export const UTILITY_PRESETS = {
   reduceInk,
@@ -28,14 +28,14 @@ export const UTILITY_PRESETS = {
 
 export const LAYOUT_PRESETS = {
   addTrimMarks,
-  saddleStitch,
-  saddleStitch4Up,
-  saddleStitch4UpTall,
-  zine8Fold,
-  businessCard,
-  repeatingGrid,
-  sequentialGrid,
-  sequentialBookletGrid,
+  booklet2Up,
+  booklet4Up,
+  booklet4UpTall,
+  bookletFlexGrid,
+  zine8Up,
+  bizcard8Up,
+  flexGrid,
+  flexGridRepeating,
 };
 
 export const PRESETS = {

@@ -18,10 +18,12 @@ import {
   setupOutPdf,
   commonPresetSettings,
   gridPresetSettings,
+  getThumbnailPath,
 } from "./helpers";
 
-const name = "Sequential Grid";
+const name = "Flexible Grid";
 const description = `Imposes pages on a grid (left-to-right, top-to-bottom) with a flexible amount of rows and columns. (Note: all pages must have the same size!)`;
+const thumbnail = getThumbnailPath("flex-grid.png");
 
 const { commonSchemaItems, getCommonSettings } = commonPresetSettings({
   orientation: "portrait",
@@ -184,6 +186,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
 const preset: Preset = {
   name,
   description,
+  thumbnail,
   settingsSchema,
   impose,
 };

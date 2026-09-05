@@ -8,10 +8,11 @@ import { PDFDocument } from "pdf-lib";
 import { drawPageWithTrimMarks, Vec2 } from "../utils";
 import type { Preset } from "../types";
 import { defineSettingsSchema, type RawSettings } from "../settings";
-import { setupOutPdf, commonPresetSettings } from "./helpers";
+import { setupOutPdf, commonPresetSettings, getThumbnailPath } from "./helpers";
 
 const name = "Add Trim Marks";
 const description = "Impose any PDF file with trim marks.";
+const thumbnail = getThumbnailPath("add-trim-marks.png");
 
 const { commonSchemaItems, getCommonSettings } = commonPresetSettings({
   orientation: "portrait",
@@ -49,6 +50,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
 const preset: Preset = {
   name,
   description,
+  thumbnail,
   settingsSchema,
   impose,
 };

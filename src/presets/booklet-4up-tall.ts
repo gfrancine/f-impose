@@ -7,12 +7,13 @@ Saddle-Stitched Tall Booklet 4-Up
 import { PDFDocument } from "pdf-lib";
 import type { Preset } from "../types";
 import { defineSettingsSchema, type RawSettings } from "../settings";
-import { setupOutPdf, commonPresetSettings } from "./helpers";
-import { imposeSequentialBookletGrid } from "./sequential-booklet-grid";
+import { setupOutPdf, commonPresetSettings, getThumbnailPath } from "./helpers";
+import { imposeSequentialBookletGrid } from "./booklet-flex-grid";
 
-const name = "Saddle-Stitched Tall Booklet 4-Up";
+const name = "Booklet 4-Up (Tall)";
 const description =
-  "Imposes two saddle-stitched booklet spreads per sheet. Good for tall booklets. (To freely adjust the amount of spreads per sheet, see the sequential booklet grid preset instead!)";
+  "Imposes two saddle-stitched booklet spreads per sheet. Good for tall booklets.\n\nTo freely adjust the amount of spreads per sheet, see the sequential booklet grid preset instead!";
+const thumbnail = getThumbnailPath("booklet-4up-tall.png");
 
 const { commonSchemaItems, getCommonSettings } = commonPresetSettings({
   orientation: "landscape",
@@ -35,6 +36,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
 const preset: Preset = {
   name,
   description,
+  thumbnail,
   settingsSchema,
   impose,
 };

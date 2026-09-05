@@ -1,32 +1,32 @@
 /*
 
-Saddle-Stitched Booklet 2-Up
+Business Card 8-Up
 
 */
 
 import { PDFDocument } from "pdf-lib";
 import type { Preset } from "../types";
 import { defineSettingsSchema, type RawSettings } from "../settings";
-import { setupOutPdf, commonPresetSettings } from "./helpers";
-import { imposeSequentialBookletGrid } from "./sequential-booklet-grid";
+import { setupOutPdf, commonPresetSettings, getThumbnailPath } from "./helpers";
+import { imposeRepeatingGrid } from "./flex-grid-repeating";
 
-const name = "Saddle-Stitched Booklet 2-Up";
-const description =
-  "Generic 2-up saddle-stitched booklet or signature. To remove inner/spine bleeds, check out the 'Remove Inner Bleed' preset!";
+const name = "Business Card 8-Up";
+const description = `Imposes cards on a long edge-flip, 2x4 layout. Supports both landscape and portrait cards.`;
+const thumbnail = getThumbnailPath("bizcard-8up.png");
 
 const { commonSchemaItems, getCommonSettings } = commonPresetSettings({
-  orientation: "landscape",
+  orientation: "portrait",
 });
 const settingsSchema = defineSettingsSchema(commonSchemaItems);
 
 async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
   const { outPdf, srcPages } = await setupOutPdf(srcPdf);
 
-  await imposeSequentialBookletGrid(outPdf, srcPages, {
+  await imposeRepeatingGrid(outPdf, srcPages, {
     ...getCommonSettings(rawSettings),
-    nRows: 1,
-    nCols: 1,
-    excessTrimEnabled: true,
+    nCols: 2,
+    nRows: 4,
+    excessTrimEnabled: false,
   });
 
   return [outPdf];
@@ -35,6 +35,7 @@ async function impose(srcPdf: PDFDocument, rawSettings: RawSettings) {
 const preset: Preset = {
   name,
   description,
+  thumbnail,
   settingsSchema,
   impose,
 };
