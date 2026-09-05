@@ -1,3 +1,9 @@
+/*
+
+Handles preset step file imports and exports
+
+*/
+
 import { DEFAULT_PRESET_ID, PRESETS } from "./presets";
 import { getPrefilledRawSettings } from "./settings";
 import type { PresetStep } from "./types";
