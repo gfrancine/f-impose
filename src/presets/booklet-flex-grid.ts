@@ -21,7 +21,7 @@ import {
 } from "./helpers";
 
 const name = "Booklet (Flexible Grid)";
-const description = `Imposes saddle-stitched booklets or signatures on a grid (left-to-right, top-to-bottom) with a flexible amount of rows and columns. (Note: all pages must have the same size!)`;
+const description = `Imposes saddle-stitched booklets or signatures on a grid (left-to-right, top-to-bottom) with a flexible amount of rows and columns.\n\n(Note: all pages must have the same size!)`;
 const thumbnail = getThumbnailPath("booklet-flex-grid.png");
 
 const { commonSchemaItems, getCommonSettings } = commonPresetSettings({

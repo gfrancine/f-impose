@@ -12,7 +12,7 @@ import { imposeSequentialBookletGrid } from "./booklet-flex-grid";
 
 const name = "Booklet 4-Up";
 const description =
-  "Imposes two saddle-stitched booklet spreads per sheet.\n\nTo freely adjust the amount of spreads per sheet, see the sequential booklet grid preset instead!";
+  "Imposes two saddle-stitched booklet spreads per sheet.\n\nTo freely adjust the amount of spreads per sheet, see the Booklet (Flexible Grid) preset instead!";
 const thumbnail = getThumbnailPath("booklet-4up.png");
 
 const { commonSchemaItems, getCommonSettings } = commonPresetSettings({

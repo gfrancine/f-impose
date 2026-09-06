@@ -20,7 +20,7 @@ import { setupOutPdf, unitsSettings, getUnitToPtsConversion } from "./helpers";
 
 const name = "Crop Pages";
 const description =
-  "Crops PDF pages. Supports left/right or inner/outer measurements.";
+  "Crops PDF pages. Supports both left/right and inner/outer measurements.";
 
 const { getUnitsSetting, unitsInputSchema } = unitsSettings();
 

@@ -22,7 +22,7 @@ import {
 } from "./helpers";
 
 const name = "Flexible Grid";
-const description = `Imposes pages on a grid (left-to-right, top-to-bottom) with a flexible amount of rows and columns. (Note: all pages must have the same size!)`;
+const description = `Imposes pages on a grid (left-to-right, top-to-bottom) with a flexible amount of rows and columns.\n\n(Note: all pages must have the same size!)`;
 const thumbnail = getThumbnailPath("flex-grid.png");
 
 const { commonSchemaItems, getCommonSettings } = commonPresetSettings({

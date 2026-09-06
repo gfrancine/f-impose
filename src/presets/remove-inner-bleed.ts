@@ -13,7 +13,7 @@ import { setupOutPdf, commonPresetSettings } from "./helpers";
 
 const name = "Remove Inner Bleed";
 const description =
-  "Removes inner bleed from PDFs with facing pages. Useful for imposing book spreads.";
+  "Removes inner bleed from PDFs with facing pages, for imposing book spreads.";
 
 const { commonSchemaItems, getCommonSettings } = commonPresetSettings({
   exclude: ["trimMarks", "sheetSize", "srcPageScale"],

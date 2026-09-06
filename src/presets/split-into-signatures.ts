@@ -16,7 +16,7 @@ import {
 
 const name = "Split Into Signatures";
 const description =
-  "Splits a PDF by the amount of paper sheets (or leaves) per signature. Will NOT impose into booklets, only splits into multiple PDFs—see the saddle-stitched booklet presets instead!";
+  "Splits a PDF by the amount of paper sheets (or leaves) per signature. Will NOT impose into booklets, only splits into multiple PDFs—see the booklet presets instead!";
 
 const settingsSchema = defineSettingsSchema([
   numberInput({

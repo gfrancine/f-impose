@@ -12,7 +12,7 @@ import { imposeSequentialBookletGrid } from "./booklet-flex-grid";
 
 const name = "Booklet 2-Up";
 const description =
-  "Generic 2-up saddle-stitched booklet or signature.\n\nTo remove inner/spine bleeds, check out the 'Remove Inner Bleed' preset!";
+  "Generic 2-up saddle-stitched booklet or signature.\n\nTo remove inner/spine bleeds, check out the Remove Inner Bleed preset!";
 const thumbnail = getThumbnailPath("booklet-2up.png");
 
 const { commonSchemaItems, getCommonSettings } = commonPresetSettings({

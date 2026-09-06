@@ -11,7 +11,7 @@ import { setupOutPdf, commonPresetSettings, getThumbnailPath } from "./helpers";
 import { imposeRepeatingGrid } from "./flex-grid-repeating";
 
 const name = "Business Card 8-Up";
-const description = `Imposes cards on a long edge-flip, 2x4 layout. Supports both landscape and portrait cards.`;
+const description = `Imposes cards on a 2x4 layout. Supports both landscape and portrait cards.`;
 const thumbnail = getThumbnailPath("bizcard-8up.png");
 
 const { commonSchemaItems, getCommonSettings } = commonPresetSettings({
